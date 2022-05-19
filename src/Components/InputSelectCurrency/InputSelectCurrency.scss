@@ -1,13 +1,14 @@
 @import '../../assets/theme/_var.scss';
 
 .InputSelectCurrency_style{
-        background:$blueLign;
+        background:$darkBlue;
         border-radius: 25px;
         padding-top: 20px;
         padding-bottom: 20px;
         padding-left: 25px;
         padding-right: 25px;
         position: relative;
+        border: 1px solid $yellowClr;
         .labelTextStyle{
             display: block;
             font-family: $baseFont;

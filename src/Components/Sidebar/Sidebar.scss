@@ -2,7 +2,7 @@
 
 
 $sidebar-bg-color: $baseColor !default;
-$submenu-bg-color: $blueLign !default;
+$submenu-bg-color: $swapStepbg !default;
 $sidebar-width: 235px !default;
 $icon-bg-color: transparent !default;
 
@@ -38,8 +38,7 @@ $icon-bg-color: transparent !default;
 }
 li.pro-menu-item{
     width: 236px;
-    position: relative;    
-
+    position: relative;   
     &.active{
         &:before{
             position: absolute;
@@ -109,7 +108,7 @@ li.pro-menu-item{
     padding:3.5px;
 }
 .sidebar_footer_style{
-    border-top: 2px solid $secondaryColor !important;
+    border-top: 1px solid $secondaryColor !important;
     flex: 0 0 auto;
     padding-top: 25px;
     padding-bottom: 25px;

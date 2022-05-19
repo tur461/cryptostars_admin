@@ -2,10 +2,8 @@ import React, { useState, useEffect, Fragment } from "react";
 import Countdown from "react-countdown";
 import "./Lottery.scss";
 import ProgressBar from "./ProgressBar";
-import anchor_total from "../../../assets/images/anchor_total.png";
 import Button from "../../../Components/Button/Button";
 import ticket from "../../../assets/images/ticket_bg.png";
-import anchor from "../../../assets/images/anchor_total.png";
 import { LotteryServices } from "../../../services/LotteryServices";
 import { useSelector } from "react-redux";
 import { toast } from "../../../Components/Toast/Toast";
@@ -14,6 +12,7 @@ import { UserService } from "../../../services/UserService";
 import { MAIN_CONTRACT_LIST } from "../../../assets/tokens";
 import Card from "../../../Components/Card/Card";
 import LotteryChart from "./LotteryChart";
+import anchor from "../../../assets/images/Anchor.png";
 import { API_HOST } from "../../../constant";
 import Loader from "react-loader-spinner";
 import Table from "react-bootstrap/Table";
@@ -255,9 +254,9 @@ const Lottery = () => {
     ) {
       setvalue(event.target.value);
     }
-    if(event.target.value > 50) {
+    if (event.target.value > 50) {
       setvalue("50");
-      return toast.error("Can't buy more then 50 tickets at a time")
+      return toast.error("Can't buy more then 50 tickets at a time");
     }
   };
 
@@ -430,7 +429,6 @@ const Lottery = () => {
               <div className="totalPot">
                 <div className="totalPotIn totalPotLeft">
                   <div className="totalPotHead">
-                    <img src={anchor_total} alt="icon" />
                     <h3>
                       <span>Total Pot</span>
                       {pot / 10 ** decimals} ANCHOR
@@ -603,7 +601,7 @@ const Lottery = () => {
                                   type="text"
                                   className="form-control"
                                 />
-                                
+
                                 <h4>
                                   Ticket
                                   <Button
@@ -614,7 +612,9 @@ const Lottery = () => {
                                   </Button>
                                 </h4>
                               </div>
-                              <small style={{color:"red"}}>*Note: Can't buy tickets more then 50 at a time</small>
+                              <small style={{ color: "red" }}>
+                                *Note: Can't buy tickets more then 50 at a time
+                              </small>
 
                               <p>1 Ticket = 20 ANCHOR</p>
                               <p className="white">
@@ -769,13 +769,15 @@ const Lottery = () => {
                         <tr>
                           <td>4</td>
                           <td>{rewardArray[1] / miniPrice}</td>
-                          <td>  
+                          <td>
                             {" "}
                             <span>
-                              {Number((
-                                (rewardArray[0] * prizeArray[0]) /
-                                (100 * 10 ** decimals)
-                              ).toFixed(4))}
+                              {Number(
+                                (
+                                  (rewardArray[0] * prizeArray[0]) /
+                                  (100 * 10 ** decimals)
+                                ).toFixed(4)
+                              )}
                             </span>
                           </td>
                           <td></td>
