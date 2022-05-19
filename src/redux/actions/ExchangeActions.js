@@ -84,7 +84,7 @@ export const getUserLPTokens = () => async (dispatch, getState) => {
           await dispatch(commonLpToken(lp));
         }
 
-        console.log("LPTOKENS:", lpTokens);
+        // console.log("LPTOKENS:", lpTokens);
       }
     }
   } catch (error) {
@@ -132,14 +132,10 @@ export const commonLpToken = (lp) => {
           );
         }
         //lp deposit
-        token0Deposit = (
-          ratio *
-          (reserves["_reserve0"] / 10 ** token0Obj.decimals)
-        );
-        token1Deposit = (
-          ratio *
-          (reserves["_reserve1"] / 10 ** token1Obj.decimals)
-        );
+        token0Deposit =
+          ratio * (reserves["_reserve0"] / 10 ** token0Obj.decimals);
+        token1Deposit =
+          ratio * (reserves["_reserve1"] / 10 ** token1Obj.decimals);
 
         const data = {
           ...lp,
@@ -151,15 +147,11 @@ export const commonLpToken = (lp) => {
           poolShare,
         };
         userLpTokensArr = [...userLpTokensArr, data];
-        dispatch(
-          saveUserLpTokens(userLpTokensArr)
-        );
+        dispatch(saveUserLpTokens(userLpTokensArr));
       }
-    } catch (error) {
-
-    }
-  }
-}
+    } catch (error) {}
+  };
+};
 
 export const addLpToken = (lp) => {
   return async (dispatch, getState) => {
@@ -190,7 +182,7 @@ export const addLpToken = (lp) => {
           const reserves = await ExchangeService.getReserves(lp.pair);
 
           if (lp.token0.toLowerCase() === WETH.toLowerCase()) {
-            lp.token0 = 'BNB';
+            lp.token0 = "BNB";
             token0Obj = tokenList.find((d) => d.address === "BNB");
           } else {
             token0Obj = tokenList.find(
@@ -198,7 +190,7 @@ export const addLpToken = (lp) => {
             );
           }
           if (lp.token1.toLowerCase() === WETH.toLowerCase()) {
-            lp.token1 = 'BNB';
+            lp.token1 = "BNB";
             token1Obj = tokenList.find((d) => d.address === "BNB");
           } else {
             token1Obj = tokenList.find(
@@ -206,14 +198,10 @@ export const addLpToken = (lp) => {
             );
           }
           //lp deposit
-          token0Deposit = (
-            ratio *
-            (reserves["_reserve0"] / 10 ** token0Obj.decimals)
-          );
-          token1Deposit = (
-            ratio *
-            (reserves["_reserve1"] / 10 ** token1Obj.decimals)
-          );
+          token0Deposit =
+            ratio * (reserves["_reserve0"] / 10 ** token0Obj.decimals);
+          token1Deposit =
+            ratio * (reserves["_reserve1"] / 10 ** token1Obj.decimals);
 
           const data = {
             ...lp,
@@ -232,9 +220,7 @@ export const addLpToken = (lp) => {
           }
           if (check) {
             userLpTokensArr = [...userLpTokensArr, data];
-            await dispatch(
-              saveUserLpTokens(userLpTokensArr)
-            );
+            await dispatch(saveUserLpTokens(userLpTokensArr));
           }
           return data;
         } else {

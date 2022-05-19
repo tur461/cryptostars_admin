@@ -1,32 +1,42 @@
 import Web3 from "web3";
 import TOKEN_ABI from "../assets/ABI/tokenContract.ABI.json";
 import { toast } from "../Components/Toast/Toast";
-import { NETWORK_CHAIN_ID, NETWORK_CHAIN_NAME, NETWORK_LINK, NETWORK_NATIVE_CURRENCY_DECIMALS, NETWORK_NATIVE_CURRENCY_NAME, NETWORK_NATIVE_CURRENCY_SYMBOL, NETWORK_RPC_URL } from '../constant'
-import WalletConnectProvider from '@walletconnect/web3-provider'
+import {
+  NETWORK_CHAIN_ID,
+  NETWORK_CHAIN_NAME,
+  NETWORK_LINK,
+  NETWORK_NATIVE_CURRENCY_DECIMALS,
+  NETWORK_NATIVE_CURRENCY_NAME,
+  NETWORK_NATIVE_CURRENCY_SYMBOL,
+  NETWORK_RPC_URL,
+} from "../constant";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
 let web3Object;
 let contractOjbect;
 let currentContractAddress;
 let tokenContractObject;
 let currentTokenAddress;
-let walletTypeObject = 'Metamask';
+let walletTypeObject = "Metamask";
 let walletConnectProvider;
 
 //only for lp tokens
 const convertToDecimals = async (value) => {
   const decimals = 18;
   return Number(value) / 10 ** decimals;
-}
+};
 
 const isMetamaskInstalled = async (type) => {
   //Have to check the ethereum binding on the window object to see if it's installed
   const { ethereum, web3 } = window;
   const result = Boolean(ethereum && ethereum.isMetaMask);
-  walletTypeObject = 'Metamask';
+  walletTypeObject = "Metamask";
   if (result) {
     //metamask
     try {
-      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
       return accounts[0];
     } catch (err) {
       toast.error(err.message);
@@ -35,7 +45,9 @@ const isMetamaskInstalled = async (type) => {
   } else if (ethereum) {
     //trust wallet
     try {
-      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
       return accounts[0];
     } catch (err) {
       toast.error(err.message);
@@ -51,18 +63,17 @@ const isMetamaskInstalled = async (type) => {
     }
     return false;
   }
-
-}
-
-
+};
 
 const isBinanceChainInstalled = async () => {
   //Have to check the ethereum binding on the window object to see if it's installed
   const { BinanceChain } = window;
   if (BinanceChain) {
-    walletTypeObject = 'BinanceChain';
+    walletTypeObject = "BinanceChain";
     try {
-      const accounts = await BinanceChain.request({ method: 'eth_requestAccounts' });
+      const accounts = await BinanceChain.request({
+        method: "eth_requestAccounts",
+      });
       return accounts[0];
     } catch (err) {
       toast.error(err.message);
@@ -72,119 +83,128 @@ const isBinanceChainInstalled = async () => {
     toast.error("Install BinanceChain extension first!");
     return false;
   }
-}
+};
 
+//Network switch protection
 const walletWindowListener = async () => {
   const { BinanceChain, ethereum } = window;
-  if (walletTypeObject === 'Metamask') {
+  console.log(
+    "ethereum.chainId ",
+    ethereum.chainId,
+    "NETWORK_CHAIN_ID",
+    NETWORK_CHAIN_ID
+  );
+  if (walletTypeObject === "Metamask") {
     const result = Boolean(ethereum && ethereum.isMetaMask);
     if (result) {
       if (ethereum.chainId !== NETWORK_CHAIN_ID) {
         try {
           const chain = await ethereum.request({
-            method: 'wallet_switchEthereumChain',
+            method: "wallet_switchEthereumChain",
             params: [{ chainId: NETWORK_CHAIN_ID }],
           });
         } catch (error) {
-          console.log('metamask error', error);
+          console.log("metamask error", error);
           if (error?.code === 4902) {
             try {
               const addChain = await ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [{
-                  chainId: NETWORK_CHAIN_ID,
-                  chainName: NETWORK_CHAIN_NAME,
-                  nativeCurrency: {
-                    name: NETWORK_NATIVE_CURRENCY_NAME,
-                    symbol: NETWORK_NATIVE_CURRENCY_SYMBOL,
-                    decimals: Number(NETWORK_NATIVE_CURRENCY_DECIMALS)
-                  },
-                  rpcUrls: [NETWORK_RPC_URL],
-                  blockExplorerUrls: [NETWORK_LINK]
-                }],
-              });
-              window.location.reload();
-            } catch (error) { }
-          }
-        }
-
-      }
-
-      ethereum.on('chainChanged', async (chainId) => {
-        if (chainId !== NETWORK_CHAIN_ID) {
-          // toast.error('Select Binance Smart Chain Mainnet Network in wallet!')
-          try {
-            const chain = await ethereum.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: NETWORK_CHAIN_ID }],
-            });
-          } catch (error) {
-            console.log('metamask error', error);
-            if (error?.code === 4902) {
-              try {
-                const addChain = await ethereum.request({
-                  method: 'wallet_addEthereumChain',
-                  params: [{
-                    chainId: await window.ethereum.chainId,
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    chainId: NETWORK_CHAIN_ID,
                     chainName: NETWORK_CHAIN_NAME,
                     nativeCurrency: {
                       name: NETWORK_NATIVE_CURRENCY_NAME,
                       symbol: NETWORK_NATIVE_CURRENCY_SYMBOL,
-                      decimals: Number(NETWORK_NATIVE_CURRENCY_DECIMALS)
+                      decimals: Number(NETWORK_NATIVE_CURRENCY_DECIMALS),
                     },
                     rpcUrls: [NETWORK_RPC_URL],
-                    blockExplorerUrls: [NETWORK_LINK]
-                  }],
+                    blockExplorerUrls: [NETWORK_LINK],
+                  },
+                ],
+              });
+              window.location.reload();
+            } catch (error) {}
+          }
+        }
+      }
+
+      ethereum.on("chainChanged", async (chainId) => {
+        if (chainId !== NETWORK_CHAIN_ID) {
+          // toast.error('Select Binance Smart Chain Mainnet Network in wallet!')
+          try {
+            const chain = await ethereum.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: NETWORK_CHAIN_ID }],
+            });
+          } catch (error) {
+            console.log("metamask error", error);
+            if (error?.code === 4902) {
+              try {
+                const addChain = await ethereum.request({
+                  method: "wallet_addEthereumChain",
+                  params: [
+                    {
+                      chainId: await window.ethereum.chainId,
+                      chainName: NETWORK_CHAIN_NAME,
+                      nativeCurrency: {
+                        name: NETWORK_NATIVE_CURRENCY_NAME,
+                        symbol: NETWORK_NATIVE_CURRENCY_SYMBOL,
+                        decimals: Number(NETWORK_NATIVE_CURRENCY_DECIMALS),
+                      },
+                      rpcUrls: [NETWORK_RPC_URL],
+                      blockExplorerUrls: [NETWORK_LINK],
+                    },
+                  ],
                 });
-              } catch (error) { }
+              } catch (error) {}
             }
           }
         }
       });
     }
-
   }
-  if (walletTypeObject === 'BinanceChain') {
+  if (walletTypeObject === "BinanceChain") {
     if (BinanceChain) {
-      BinanceChain.on('chainChanged', async (chainId) => {
+      BinanceChain.on("chainChanged", async (chainId) => {
         if (chainId !== NETWORK_CHAIN_ID) {
           // toast.error('Select Binance Smart Chain Mainnet Network in wallet!')
           try {
             const chain = await BinanceChain.request({
-              method: 'wallet_switchEthereumChain',
+              method: "wallet_switchEthereumChain",
               params: [{ chainId: NETWORK_CHAIN_ID }],
             });
           } catch (error) {
-            console.log('binance error', error)
+            console.log("binance error", error);
           }
         }
       });
     }
   }
-}
+};
 
 const callWeb3 = async () => {
   if (web3Object) {
-    return (web3Object);
+    return web3Object;
   }
   const { ethereum, web3, BinanceChain } = window;
-  if (walletTypeObject === 'Metamask') {
+  if (walletTypeObject === "Metamask") {
     if (ethereum && ethereum.isMetaMask) {
       web3Object = new Web3(ethereum);
-      return (web3Object);
+      return web3Object;
     } else if (ethereum) {
       web3Object = new Web3(ethereum);
-      return (web3Object);
+      return web3Object;
     } else if (web3) {
       web3Object = new Web3(web3.currentProvider);
-      return (web3Object);
+      return web3Object;
     } else {
       toast.error("You have to install Wallet!");
     }
   } else {
     if (BinanceChain) {
       web3Object = new Web3(BinanceChain);
-      return (web3Object);
+      return web3Object;
     } else {
       toast.error("You have to install Wallet!");
     }
@@ -193,7 +213,8 @@ const callWeb3 = async () => {
 
 const callContract = async (contractAddress, contractABI) => {
   if (
-    contractOjbect && currentContractAddress &&
+    contractOjbect &&
+    currentContractAddress &&
     currentContractAddress.toLowerCase() === contractAddress.toLowerCase()
   ) {
     return contractOjbect;
@@ -206,7 +227,8 @@ const callContract = async (contractAddress, contractABI) => {
 
 const callTokenContract = async (tokenAddress) => {
   if (
-    tokenContractObject && currentContractAddress &&
+    tokenContractObject &&
+    currentContractAddress &&
     currentTokenAddress.toLowerCase() === tokenAddress.toLowerCase()
   ) {
     return tokenContractObject;
@@ -223,20 +245,27 @@ const callTokenContract = async (tokenAddress) => {
 const calculateGasPrice = async () => {
   const web3 = await callWeb3();
   return await web3.eth.getGasPrice();
-}
+};
 
 const getDefaultAccount = async () => {
   const web3 = await callWeb3();
   const accounts = await web3.eth.getAccounts();
   return accounts[0];
-}
+};
 
-const approveToken = async (address, value, mainContractAddress, tokenAddress) => {
+const approveToken = async (
+  address,
+  value,
+  mainContractAddress,
+  tokenAddress
+) => {
   try {
     const gasPrice = await calculateGasPrice();
     const contract = await callTokenContract(tokenAddress);
     //calculate estimate gas limit
-    const gas = await contract.methods.approve(mainContractAddress, value).estimateGas({ from: address });
+    const gas = await contract.methods
+      .approve(mainContractAddress, value)
+      .estimateGas({ from: address });
 
     return await contract.methods
       .approve(mainContractAddress, value)
@@ -250,19 +279,20 @@ const allowanceToken = async (tokenAddress, mainContractAddress, address) => {
   try {
     const contract = await callTokenContract(tokenAddress);
     return await contract.methods
-      .allowance(address, mainContractAddress).call();
+      .allowance(address, mainContractAddress)
+      .call();
   } catch (error) {
     return error;
   }
-}
+};
 
 const getTokenBalance = async (tokenAddress, address) => {
   try {
     const contract = await callTokenContract(tokenAddress);
-    const decimals = await contract.methods.decimals().call();
 
+    const decimals = await contract.methods.decimals().call();
     let result = await contract.methods.balanceOf(address).call();
-    result = ((Number(result) / 10 ** decimals)).toFixed(5);
+    result = (Number(result) / 10 ** decimals).toFixed(5);
     return Number(result);
   } catch (error) {
     console.log("Error:", error);
@@ -272,11 +302,13 @@ const getTokenBalance = async (tokenAddress, address) => {
 const getTokenBalanceFull = async (tokenAddress, address) => {
   try {
     const contract = await callTokenContract(tokenAddress);
+    console.log("contract", contract);
     const decimals = await contract.methods.decimals().call();
 
+    console.log("decimal", decimals);
     let result = await contract.methods.balanceOf(address).call();
-    result = result/10 ** decimals;
-   
+    result = result / 10 ** decimals;
+    console.log("www", result);
     return result;
   } catch (error) {
     console.log("Error:", error);
@@ -300,7 +332,7 @@ const getTokenName = async (tokenAddress) => {
   } catch (error) {
     return error;
   }
-}
+};
 
 const getTokenSymbol = async (tokenAddress) => {
   try {
@@ -309,7 +341,7 @@ const getTokenSymbol = async (tokenAddress) => {
   } catch (error) {
     return error;
   }
-}
+};
 
 const getBNBBalance = async (address) => {
   try {
@@ -320,41 +352,41 @@ const getBNBBalance = async (address) => {
   } catch (error) {
     return error;
   }
-}
+};
 
 const setWalletType = async (walletType) => {
   walletTypeObject = walletType;
-}
+};
 
 const getTotalSupply = async (tokenAddress) => {
   try {
     const contract = await callTokenContract(tokenAddress);
     let result = await contract.methods.totalSupply().call();
     const decimals = await contract.methods.decimals().call();
-    result = Number(result) / (10 ** Number(decimals));
+    result = Number(result) / 10 ** Number(decimals);
     return result;
   } catch (error) {
     return error;
   }
-}
+};
 
 const web3ErrorHandle = async (err) => {
-  let message = 'Transaction Reverted!';
-  if (err.message.indexOf('Rejected') > -1) {
-    message = 'User denied the transaction!';
-  } else if (err.message && err.message.indexOf('User denied') > -1) {
-    message = 'User denied the transaction!';
-  } else if (err.message && err.message.indexOf('INSUFFICIENT_B') > -1) {
-    message = 'Insufficient value of second token!';
-  } else if (err.message && err.message.indexOf('INSUFFICIENT_A') > -1) {
-    message = 'Insufficient value of first token!';
+  let message = "Transaction Reverted!";
+  if (err.message.indexOf("Rejected") > -1) {
+    message = "User denied the transaction!";
+  } else if (err.message && err.message.indexOf("User denied") > -1) {
+    message = "User denied the transaction!";
+  } else if (err.message && err.message.indexOf("INSUFFICIENT_B") > -1) {
+    message = "Insufficient value of second token!";
+  } else if (err.message && err.message.indexOf("INSUFFICIENT_A") > -1) {
+    message = "Insufficient value of first token!";
   } else {
     console.log(err, err.message);
   }
   return message;
-}
+};
 
-const getLiquidity100Value = async (tokenAddress,address) =>{
+const getLiquidity100Value = async (tokenAddress, address) => {
   try {
     const contract = await callTokenContract(tokenAddress);
 
@@ -369,7 +401,7 @@ const callWeb3ForWalletConnect = async (provider) => {
   const provide = new WalletConnectProvider({
     //infuraId: "8570afa4d18b4c5d9cb3a629b08de069",
     rpc: {
-      97: 'https://data-seed-prebsc-2-s3.binance.org:8545/',
+      97: "https://data-seed-prebsc-2-s3.binance.org:8545/",
       56: "https://bsc-dataseed.binance.org/",
     },
     chainId: 97,
@@ -384,18 +416,15 @@ const callWeb3ForWalletConnect = async (provider) => {
         "imtoken",
         "pillar",
       ],
-      desktopLinks: [
-        "encrypted ink",
-      ]
-    }
+      desktopLinks: ["encrypted ink"],
+    },
   });
   const results = await provide.enable();
   walletConnectProvider = provide;
   web3Object = new Web3(provide);
 
   // return instance;
-}
-
+};
 
 //exporting functions
 export const ContractServices = {
@@ -421,5 +450,5 @@ export const ContractServices = {
   walletWindowListener,
   walletTypeObject,
   getLiquidity100Value,
-  callWeb3ForWalletConnect
-}
+  callWeb3ForWalletConnect,
+};
