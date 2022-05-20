@@ -668,6 +668,7 @@ const RemoveLiquidity = (props) => {
             <img src={awesomeArrowLeft} alt="icon" />
           </Link>
           <h2>Remove Liquidity</h2>
+          
         </div>
         <div className="Liquiditybox">
           <ul>
