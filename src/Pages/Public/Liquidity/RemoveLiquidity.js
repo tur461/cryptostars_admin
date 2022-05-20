@@ -447,7 +447,7 @@ const RemoveLiquidity = (props) => {
     let value = 0,
       checkBNB = false,
       token;
-    debugger;
+
     if (tokenOne.address === "BNB") {
       checkBNB = true;
       value = tokenOneValue;
@@ -462,7 +462,7 @@ const RemoveLiquidity = (props) => {
       value = Math.floor(value * 10 ** 18);
       value = BigNumber(value).toFixed();
     }
-    debugger;
+
     if (checkBNB) {
       let amountETHMin = BigNumber(
         Math.floor(Number(value) - (Number(value) * slippagePercentage) / 100)
@@ -512,6 +512,7 @@ const RemoveLiquidity = (props) => {
         v,
         checkSignature,
       };
+      console.log("hahahahahah", data);
       try {
         const result = await ExchangeService.removeLiquidityETHWithPermit(data);
         console.log(result, "remove liquidity transaction");
@@ -591,7 +592,7 @@ const RemoveLiquidity = (props) => {
         v,
         checkSignature,
       };
-
+      console.log("---------------------------", data);
       try {
         const result = await ExchangeService.removeLiquidityWithPermit(data);
         console.log(result, "remove liquidity transaction");
@@ -668,7 +669,6 @@ const RemoveLiquidity = (props) => {
             <img src={awesomeArrowLeft} alt="icon" />
           </Link>
           <h2>Remove Liquidity</h2>
-          
         </div>
         <div className="Liquiditybox">
           <ul>

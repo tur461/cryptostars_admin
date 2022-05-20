@@ -19,7 +19,7 @@ const TokenBalance = ({ address }) => {
         setBalance(res);
       } else {
         res = await ContractServices.getTokenBalance(address, isUserConnected);
-        console.log("qq", res);
+        // console.log("qq", res);
         setBalance(res);
       }
     } catch (error) {

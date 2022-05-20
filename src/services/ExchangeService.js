@@ -728,7 +728,7 @@ const signRemoveTransaction = async (d, pair) => {
       { name: 'verifyingContract', type: 'address' },
     ]
     const domain = {
-      name: 'Pancake LPs',
+      name: "Uniswap V2",
       version: '1',
       value,
       chainId,
