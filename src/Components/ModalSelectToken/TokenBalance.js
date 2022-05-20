@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 const TokenBalance = ({ address }) => {
   const [balance, setBalance] = useState("");
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
-
+  console.log("HEREEEEEEEaddress", address);
   useEffect(() => {
     init();
   }, [isUserConnected]);
@@ -25,6 +25,13 @@ const TokenBalance = ({ address }) => {
     } catch (error) {
       console.log(error);
     }
+    // try {
+    //   let res = 0;
+    //   res = await ContractServices.getBNBBalance(isUserConnected);
+    //   setBalance(res);
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
   return <span className="tokenName_textStyle">{balance}</span>;
 };

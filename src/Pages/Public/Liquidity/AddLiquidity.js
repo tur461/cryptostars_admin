@@ -25,6 +25,7 @@ import TransactionModal from "../../../Components/TransactionModal/TransactionMo
 import { BigNumber } from "bignumber.js";
 // import { ContractServices } from "../../../services/ContractServices";
 import { NETWORK_CHAIN_ID } from "../../../constant";
+import { isCompositeComponent } from "react-dom/test-utils";
 const AddLiquidity = (props) => {
   const dispatch = useDispatch();
 
@@ -78,8 +79,8 @@ const AddLiquidity = (props) => {
 
   useEffect(() => {
     setFilteredTokenList(
-      tokenList.filter((token) =>
-        token.name.toLowerCase().includes(search.toLowerCase())
+      tokenList?.filter((token) =>
+        token?.name?.toLowerCase().includes(search.toLowerCase())
       )
     );
     init();

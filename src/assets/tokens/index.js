@@ -30,36 +30,27 @@ export const DEFLATIONNARY_TOKENS = [
   "0x4aac18De824eC1b553dbf342829834E4FF3F7a9F",
   "0x0ED224e1d088c1BA17BdF352D4FaF0979E7BB0b7",
 ];
-export const OVERVIEW_LINK =
-  "https://bscscan.com/token/0x4aac18De824eC1b553dbf342829834E4FF3F7a9F";
-export const TOKEN_LINK =
-  "https://bscscan.com/address/0x4aac18De824eC1b553dbf342829834E4FF3F7a9F";
-export const BUSD_LP =
-  "https://bscscan.com/address/0xC0Ff9f250d2D97F90BC89bD16D3B5344CdC68d06";
-export const BNB_LP =
-  "https://bscscan.com/address/0x942986B6Cbe26a80a5456D5d3Ac75860f0E9546e";
-export const TUTORIALS = "https://docs.anchorswap.finance/tutorial";
-export const AUTOMATIC_LIQUIDITY =
-  "https://docs.anchorswap.finance/tokenomics/#automatic-liquidity";
-export const LOTTERY = "https://docs.anchorswap.finance/products/#lottery";
-export const ROADMAP = "https://docs.anchorswap.finance/roadmap/#roadmap";
-export const AUTOMATIC_BURNING =
-  "https://docs.anchorswap.finance/tokenomics/#automatic-burning";
-export const HARVEST_LOCKUP =
-  "https://docs.anchorswap.finance/tokenomics/#harvest-lockup";
-export const ANTI_WHALE =
-  "https://docs.anchorswap.finance/tokenomics/#anti-whale";
+// export const OVERVIEW_LINK =
+//   "https://bscscan.com/token/0x4aac18De824eC1b553dbf342829834E4FF3F7a9F";
+// export const TOKEN_LINK =
+//   "https://bscscan.com/address/0x4aac18De824eC1b553dbf342829834E4FF3F7a9F";
+// export const BUSD_LP =
+//   "https://bscscan.com/address/0xC0Ff9f250d2D97F90BC89bD16D3B5344CdC68d06";
+// export const BNB_LP =
+//   "https://bscscan.com/address/0x942986B6Cbe26a80a5456D5d3Ac75860f0E9546e";
+// export const TUTORIALS = "https://docs.anchorswap.finance/tutorial";
+// export const AUTOMATIC_LIQUIDITY =
+//   "https://docs.anchorswap.finance/tokenomics/#automatic-liquidity";
+// export const LOTTERY = "https://docs.anchorswap.finance/products/#lottery";
+// export const ROADMAP = "https://docs.anchorswap.finance/roadmap/#roadmap";
+// export const AUTOMATIC_BURNING =
+//   "https://docs.anchorswap.finance/tokenomics/#automatic-burning";
+// export const HARVEST_LOCKUP =
+//   "https://docs.anchorswap.finance/tokenomics/#harvest-lockup";
+// export const ANTI_WHALE =
+//   "https://docs.anchorswap.finance/tokenomics/#anti-whale";
 
 export const TOKEN_LIST = [
-  {
-    // icon: TCRO,
-    name: "Cronos",
-    address: "TRCO", //BNB
-    isAdd: false,
-    isDel: false,
-    decimals: 18,
-    symbol: "TCRO",
-  },
   {
     // icon: BNB,
     name: "LMS",

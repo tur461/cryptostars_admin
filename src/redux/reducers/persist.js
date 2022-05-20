@@ -1,6 +1,6 @@
 import { TOKEN_LIST } from "../../assets/tokens";
 import { actionTypes } from "../actions/PersistActions";
-
+console.log("tokeeeeee", TOKEN_LIST);
 const initialState = {
   walletType: "Metamask",
   isUserConnected: "",
@@ -13,7 +13,7 @@ const initialState = {
   recentTransactions: [],
   referralAddress: "",
   updateUserLpTokens: false,
-  anchorValue: "0.01"
+  anchorValue: "0.01",
 };
 
 const persist = (state = initialState, action) => {
@@ -78,12 +78,12 @@ const persist = (state = initialState, action) => {
     case actionTypes.CHECK_USER_LPTOKENS:
       return {
         ...state,
-        updateUserLpTokens: action.payload
+        updateUserLpTokens: action.payload,
       };
     case actionTypes.SAVE_DOLLAR_VALUE:
       return {
         ...state,
-        anchorValue: action.payload
+        anchorValue: action.payload,
       };
     default:
       return state;

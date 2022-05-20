@@ -38,9 +38,9 @@ const ModalSelectToken = ({
     searchByName("");
     window.location.reload();
   };
-  {
-    console.log("tokenlist", tokenList);
-  }
+
+  console.log("t222okenlist", tokenList);
+
   return (
     <>
       <div className="backdrop"></div>
