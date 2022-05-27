@@ -69,23 +69,23 @@ export const getUserLPTokens = () => async (dispatch, getState) => {
     } = getState();
     if (!updateUserLpTokens) {
       dispatch(saveUserLpTokens([]));
-      // let lpTokensCount = await UserService.getPairsCount();
-      // lpTokensCount = lpTokensCount.data.count;
+      let lpTokensCount = await UserService.getPairsCount();
+      lpTokensCount = lpTokensCount.data.count;
 
-      // const limit = 100;
-      // const totalPages = Math.ceil(lpTokensCount / limit);
-      // // let lpTokensArr = [];
-      // for (let page = 1; page <= totalPages; page++) {
-      //   let lpTokens = await UserService.getPairs({ page, limit });
+      const limit = 100;
+      const totalPages = Math.ceil(lpTokensCount / limit);
+      // let lpTokensArr = [];
+      for (let page = 1; page <= totalPages; page++) {
+        let lpTokens = await UserService.getPairs({ page, limit });
 
-      //   lpTokens = lpTokens.data;
-      //   // lpTokensArr = lpTokensArr.concat(lpTokens);
-      //   for (let lp of lpTokens) {
-      //     await dispatch(commonLpToken(lp));
-      //   }
+        lpTokens = lpTokens.data;
+        // lpTokensArr = lpTokensArr.concat(lpTokens);
+        for (let lp of lpTokens) {
+          await dispatch(commonLpToken(lp));
+        }
 
-      //   // console.log("LPTOKENS:", lpTokens);
-      // }
+        console.log("LPTOKENS:", lpTokens);
+      }
     }
   } catch (error) {
     console.log("Error: ", error);
@@ -136,7 +136,7 @@ export const commonLpToken = (lp) => {
           ratio * (reserves["_reserve0"] / 10 ** token0Obj.decimals);
         token1Deposit =
           ratio * (reserves["_reserve1"] / 10 ** token1Obj.decimals);
-
+        console.log("jjjjjjjj", userLpTokensArr);
         const data = {
           ...lp,
           token0Obj,

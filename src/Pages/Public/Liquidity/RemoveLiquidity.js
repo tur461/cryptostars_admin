@@ -340,6 +340,7 @@ const RemoveLiquidity = (props) => {
     };
     try {
       console.log("hwyhwywhwy");
+      console.log("hahahahhah", slippagePercentage);
       const res = await ExchangeService.signRemoveTransaction(
         data,
         currentPairAddress
@@ -491,6 +492,7 @@ const RemoveLiquidity = (props) => {
         );
       }
       console.log("check4");
+      console.log("signedData", signedData);
       let r, s, v;
       if (signedData) {
         r = signedData.r;
@@ -576,7 +578,7 @@ const RemoveLiquidity = (props) => {
         s = signedData.s;
         v = signedData.v;
       }
-
+      console.log("pppppppppp", value);
       const data = {
         tokenA: tokenOne.address,
         tokenB: tokenTwo.address,
@@ -587,12 +589,13 @@ const RemoveLiquidity = (props) => {
         deadline: dl,
         value,
         approveMax: false,
+        v,
         r,
         s,
-        v,
         checkSignature,
       };
       console.log("---------------------------", data);
+      console.log("signedData", signedData);
       try {
         const result = await ExchangeService.removeLiquidityWithPermit(data);
         console.log(result, "remove liquidity transaction");

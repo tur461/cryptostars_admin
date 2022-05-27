@@ -10,7 +10,7 @@ const TokenBalance = ({ address }) => {
   useEffect(() => {
     init();
   }, [isUserConnected]);
-
+  console.log("aja balamnce", balance);
   const init = async () => {
     try {
       let res = 0;

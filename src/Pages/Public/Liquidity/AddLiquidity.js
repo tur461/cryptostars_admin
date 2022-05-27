@@ -600,32 +600,32 @@ const AddLiquidity = (props) => {
     setLiquidityConfirmation(true);
 
     let value = 0,
-      checkCRO = false,
+      checkTCRO = false,
       token;
 
     let dl = Math.floor(new Date().getTime() / 1000);
     dl = dl + deadline * 60;
 
-    if (tokenOne.address === "CRO") {
-      checkCRO = true;
+    if (tokenOne.address === "TCRO") {
+      checkTCRO = true;
       value = tokenOneValue;
       token = tokenTwo.address;
     }
-    if (tokenTwo.address === "CRO") {
-      checkCRO = true;
+    if (tokenTwo.address === "TCRO") {
+      checkTCRO = true;
       value = tokenTwoValue;
       token = tokenOne.address;
     }
     if (value > 0) {
       value = value * 10 ** 18;
     }
-    if (checkCRO) {
+    if (checkTCRO) {
       let amountETHMin = BigNumber(
         Math.floor(Number(value) - (Number(value) * slippagePercentage) / 100)
       ).toFixed();
       let amountTokenMin = "";
       let amountTokenDesired = 0;
-      if (tokenOne.address === "CRO") {
+      if (tokenOne.address === "TCRO") {
         amountTokenDesired = tokenTwoValue;
         amountTokenMin = BigNumber(
           Math.floor(
@@ -638,7 +638,7 @@ const AddLiquidity = (props) => {
           amountTokenDesired * 10 ** tokenTwo.decimals
         ).toFixed();
       }
-      if (tokenTwo.address === "BNB") {
+      if (tokenTwo.address === "TCRO") {
         amountTokenDesired = tokenOneValue;
         amountTokenMin = BigNumber(
           Math.floor(
