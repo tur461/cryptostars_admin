@@ -12,6 +12,7 @@
     "bignumber.js": "^9.0.1",
     "cogo-toast": "^4.2.3",
     "connected-react-router": "^6.9.1",
+    "core-js": "^3.4.8",
     "env-cmd": "^10.1.0",
     "history": "^5.0.0",
     "install": "^0.13.0",

@@ -1,31 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Route, Switch } from "react-router-dom";
 import { useLocation, withRouter } from "react-router";
-import Header from '../../Components/Header/Header'
-import Sidebar from '../../Components/Sidebar/Sidebar'
-import Home from '../../Pages/Public/Home/Home'
-import Swap from '../../Pages/Public/Swap/Swap'
-import Liquidity from '../../Pages/Public/Liquidity/Liquidity'
-import Farm from '../../Pages/Public/Farm'
+import Header from "../../Components/Header/Header";
+import Sidebar from "../../Components/Sidebar/Sidebar";
+import Home from "../../Pages/Public/Home/Home";
+import Swap from "../../Pages/Public/Swap/Swap";
+import Liquidity from "../../Pages/Public/Liquidity/Liquidity";
+import Farm from "../../Pages/Public/Farm";
 import Oceans from "../../Pages/Public/Oceans/Oceans";
 import Lottery from "../../Pages/Public/Lottery/Lottery";
 import { HOME_ROUTE } from "../../constant";
 import Pools from "../../Pages/Public/Pools/Pools";
+import AddTokenModal from "../../Components/AddTokenModal/AddTokenModal";
 import Referrals from "../../Pages/Public/Referrals/Referrals";
-import ReactGA from 'react-ga';
-
+import ReactGA from "react-ga";
 
 const PublicRoutes = () => {
-
   const location = useLocation();
 
   useEffect(() => {
     ReactGA.initialize("UA-203869190-3");
     ReactGA.pageview(location.pathname + location.search);
-  }, [location])
+  }, [location]);
 
   const [small, setSmall] = useState(false);
-  const [navCollapse, setNavCollapse] = useState(false)
+  const [navCollapse, setNavCollapse] = useState(false);
   const [tradeDropdown, openCloseTradeDropdown] = useState(false);
 
   useEffect(() => {
@@ -36,69 +35,58 @@ const PublicRoutes = () => {
     }
   }, []);
 
-
   const handleNavCollapse = () => {
-
-    setNavCollapse((prevNavCollapse) => !prevNavCollapse)
+    setNavCollapse((prevNavCollapse) => !prevNavCollapse);
     if (navCollapse === false) {
-
-      document.body.className = 'expande_container';
+      document.body.className = "expande_container";
       // return () => { document.body.className = ''; }
     } else {
-      document.body.className = '';
+      document.body.className = "";
     }
-  }
+  };
 
   const handleSubNav = () => {
-    setNavCollapse((prevNavCollapse) => prevNavCollapse)
-  }
+    setNavCollapse((prevNavCollapse) => prevNavCollapse);
+  };
 
   return (
     <>
-      <Header className={`fixed ${small ? "isFixed" : ""
-        }`} small_nav={() => handleNavCollapse()}
+      <Header
+        className={`fixed ${small ? "isFixed" : ""}`}
+        small_nav={() => handleNavCollapse()}
         mobileIcon={navCollapse}
       />
       <Sidebar
-        className={`fixed ${small ? "isFixed" : ""} ${navCollapse ? 'small_nav' : ''}`}
+        className={`fixed ${small ? "isFixed" : ""} ${
+          navCollapse ? "small_nav" : ""
+        }`}
         showSocial={navCollapse}
         onClickOpenSidebar={() => handleSubNav()}
         closeSidebar={() => {
-          handleNavCollapse()
+          handleNavCollapse();
         }}
         tradeDropdown={() => {
           if (navCollapse === true) {
-            alert('collapsed')
-            handleNavCollapse()
+            alert("collapsed");
+            handleNavCollapse();
           }
         }}
         // tradeDropdown={!tradeDropdown}
         onOpenChange={(open) => {
-          alert('fd')
-          openCloseTradeDropdown(!open)
+          alert("fd");
+          openCloseTradeDropdown(!open);
         }}
       />
       <Switch>
+        <Route path={HOME_ROUTE} component={Liquidity} exact={true} />
+        <Route path={`${HOME_ROUTE}r/:ref`} component={Home} exact={true} />
         <Route
-          path={HOME_ROUTE}
-          component={Liquidity}
+          path={`${HOME_ROUTE}addmodal`}
+          component={AddTokenModal}
           exact={true}
         />
-        <Route
-          path={`${HOME_ROUTE}r/:ref`}
-          component={Home}
-          exact={true}
-        />
-        <Route
-          path={`${HOME_ROUTE}home`}
-          component={Home}
-          exact={true}
-        />
-        <Route
-          path={`${HOME_ROUTE}swap`}
-          component={Swap}
-          exact={true}
-        />
+        <Route path={`${HOME_ROUTE}home`} component={Home} exact={true} />
+        <Route path={`${HOME_ROUTE}swap`} component={Swap} exact={true} />
         <Route
           path={`${HOME_ROUTE}liquidity`}
           component={Liquidity}
@@ -110,29 +98,13 @@ const PublicRoutes = () => {
           exact={true}
         />
 
-        <Route
-          path={`${HOME_ROUTE}farm`}
-          component={Farm}
-          exact={true}
-        />
-        <Route
-          path={`${HOME_ROUTE}oceans`}
-          component={Oceans}
-          exact={true}
-        />
-        <Route
-          path={`${HOME_ROUTE}lottery`}
-          component={Lottery}
-          exact={true}
-        />
-        <Route
-          path={`${HOME_ROUTE}pools`}
-          component={Pools}
-          exact={true}
-        />
+        <Route path={`${HOME_ROUTE}farm`} component={Farm} exact={true} />
+        <Route path={`${HOME_ROUTE}oceans`} component={Oceans} exact={true} />
+        <Route path={`${HOME_ROUTE}lottery`} component={Lottery} exact={true} />
+        <Route path={`${HOME_ROUTE}pools`} component={Pools} exact={true} />
       </Switch>
     </>
   );
-}
+};
 
 export default withRouter(PublicRoutes);

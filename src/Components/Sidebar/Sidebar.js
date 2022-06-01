@@ -89,6 +89,13 @@ const Sidebar = (props) => {
             <Link to={`${HOME_ROUTE}liquidity`}>Liquidity</Link>
           </MenuItem>
         </SubMenu>
+        <SubMenu
+          title="Add Token"
+          icon={<i className="trade_nav"></i>}
+          onOpenChange={() => setSideBarOption("Add Token")}
+        >
+          <MenuItem><Link to="/AddModal">Add Token</Link></MenuItem>
+        </SubMenu>
       </Menu>
 
     </ProSidebar >
