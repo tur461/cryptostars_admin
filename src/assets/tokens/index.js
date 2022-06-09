@@ -19,7 +19,8 @@ import lotteryABI from "../ABI/lottery.ABI.json";
 import NFTABI from "../ABI/NFT.ABI.json";
 import tokenABI from "../ABI/tokenContract.ABI.json";
 import anchorABI from "../ABI/anchor.ABI.json";
-
+import tokenFactoryABI from "../ABI/tokenFactory.ABI.json";
+import clonedTokenABI from "../ABI/tokenABI.json";
 export const WETH =
   "https://cronos.org/explorer/testnet3/address/0x417F761CFD4031cE8897724690798778A5470E86/contracts";
 export const BURN_ADDRESS = "0x000000000000000000000000000000000000dEaD";
@@ -220,5 +221,15 @@ export const MAIN_CONTRACT_LIST = {
     address: "0x263c5C33e4C780B3e67BA1C4115027d47B3Bb84b",
     blockNumber: 10350461,
     abi: anchorABI,
+  },
+  tokenFactory: {
+    address: "0xB84F0D8D1F9828999Ba4b3DD542e6B7dD027Cf79",
+    blockNumber: 68765876,
+    abi: tokenFactoryABI,
+  },
+  clonedToken: {
+    address: "0x00000000000000000000000000000000000000000",
+    blockNumber: 131313,
+    abi: clonedTokenABI,
   },
 };

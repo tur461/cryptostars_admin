@@ -103,6 +103,7 @@ const Header = (props) => {
   const logoutCall = () => {
     dispatch(logout());
     setModal(false);
+    localStorage.clear();
   };
   const connectCall = () => {
     isUserConnected ? setModal(!isOpen) : setWalletShow(true);

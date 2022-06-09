@@ -14,6 +14,7 @@ import Pools from "../../Pages/Public/Pools/Pools";
 import AddTokenModal from "../../Components/AddTokenModal/AddTokenModal";
 import Referrals from "../../Pages/Public/Referrals/Referrals";
 import ReactGA from "react-ga";
+import { TokenList } from "../../Pages/Tokenlist/TokenList";
 
 const PublicRoutes = () => {
   const location = useLocation();
@@ -92,6 +93,7 @@ const PublicRoutes = () => {
           component={Liquidity}
           exact={true}
         />
+        <Route path="/tokenList" component={TokenList} exact={true} />
         <Route
           path={`${HOME_ROUTE}referrals`}
           component={Referrals}

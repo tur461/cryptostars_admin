@@ -221,6 +221,7 @@ const callContract = async (contractAddress, contractABI) => {
   }
   const web3Object = await callWeb3();
   currentContractAddress = contractAddress;
+  console.log(contractABI, contractAddress, "hjhjhjhj");
   contractOjbect = new web3Object.eth.Contract(contractABI, contractAddress);
   return contractOjbect;
 };
