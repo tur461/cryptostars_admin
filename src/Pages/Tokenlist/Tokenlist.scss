@@ -1,0 +1,39 @@
+@import "../../assets/theme/_var.scss";
+
+.table {
+  margin: 0 auto;
+  border-color: #fff;
+  border: 1px solid $secondaryColor;
+  border-radius: 10px;
+  padding: 10px;
+  margin-left: 236px;
+  width: 85%;
+  thead {
+    tr {
+      th {
+        color: $yellowClr;
+        text-align: left;
+      }
+    }
+  }
+  tbody {
+    tr {
+      td {
+        color: $whiteColor;
+      }
+    }
+  }
+}
+.pagination {
+  margin-left: 236px;
+  display: flex;
+  justify-content: end;
+  padding: 0 50px 0 0;
+  li {
+    margin: 0 5px;
+    cursor: pointer;
+    a {
+      color: $whiteColor;
+    }
+  }
+}

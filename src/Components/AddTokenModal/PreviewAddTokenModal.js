@@ -5,7 +5,7 @@ import Web3 from "web3";
 import { Modal, FormLabel, Button } from "react-bootstrap";
 import { ContractServices } from "../../services/ContractServices";
 import { MAIN_CONTRACT_LIST } from "../../assets/tokens/index";
-import xtype from "xtypejs";
+// import xtype from "xtypejs";
 function PreviewAddTokenModal({
   handleClose,
   handleShow,
