@@ -88,7 +88,6 @@ function AddTokenModal() {
                     />
                   </div>
                 </li>
-
                 <li>
                   <div className="token_info d-flex mb-3">
                     <FormLabel className="text_head">Mint Address</FormLabel>

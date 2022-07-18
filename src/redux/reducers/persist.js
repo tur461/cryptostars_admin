@@ -17,6 +17,7 @@ const initialState = {
 };
 
 const persist = (state = initialState, action) => {
+  console.log(state.tokenList, "newadedd");
   switch (action.type) {
     case actionTypes.USER_CONNECTED:
       return {

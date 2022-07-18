@@ -34,6 +34,9 @@ const AddLiquidity = (props) => {
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
   const walletType = useSelector((state) => state.persist.walletType);
   const tokenList = useSelector((state) => state.persist.tokenList);
+  const result = useSelector((state) =>
+    console.log(state.persist, "cheingggg")
+  );
   const deadline = useSelector((state) => state.persist.deadline);
   const slippagePercentage = useSelector(
     (state) => state.persist.slippagePercentage
@@ -90,12 +93,14 @@ const AddLiquidity = (props) => {
     console.log("hey");
   }, []);
   console.log("slippagePercentage", slippagePercentage);
+
   const init = async () => {
     if (isUserConnected) {
       const oneBalance = await ContractServices.getBNBBalance(isUserConnected);
       // setTokenOneBalance(oneBalance);
 
       const { lptoken } = props;
+      console.log(lptoken, "mnnnmnmnmnmmn");
       if (lptoken) {
         setCurrentPairAddress(lptoken.pair);
         setLpTokenBalance(lptoken.balance);
@@ -825,10 +830,10 @@ const AddLiquidity = (props) => {
                   {calculateFraction("TK2")} <br />
                   {tokenOneCurrency} per {tokenTwoCurrency}{" "}
                 </li>
-                <li>
+                {/* <li>
                   {sharePoolValue}% <br />
                   Share of Pool
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>

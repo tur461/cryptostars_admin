@@ -13,7 +13,7 @@ import {
   removeTokenList,
 } from "../../redux/actions";
 import TokenBalance from "./TokenBalance";
-
+import { TOKEN_LIST } from "../../assets/tokens/index";
 const ModalSelectToken = ({
   closeModal,
   tokenList,
@@ -25,7 +25,7 @@ const ModalSelectToken = ({
   currencyName,
 }) => {
   const dispatch = useDispatch();
-
+  console.log("hahahahahaha", TOKEN_LIST);
   const [isAdded, setTokenAdd] = useState(true);
   const handleTokenList = (data) => {
     data.isAdd = false;
@@ -70,7 +70,7 @@ const ModalSelectToken = ({
             <div className=" modal_headerStyle__rowC_colLeft">
               <h2>Token name</h2>
             </div>
-            <div className=" modal_headerStyle__rowC_colRight">
+            {/* <div className=" modal_headerStyle__rowC_colRight">
               <button>
                 <img
                   height="40"
@@ -79,13 +79,13 @@ const ModalSelectToken = ({
                   alt="icon"
                 />
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="col tokenList__column">
           <ul className="tokenList">
-            {tokenList &&
-              tokenList.map((t, index) => (
+            {TOKEN_LIST &&
+              TOKEN_LIST.map((t, index) => (
                 <li key={index}>
                   {currencyName === t.symbol ? (
                     <div className="dis">

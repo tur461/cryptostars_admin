@@ -214,7 +214,7 @@ export const addLpToken = (lp) => {
           };
           let check = true;
           for (let oldLp of userLpTokens) {
-            if (oldLp.pair.toLowerCase() === lp.pair.toLowerCase()) {
+            if (oldLp?.pair?.toLowerCase() === lp?.pair?.toLowerCase()) {
               check = false;
             }
           }

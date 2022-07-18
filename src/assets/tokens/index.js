@@ -1,15 +1,5 @@
-import BNB from "../images/token_icons/BNB.svg";
-import ETH from "../images/token_icons/ETH.svg";
-import ADA from "../images/token_icons/ADA.svg";
-import BTC from "../images/token_icons/BTC.svg";
-import CAKE from "../images/token_icons/CAKE.svg";
-import POLKADOT from "../images/token_icons/POLKADOT.svg";
-import TRON from "../images/token_icons/TRON.svg";
-import ANCHOR from "../images/token_icons/ANCHOR.svg";
-import BUSD from "../images/token_icons/BUSD.svg";
-import HARMONY from "../images/token_icons/HARMONY.svg";
-import defaultImg from "../images/token_icons/default.svg";
-import USDT from "../images/token_icons/USDT.svg";
+import CST from "../images/token_icons/cst-coin.png";
+import LMES from "../images/token_icons/LMES.png";
 import routerABI from "../ABI/router.ABI.json";
 import farmABI from "../ABI/farmABI.json";
 import factoryABI from "../ABI/factory.ABI.json";
@@ -53,7 +43,7 @@ export const DEFLATIONNARY_TOKENS = [
 
 export const TOKEN_LIST = [
   {
-    // icon: BNB,
+    icon: LMES,
     name: "LMS",
     address: "0x6Ba4947efD77eAF5bE44eFD9C9e30A708F1439F6", //BNB
     isAdd: false,
@@ -62,7 +52,7 @@ export const TOKEN_LIST = [
     symbol: "LMS",
   },
   {
-    // icon: ANCHOR,
+    icon: CST,
     name: "CST",
     address: "0x17773dBa2DB547F887702bac334342dA57e26f49",
     isAdd: false,
@@ -71,7 +61,7 @@ export const TOKEN_LIST = [
     symbol: "CST",
   },
   {
-    // icon: BUSD,
+    icon: LMES,
     name: "ADF",
     address: "0xCf247875755780c2978562f5Faf0BDAB67134393",
     isAdd: false,
@@ -80,7 +70,7 @@ export const TOKEN_LIST = [
     symbol: "ADF",
   },
   {
-    // icon: ETH,
+    icon: LMES,
     name: "MBG",
     address: "0x3585D6B21A99233B1088871875E6754f5a546D1b",
     isAdd: false,
@@ -88,87 +78,6 @@ export const TOKEN_LIST = [
     decimals: 18,
     symbol: "MBG",
   },
-  // {
-  //   icon: ADA,
-  //   name: "Cardano",
-  //   address: "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47",
-  //   isAdd: false,
-  //   isDel: false,
-  //   decimals: 18,
-  //   symbol: "ADA",
-  // },
-  // {
-  //   icon: defaultImg,
-  //   name: "Matic Token",
-  //   address: "0xCC42724C6683B7E57334c4E856f4c9965ED682bD",
-  //   isAdd: false,
-  //   isDel: false,
-  //   decimals: 18,
-  //   symbol: "MATIC",
-  // },
-  // {
-  //   icon: defaultImg,
-  //   name: "Dai Token",
-  //   address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
-  //   isAdd: false,
-  //   isDel: false,
-  //   decimals: 18,
-  //   symbol: "DAI",
-  // },
-  // {
-  //   icon: BTC,
-  //   name: "BTCB Token",
-  //   address: "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
-  //   isAdd: false,
-  //   isDel: false,
-  //   decimals: 18,
-  //   symbol: "BTCB",
-  // },
-  // {
-  //   icon: USDT,
-  //   name: "Tether USD",
-  //   address: "0x55d398326f99059fF775485246999027B3197955",
-  //   isAdd: false,
-  //   isDel: false,
-  //   decimals: 18,
-  //   symbol: "USDT",
-  // },
-  // {
-  //   icon: POLKADOT,
-  //   name: "Polkadot Token",
-  //   address: "0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402",
-  //   isAdd: false,
-  //   isDel: false,
-  //   decimals: 18,
-  //   symbol: "DOT",
-  // },
-  // {
-  //   icon: TRON,
-  //   name: "TRON",
-  //   address: "0x85EAC5Ac2F758618dFa09bDbe0cf174e7d574D5B",
-  //   isAdd: false,
-  //   isDel: false,
-  //   decimals: 18,
-  //   symbol: "TRX",
-  // },
-  // {
-  //   icon: CAKE,
-  //   name: "PancakeSwap Token",
-  //   address: "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
-  //   isAdd: false,
-  //   isDel: false,
-  //   decimals: 18,
-  //   symbol: "Cake",
-  // },
-  // {
-  //   icon: BNB,
-  //   name: "Wrapped BNB",
-  //   address: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-  //   isAdd: false,
-  //   isDel: false,
-  //   decimals: 18,
-  //   symbol: "WBNB",
-  // },
 ];
 
 export const MAIN_CONTRACT_LIST = {

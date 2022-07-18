@@ -5,6 +5,7 @@ import Web3 from "web3";
 import { Modal, FormLabel, Button } from "react-bootstrap";
 import { ContractServices } from "../../services/ContractServices";
 import { MAIN_CONTRACT_LIST } from "../../assets/tokens/index";
+import { TokenList } from "../../Pages/Tokenlist/TokenList";
 // import xtype from "xtypejs";
 function PreviewAddTokenModal({
   handleClose,
@@ -21,6 +22,7 @@ function PreviewAddTokenModal({
   //   const handleClose = () => setShow(false);
   //   const handleShow = () => setShow(true);
   // const [token, setToken] = useState({});
+  const [data, setData] = useState();
   useEffect(async () => {
     let contract = await ContractServices.callContract(
       "0xAeD9eB10741eEe2340A308029D1A905F1F2a4625",
@@ -65,9 +67,53 @@ function PreviewAddTokenModal({
     let tokenAddresess = await contract.methods.getCitizenAddress().call();
     let tokenAddressArray = tokenAddresess;
     console.log(userAddress, "userAddress");
-    arrayItration(tokenAddressArray);
+
+    getAnsArr(tokenAddressArray);
     console.log("arrry hai", tokenAddressArray);
+    
   };
+
+  //getting the contract data below
+  
+  const functionThatReturnsAPromise = async (item) => {
+    //a function that returns a promise
+
+    let contract = await ContractServices.callContract(
+      item,
+      MAIN_CONTRACT_LIST.clonedToken.abi
+    );
+    //0xfdce5F5FbBC561719fd459ebb665705A9Ed6B2ad
+
+    let symbol = await contract.methods.symbol().call();
+    let name = await contract.methods.name().call();
+    let totalSupply = await contract.methods.totalSupply().call();
+    return Promise.resolve({
+      symbol,
+      name,
+      totalSupply,
+      item,
+    });
+  };
+
+  const doSomethingAsync = async (item) => {
+    return await functionThatReturnsAPromise(item);
+  };
+
+  const getAnsArr = async (array) => {
+    let count;
+    let map = [];
+    console.log("arraghy", array);
+    let promises = array.map(async (item) => {
+      return await doSomethingAsync(item);
+    });
+    let data = await Promise.all(promises);
+    console.log(data, "yw ahi final daata");
+    if (data) {
+      setData(data);
+    }
+    return Promise.all(promises);
+  };
+
   const arrayItration = async (array) => {
     let contract;
     let tokenDetails = [];
@@ -93,9 +139,10 @@ function PreviewAddTokenModal({
       };
     });
     console.log(await Promise.all(promises), "promises");
+    console.log("aa gye promises", promises);
     count += 1;
-    return await Promise.all(promises);
-  
+    return await Promise.all(promises.PromiseResult);
+
     // tokenObject.totalSupply = await contract.methods.totalSupply().call();
     console.log(tokenObject.name, count, "ye raha naam token aka");
     console.log(tokenObject.symbol, count, "ye raha symbol token aka");
@@ -107,6 +154,8 @@ function PreviewAddTokenModal({
 
     // console.log("ye hai tokenDetails", tokenDetails);
   };
+  console.log("ye bhi data hi hai", data);
+  console.log(getAnsArr, "getAnsArr");
 
   //0x5D0CbFEBc66D6D0282c1DD9146Ef79f3C4EA5629
   console.log(tokenObject.name, "  tokenObject.name last");
