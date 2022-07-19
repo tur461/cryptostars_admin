@@ -6,6 +6,9 @@ import { Modal, FormLabel, Button } from "react-bootstrap";
 import { ContractServices } from "../../services/ContractServices";
 import { MAIN_CONTRACT_LIST } from "../../assets/tokens/index";
 import { TokenList } from "../../Pages/Tokenlist/TokenList";
+import { useDispatch } from "react-redux";
+import { savetoken } from "../../redux/actions";
+
 // import xtype from "xtypejs";
 function PreviewAddTokenModal({
   handleClose,
@@ -23,6 +26,7 @@ function PreviewAddTokenModal({
   //   const handleShow = () => setShow(true);
   // const [token, setToken] = useState({});
   const [data, setData] = useState();
+  const dispatch = useDispatch();
   useEffect(async () => {
     let contract = await ContractServices.callContract(
       "0xAeD9eB10741eEe2340A308029D1A905F1F2a4625",
@@ -47,6 +51,7 @@ function PreviewAddTokenModal({
   console.log("mmmmm", totalSupply);
   let web3 = new Web3(window.ethereum);
   let tokenObject = { name: "", symbol: "", totalSupply: "" };
+
   const letsCallTheContract = async () => {
     let contract = await ContractServices.callContract(
       MAIN_CONTRACT_LIST.tokenFactory.address,
@@ -64,12 +69,17 @@ function PreviewAddTokenModal({
       )
       .send({ from: userAddress });
     console.log("callCreate", callCreate);
+    
     let tokenAddresess = await contract.methods.getCitizenAddress().call();
     let tokenAddressArray = tokenAddresess;
     console.log(userAddress, "userAddress");
-
+     console.log("llllllllll",tokenAddressArray);
     getAnsArr(tokenAddressArray);
+
+    
+
     console.log("arrry hai", tokenAddressArray);
+    //dispatch(savetoken(tokenAddressArray))
     
   };
 
@@ -221,6 +231,7 @@ function PreviewAddTokenModal({
           </Button>
         </Modal.Footer>
       </Modal>
+      < TokenList data={data}/>
     </div>
   );
 }
