@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import "./PreviewToken.scss";
+// import Button from "react-bootstrap/Button";
+// import Modal from "react-bootstrap/Modal";
 import back from "../../assets/images/back-arrow.svg";
 import Web3 from "web3";
 import { Modal, FormLabel, Button } from "react-bootstrap";
@@ -27,6 +30,7 @@ function PreviewAddTokenModal({
   // const [token, setToken] = useState({});
   const [data, setData] = useState();
   const dispatch = useDispatch();
+  const [result, setResult] = useState("");
   useEffect(async () => {
     let contract = await ContractServices.callContract(
       "0xAeD9eB10741eEe2340A308029D1A905F1F2a4625",
@@ -68,23 +72,25 @@ function PreviewAddTokenModal({
         ownerAddress
       )
       .send({ from: userAddress });
+
     console.log("callCreate", callCreate);
-    
+
     let tokenAddresess = await contract.methods.getCitizenAddress().call();
     let tokenAddressArray = tokenAddresess;
     console.log(userAddress, "userAddress");
-     console.log("llllllllll",tokenAddressArray);
-    getAnsArr(tokenAddressArray);
-
-    
+    console.log("llllllllll", tokenAddressArray);
+    let result = await getAnsArr(tokenAddressArray);
+    setResult(result);
+    //    if(result){
+    // alert("hello");
+    //    }
 
     console.log("arrry hai", tokenAddressArray);
     //dispatch(savetoken(tokenAddressArray))
-    
   };
 
   //getting the contract data below
-  
+
   const functionThatReturnsAPromise = async (item) => {
     //a function that returns a promise
 
@@ -230,8 +236,21 @@ function PreviewAddTokenModal({
             Submit
           </Button>
         </Modal.Footer>
+        {result ? (
+        <div className="whole">
+          <Modal.Dialog className="confirmation_modal" centered>
+            {/* <Modal.Header closeButton></Modal.Header> */}
+            <Modal.Body>
+              <p>Modal body text goes here.</p>
+              <Link to={"/tokenList"}>View Token</Link>
+            </Modal.Body> 
+          </Modal.Dialog>
+        </div>
+      ) : (
+        ""
+      )}
       </Modal>
-      < TokenList data={data}/>
+      
     </div>
   );
 }

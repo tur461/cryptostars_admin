@@ -61,6 +61,7 @@ function AddTokenModal() {
                       type="text"
                       value={tokenName}
                       onChange={(e) => handleChange(e, "tokenName")}
+                    
                     />
                   </div>
                 </li>
@@ -72,6 +73,7 @@ function AddTokenModal() {
                       label="Token Name"
                       type="text"
                       value={tokenSymbol}
+                      
                       onChange={(e) => handleChange(e, "tokenSymbol")}
                     />
                   </div>
@@ -82,7 +84,7 @@ function AddTokenModal() {
                     <FormLabel className="text_head">Token Supply</FormLabel>
                     <input
                       label="Token Name"
-                      type="text"
+                      type="Number"
                       value={totalSupply}
                       onChange={(e) => handleChange(e, "totalSupply")}
                     />

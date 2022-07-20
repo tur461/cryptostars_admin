@@ -1,36 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { Table,   } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { ContractServices } from "../../services/ContractServices";
 import { MAIN_CONTRACT_LIST } from "../../assets/tokens/index";
 
-
 import Pagination from "./Pagination";
-                         
 
 import "./Tokenlist.scss";
 
 export const TokenList = ({ data }) => {
   console.log("", data);
   const [bbb, setBBewq] = useState(data);
-  const [listdata,setListdata] = useState([]);
+  const [listdata, setListdata] = useState([]);
 
-//   const [pageData,setPageData] = useState({
-//     perPage: 10,
-//     page: 1,
-//     pages: 1
-// })
+  //   const [pageData,setPageData] = useState({
+  //     perPage: 10,
+  //     page: 1,
+  //     pages: 1
+  // })
 
-const [currentPage, setCurrentPage] = useState(1);
-const [postsPerPage] = useState(20);
- 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(20);
 
-// const handlePageClick = (event) => {
-//   console.log(event);
-//   let page1= event.selected;
-//   console.log("kkkkk",page1);
-//   setPageData({...pageData, page:page1})
-  
-// }
+  // const handlePageClick = (event) => {
+  //   console.log(event);
+  //   let page1= event.selected;
+  //   console.log("kkkkk",page1);
+  //   setPageData({...pageData, page:page1})
+
+  // }
 
   const functionThatReturnsAPromise = async (item) => {
     //a function that returns a promise
@@ -52,57 +49,52 @@ const [postsPerPage] = useState(20);
     });
   };
 
-    const doSomethingAsync = async (item) => {
-      return await functionThatReturnsAPromise(item);
-    };
+  const doSomethingAsync = async (item) => {
+    return await functionThatReturnsAPromise(item);
+  };
 
-    const getAnsArr = async (array) => {
-      let count;
-      let map = [];
-      console.log("arraghy", array);
-      let promises = array.map(async (item) => {
-        return await doSomethingAsync(item);
-      });
-      let data = await Promise.all(promises);
-      console.log(data, "yw ahi final daata");
+  const getAnsArr = async (array) => {
+    let count;
+    let map = [];
+    console.log("arraghy", array);
+    let promises = array.map(async (item) => {
+      return await doSomethingAsync(item);
+    });
+    let data = await Promise.all(promises);
+    console.log(data, "yw ahi final daata");
 
-      
-      
-      return Promise.all(promises);
-    };
+    return Promise.all(promises);
+  };
 
-  const tokenlistdata = async() =>{
+  const tokenlistdata = async () => {
+    let contract = await ContractServices.callContract(
+      MAIN_CONTRACT_LIST.tokenFactory.address,
+      MAIN_CONTRACT_LIST.tokenFactory.abi
+    );
+    let tokenAddresess = await contract.methods.getCitizenAddress().call();
+    console.log("rrrrrrrrrrrrrrrrr", tokenAddresess);
+    const list = await getAnsArr(tokenAddresess);
+    console.log("lllllllllllllll", list);
+    setListdata(list);
 
-  let contract = await ContractServices.callContract(MAIN_CONTRACT_LIST.tokenFactory.address,MAIN_CONTRACT_LIST.tokenFactory.abi)
-  let tokenAddresess = await contract.methods.getCitizenAddress().call();
-  console.log("rrrrrrrrrrrrrrrrr",tokenAddresess);
-  const list = await getAnsArr(tokenAddresess);
-console.log("lllllllllllllll",list);
-setListdata(list)
+    // setPageData({
+    //   ...pageData,
+    //   pages: Math.floor(list?.length / pageData.perPage)
+    // });
+  };
+  useEffect(() => {
+    tokenlistdata();
+  }, []);
+  console.log("llllllllllllllllllkkkkkkkkkk", listdata);
+  // Get current posts
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = listdata.slice(indexOfFirstPost, indexOfLastPost);
 
-// setPageData({
-//   ...pageData,
-//   pages: Math.floor(list?.length / pageData.perPage)
-// });
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-}
-useEffect(() => {
-
-  tokenlistdata()
-
-
-}, [])
-console.log("llllllllllllllllllkkkkkkkkkk",listdata);
-// Get current posts
-const indexOfLastPost = currentPage * postsPerPage;
-const indexOfFirstPost = indexOfLastPost - postsPerPage;
-const currentPosts = listdata.slice(indexOfFirstPost, indexOfLastPost);
-
-
-const paginate = pageNumber => setCurrentPage(pageNumber);
-    
   return (
-    <div>
+    <div className="table_responsive">
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -114,7 +106,7 @@ const paginate = pageNumber => setCurrentPage(pageNumber);
         </thead>
         {currentPosts?.map((item) => (
           <tbody>
-            <tr key={item} >
+            <tr key={item}>
               <td>{item?.name}</td>
               <td>{item?.symbol}</td>
               <td>{item?.item}</td>
@@ -138,7 +130,7 @@ const paginate = pageNumber => setCurrentPage(pageNumber);
                           containerClassName={'pagination'}
                           activeClassName={'active'}
                       /> */}
-        <Pagination
+      <Pagination
         postsPerPage={postsPerPage}
         totalPosts={listdata.length}
         paginate={paginate}
