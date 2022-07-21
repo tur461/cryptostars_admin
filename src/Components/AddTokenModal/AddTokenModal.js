@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./AddTokenModal.scss";
 import "../../App.scss";
@@ -15,23 +15,40 @@ function AddTokenModal() {
   const [totalSupply, setTotalSupply] = useState("");
   const [mintAddress, setMintAddress] = useState("");
   const [ownerAddress, setOwnerAddress] = useState("");
+  // const [errorCount, setErrorCount] = useState("0");
+
+  const [nameError, setnameError] = useState("");
+  const [symbolError, setSymbolError] = useState("");
+  const [supplyError, setSupplyError] = useState("");
+  const [mintAddressError, setMintAddressError] = useState("");
+  const [ownerAddressError, setOwnerAddressError] = useState("");
+
+
+
+
+
 
   const handleChange = (e, fieldName) => {
     switch ((e, fieldName)) {
       case "tokenName":
+        e.target.value==''?setnameError("Please Enter Token Name"):setnameError('')
         setTokenName(e.target.value);
         break;
       case "tokenSymbol":
+        e.target.value==''?setSymbolError("Please Enter Token Name"):setSymbolError('')
         setTokenSymbol(e.target.value);
         break;
       case "totalSupply":
+        e.target.value==''?setSupplyError("Please Enter Token Supply"):setSupplyError('')
         setTotalSupply(e.target.value.toString());
         break;
       case "mintAddress":
+        e.target.value==''?setMintAddressError("Please Enter Mint Address"):setMintAddressError('')
         setMintAddress(e.target.value);
         refrenceVariable = true;
         break;
       case "ownerAddress":
+        e.target.value==''?setOwnerAddressError("Please Enter Owner Address"):setOwnerAddressError('')
         setOwnerAddress(e.target.value);
         refrenceVariable = true;
         break;
@@ -42,6 +59,45 @@ function AddTokenModal() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   console.log("token ka naam", tokenName);
+
+
+   const Preview = () =>{
+    if(tokenName=='')
+    {
+     setnameError("Please Enter Token Name")
+    }
+    else if(tokenSymbol=='')
+    {
+      setSymbolError("Please Enter Token Symbol")
+    }
+    else if(totalSupply=='')
+    {
+      setSupplyError("Please Enter Token TotalSupply") 
+    }
+    else if(mintAddress=='')
+    {
+      setMintAddressError("Please Enter Mint Address")
+    }
+    else if(ownerAddress=='')
+    {
+      setOwnerAddressError("Please Enter Owner Address")
+    }
+
+    else{
+      setShow(true)
+    }
+    
+    
+   }
+    // if(tokenName=='')
+    // {
+    //   setnameError("Please Enter Token Name")
+    // }
+  
+  
+
+
+
   return (
     <>
       <div className="container swapwrap">
@@ -61,9 +117,11 @@ function AddTokenModal() {
                       type="text"
                       value={tokenName}
                       onChange={(e) => handleChange(e, "tokenName")}
-                    
                     />
+              
                   </div>
+
+                  <span style={{color:'red',}}>{nameError}</span>
                 </li>
 
                 <li>
@@ -73,10 +131,10 @@ function AddTokenModal() {
                       label="Token Name"
                       type="text"
                       value={tokenSymbol}
-                      
                       onChange={(e) => handleChange(e, "tokenSymbol")}
                     />
                   </div>
+                  <span style={{color:'red'}}>{symbolError}</span>
                 </li>
 
                 <li>
@@ -89,6 +147,7 @@ function AddTokenModal() {
                       onChange={(e) => handleChange(e, "totalSupply")}
                     />
                   </div>
+                  <span style={{color:'red'}}>{supplyError}</span>
                 </li>
                 <li>
                   <div className="token_info d-flex mb-3">
@@ -100,6 +159,7 @@ function AddTokenModal() {
                       onChange={(e) => handleChange(e, "mintAddress")}
                     />
                   </div>
+                  <span style={{color:'red'}}>{mintAddressError}</span>
                 </li>
                 <li>
                   <div className="token_info d-flex mb-3">
@@ -111,12 +171,14 @@ function AddTokenModal() {
                       onChange={(e) => handleChange(e, "ownerAddress")}
                       required="true"
                     />
+                     
                   </div>
+                  <span style={{color:'red'}}>{ownerAddressError}</span>
                 </li>
               </ul>
 
               <div className="token_footer">
-                <Button variant="secondary" onClick={handleShow}>
+                <Button variant="secondary" onClick={Preview}>
                   Preview
                 </Button>
                 a
