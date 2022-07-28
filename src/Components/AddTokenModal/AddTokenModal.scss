@@ -115,6 +115,16 @@
   p {
     margin: 0;
   }
+  .input_text {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    span {
+      margin-top: 10px;
+      color: red;
+      font-size: 14px;
+    }
+  }
 }
 .token_head_sec {
   padding: 20px;
