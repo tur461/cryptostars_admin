@@ -86,7 +86,7 @@ const PublicRoutes = () => {
           component={AddTokenModal}
           exact={true}
         />
-        <Route path={`${HOME_ROUTE}home`} component={Home} exact={true} />
+        {/* <Route path={`${HOME_ROUTE}home`} component={Home} exact={true} /> */}
         <Route path={`${HOME_ROUTE}swap`} component={Swap} exact={true} />
         <Route
           path={`${HOME_ROUTE}liquidity`}

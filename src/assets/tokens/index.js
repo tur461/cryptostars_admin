@@ -45,7 +45,7 @@ export const TOKEN_LIST = [
   {
     icon: LMES,
     name: "LMS",
-    address: "0x6Ba4947efD77eAF5bE44eFD9C9e30A708F1439F6", //BNB
+    address: "0x63A40eeD7777ea5f3b10C01c76b2804734B99848", //BNB
     isAdd: false,
     isDel: false,
     decimals: 18,
@@ -54,7 +54,7 @@ export const TOKEN_LIST = [
   {
     icon: CST,
     name: "CST",
-    address: "0x17773dBa2DB547F887702bac334342dA57e26f49",
+    address: "0xFd15391376F5beFF2edb37009c36f8908d7404A0",
     isAdd: false,
     isDel: false,
     decimals: 18,
@@ -63,7 +63,7 @@ export const TOKEN_LIST = [
   {
     icon: LMES,
     name: "ADF",
-    address: "0xCf247875755780c2978562f5Faf0BDAB67134393",
+    address: "0x788dD0D424B567eBECeB2cF5dAaFF481F45fa304",
     isAdd: false,
     isDel: false,
     decimals: 18,
@@ -72,7 +72,7 @@ export const TOKEN_LIST = [
   {
     icon: LMES,
     name: "MBG",
-    address: "0x3585D6B21A99233B1088871875E6754f5a546D1b",
+    address: "0xFA75E50cC065aF3a843600ADA783bd7aDf7C01Af",
     isAdd: false,
     isDel: false,
     decimals: 18,

@@ -23,7 +23,7 @@ function AddTokenModal() {
   const [supplyError, setSupplyError] = useState("");
   const [mintAddressError, setMintAddressError] = useState("");
   const [ownerAddressError, setOwnerAddressError] = useState("");
-  const [error, setError]= useState(false);
+  const [error, setError] = useState(false);
   const [symbolsArr] = useState(["e", "E", "+", "-"]);
 
   const handleChange = (e, fieldName) => {
@@ -38,7 +38,8 @@ function AddTokenModal() {
         }
         value == ""
           ? setnameError("Please Enter Token Name")
-          : setnameError("") ; setError(false);
+          : setnameError("");
+        setError(false);
 
         // setTokenName(e.target.value);
 
@@ -53,24 +54,28 @@ function AddTokenModal() {
         }
         value1 == ""
           ? setSymbolError("Please Enter Token Name")
-          : setSymbolError("")  ; setError(false);
+          : setSymbolError("");
+        setError(false);
         break;
       case "totalSupply":
         e.target.value == ""
           ? setSupplyError("Please Enter Token Supply")
-          : setSupplyError("")  ; setError(false);
+          : setSupplyError("");
+        setError(false);
         setTotalSupply(e.target.value.toString());
 
         break;
       case "mintAddress":
         e.target.value == ""
           ? setMintAddressError("Please Enter Mint Address")
-          : setMintAddressError("")  ; setError(false);
+          : setMintAddressError("");
+        setError(false);
         try {
           const isValidAddress = Web3.utils.toChecksumAddress(e.target.value);
           if (isValidAddress || e.target.value) {
             setMintAddress(e.target.value);
-            setMintAddressError("")  ; setError(false);
+            setMintAddressError("");
+            setError(false);
           }
         } catch (err) {
           setError(true);
@@ -84,12 +89,14 @@ function AddTokenModal() {
       case "ownerAddress":
         e.target.value == ""
           ? setOwnerAddressError("Please Enter Mint Address")
-          : setOwnerAddressError("")  ; setError(false);
+          : setOwnerAddressError("");
+        setError(false);
         try {
           const isValidAddress = Web3.utils.toChecksumAddress(e.target.value);
           if (isValidAddress || e.target.value) {
             setOwnerAddress(e.target.value);
-            setOwnerAddressError("")  ; setError(false);
+            setOwnerAddressError("");
+            setError(false);
           }
         } catch (err) {
           setError(true);
@@ -131,16 +138,22 @@ function AddTokenModal() {
       setOwnerAddressError("Please Enter Owner Address");
       setError(true);
     }
-console.log("rrrrrrrrrrrrr",error);
-    if (error == false && tokenName!=='' & tokenSymbol!='' & totalSupply!='' & mintAddress!='' & ownerAddress!='') {
-      
-       setShow(true);
+    console.log("rrrrrrrrrrrrr", error);
+    if (
+      error == false &&
+      (tokenName !== "") &
+        (tokenSymbol != "") &
+        (totalSupply != "") &
+        (mintAddress != "") &
+        (ownerAddress != "")
+    ) {
+      setShow(true);
     }
   };
 
   return (
     <>
-      <div className="container swapwrap">
+      <div className="container swapwrap" style={{ marginLeft: "00px" }}>
         <div className="row">
           <div className="container container_inside token">
             <div className="token_modal">
@@ -187,54 +200,52 @@ console.log("rrrrrrrrrrrrr",error);
                   <div className="token_info d-flex mb-3">
                     <FormLabel className="text_head">Token Supply</FormLabel>
                     <div className="input_text">
-                    <input
-                      label="Token Name"
-                      type="Number"
-                      value={totalSupply}
-                      onKeyDown={(evt) => {
-                        symbolsArr.includes(evt.key) && evt.preventDefault();
-                      }}
-                      onChange={(e) => handleChange(e, "totalSupply")}
-                    />
-                    <span>{supplyError}</span>
+                      <input
+                        label="Token Name"
+                        type="Number"
+                        value={totalSupply}
+                        onKeyDown={(evt) => {
+                          symbolsArr.includes(evt.key) && evt.preventDefault();
+                        }}
+                        onChange={(e) => handleChange(e, "totalSupply")}
+                      />
+                      <span>{supplyError}</span>
                     </div>
                   </div>
-                  
                 </li>
                 <li>
                   <div className="token_info d-flex mb-3">
                     <FormLabel className="text_head">Mint Address</FormLabel>
                     <div className="input_text">
-                    <input
-                      label="Token Name"
-                      type="text"
-                      value={mintAddress}
-                      onChange={(e) => handleChange(e, "mintAddress")}
-                    />
-                  <span>{mintAddressError}</span>
+                      <input
+                        label="Token Name"
+                        type="text"
+                        value={mintAddress}
+                        onChange={(e) => handleChange(e, "mintAddress")}
+                      />
+                      <span>{mintAddressError}</span>
+                    </div>
                   </div>
-                  </div>
-                  
                 </li>
                 <li>
                   <div className="token_info d-flex mb-3">
                     <FormLabel className="text_head">Owner Address</FormLabel>
                     <div className="input_text">
-                    <input
-                      label="Token Name"
-                      type="text"
-                      value={ownerAddress}
-                      onChange={(e) => handleChange(e, "ownerAddress")}
-                      required="true"
-                    />
-                  <span>{ownerAddressError}</span>
-                  </div>
+                      <input
+                        label="Token Name"
+                        type="text"
+                        value={ownerAddress}
+                        onChange={(e) => handleChange(e, "ownerAddress")}
+                        required="true"
+                      />
+                      <span>{ownerAddressError}</span>
+                    </div>
                   </div>
                 </li>
               </ul>
 
               <div className="token_footer">
-                <Button variant="secondary"  onClick={Preview}>
+                <Button variant="secondary" onClick={Preview}>
                   Preview
                 </Button>
                 a
