@@ -28,6 +28,7 @@ const ModalSelectToken = ({
   console.log("hahahahahaha", TOKEN_LIST);
   const [isAdded, setTokenAdd] = useState(true);
   const handleTokenList = (data) => {
+    console.log("ltltltltltltltl",data);
     data.isAdd = false;
     data.isDel = true;
     dispatch(tokenListAdd(data));
@@ -38,8 +39,17 @@ const ModalSelectToken = ({
     searchByName("");
     window.location.reload();
   };
+  localStorage.setItem('response', JSON.stringify(tokenList) );
 
-  console.log("t222okenlist", tokenList);
+  let list = JSON.parse(localStorage.getItem('response'));
+
+  console.log("t222okenlist", tokenList,list);
+  
+  // if(tokenList)
+  // {
+  //   TOKEN_LIST.push(tokenList)
+  // }
+  console.log("TOKEN_LISTTOKEN_LISTTOKEN_LISTTOKEN_LIST",TOKEN_LIST);
 
   return (
     <>
@@ -70,7 +80,7 @@ const ModalSelectToken = ({
             <div className=" modal_headerStyle__rowC_colLeft">
               <h2>Token name</h2>
             </div>
-            {/* <div className=" modal_headerStyle__rowC_colRight">
+            <div className=" modal_headerStyle__rowC_colRight">
               <button>
                 <img
                   height="40"
@@ -79,13 +89,13 @@ const ModalSelectToken = ({
                   alt="icon"
                 />
               </button>
-            </div> */}
+            </div>
           </div>
         </div>
         <div className="col tokenList__column">
           <ul className="tokenList">
-            {TOKEN_LIST &&
-              TOKEN_LIST.map((t, index) => (
+            {tokenList &&
+              tokenList.map((t, index) => (
                 <li key={index}>
                   {currencyName === t.symbol ? (
                     <div className="dis">

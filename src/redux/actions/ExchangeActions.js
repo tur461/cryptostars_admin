@@ -23,6 +23,7 @@ export const searchTokenByNameOrAddress =
         const tokenName = await ContractServices.getTokenName(address);
         const tokenSymbol = await ContractServices.getTokenSymbol(address);
         const tokenBalance = await ContractServices.getTokenBalance(address);
+        
         const obj = {
           icon: default_icon,
           name: tokenName,
@@ -33,6 +34,8 @@ export const searchTokenByNameOrAddress =
           symbol: tokenSymbol,
         };
         tokenList.push(obj);
+       
+       
         return tokenList;
       }
       return tokenList.filter((token) =>
