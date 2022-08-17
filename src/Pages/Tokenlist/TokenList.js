@@ -2,15 +2,22 @@ import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { ContractServices } from "../../services/ContractServices";
 import { MAIN_CONTRACT_LIST } from "../../assets/tokens/index";
-
+import { toast } from "../../Components/Toast/Toast";
 import Pagination from "./Pagination";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import copyIcon from "../../assets/images/icon_copyAddress.png";
+// import Skeleton from 'react-loading-skeleton'
+// import 'react-loading-skeleton/dist/skeleton.css'
+import SkeletonCard from "./SkeletonCard";
 
 import "./Tokenlist.scss";
+import { selectText } from "../../services/utils";
 
 export const TokenList = ({ data }) => {
   console.log("", data);
   const [bbb, setBBewq] = useState(data);
   const [listdata, setListdata] = useState([]);
+  const [isloading, setLoading] = useState(true);
 
   //   const [pageData,setPageData] = useState({
   //     perPage: 10,
@@ -74,47 +81,74 @@ export const TokenList = ({ data }) => {
     let tokenAddresess = await contract.methods.getCitizenAddress().call();
     console.log("rrrrrrrrrrrrrrrrr", tokenAddresess);
     const list = await getAnsArr(tokenAddresess);
-    console.log("lllllllllllllll", list);
-    setListdata(list);
+  let arrayoflist = list.reverse()
+  console.log("jjjjjjjjjjjjjjjjj", arrayoflist);
 
-    // setPageData({
-    //   ...pageData,
-    //   pages: Math.floor(list?.length / pageData.perPage)
-    // });
+    setListdata(arrayoflist);
+    setLoading(false);
   };
   useEffect(() => {
     tokenlistdata();
   }, []);
-  console.log("llllllllllllllllllkkkkkkkkkk", listdata);
+  console.log("llllllllllllllllllkkkkkkkkkk", listdata, isloading);
+  let arrayoflist = listdata.reverse()
+  console.log("vvvvvvvvvvvv",arrayoflist);
   // Get current posts
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = listdata.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = arrayoflist.slice(indexOfFirstPost, indexOfLastPost);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const trunc = (a) => `${a.slice(0, 5)}...${a.slice(39, 42)}`;
+
   return (
     <div className="table_responsive">
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Token Name</th>
-            <th>Symbol</th>
-            <th>Address</th>
-            <th>Total Supply</th>
-          </tr>
-        </thead>
-        {currentPosts?.map((item) => (
-          <tbody>
-            <tr key={item}>
-              <td>{item?.name}</td>
-              <td>{item?.symbol}</td>
-              <td>{item?.item}</td>
-              <td>{item?.totalSupply}</td>
+      {isloading && <SkeletonCard />}
+      {!isloading ? (
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Token Name</th>
+              <th>Symbol</th>
+              <th>Address</th>
+              <th>Total Supply</th>
             </tr>
-          </tbody>
-        ))}
-      </Table>
+          </thead>
+
+          {currentPosts?.map((item) => (
+            <tbody>
+              <tr key={item}>
+                <td>{item?.name}</td>
+                <td>{item?.symbol}</td>
+                <td>
+                  <p>
+                    <span id={btoa(item?.item)}>{trunc(item?.item)}</span>
+                    <CopyToClipboard
+                      text={item?.item}
+                      onCopy={() => {
+                        selectText(
+                          document.querySelector(`#${btoa(item?.item)}`)
+                        );
+                        toast.success("Copied!");
+                      }}
+                    >
+                      <img
+                        className="copy-icon cursor--pointer"
+                        src={copyIcon}
+                        alt="copy"
+                      />
+                    </CopyToClipboard>
+                  </p>
+                </td>
+                <td>{item?.totalSupply}</td>
+              </tr>
+            </tbody>
+          ))}
+        </Table>
+      ) : (
+        ""
+      )}
       {/* <Pagination>
         <Pagination.Prev />
         <Pagination.Item>{1}</Pagination.Item>

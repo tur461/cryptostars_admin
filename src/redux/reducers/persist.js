@@ -26,19 +26,33 @@ const persist = (state = initialState, action) => {
         walletType: action.payload.walletType,
       };
     case actionTypes.TOKEN_LIST_ADD:
-      initialState.tokenList.push(action.payload);
+      console.log("action.payload",initialState.tokenList);
+      let i = -1;
+      const items = initialState.tokenList.filter((t, ii) => {
+        if(t.address === action.payload.address) {
+          i = ii;
+          return !0;
+        }
+        return !1;
+      });
+      if(!items.length) {
+        // initialState.tokenList.splice(i, 1);
+        initialState.tokenList.push(action.payload);
+      }
+
+      console.log("action.payload",initialState.tokenList);
+
       return {
         ...state,
         tokenList: initialState.tokenList,
       };
     case actionTypes.TOKEN_LIST_DEL:
-      initialState.tokenList.splice(
-        initialState.tokenList.findIndex(
-          (a) =>
-            a.address.toLowerCase() === action.payload.address.toLowerCase()
-        ),
-        1
+      const idx = initialState.tokenList.findIndex(
+        (a) =>
+          a.address.toLowerCase() === action.payload.address.toLowerCase()
       );
+      console.log('removing item at:', idx, {...initialState.tokenList});  
+      idx>-1 && initialState.tokenList.splice(idx, 1);
       return {
         ...state,
         tokenList: initialState.tokenList,

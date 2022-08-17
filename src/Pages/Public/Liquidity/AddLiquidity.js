@@ -80,6 +80,7 @@ const AddLiquidity = (props) => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [txHash, setTxHash] = useState("");
 
+  console.log("jjjjj",tokenList);
   useEffect(() => {
     setFilteredTokenList(
       tokenList?.filter((token) =>
@@ -87,7 +88,7 @@ const AddLiquidity = (props) => {
       )
     );
     init();
-  }, [search, tokenList]);
+  },[search, tokenList,]);
   useEffect(() => {
     ContractServices.walletWindowListener();
     console.log("hey");
@@ -292,9 +293,11 @@ const AddLiquidity = (props) => {
   const handleTokenValue = async (amount, tokenType) => {
     if (tokenType === "TK1") {
       setTokenOneValue(amount);
+
       const r = await getAllowance(amount, tokenType);
-      console.log(r);
-      if (r && tokenOne.address && tokenTwo.address && amount > 0) {
+
+      if (r && tokenOne.address && tokenTwo.address && amount >= 0) {
+
         let tokenAddress = tokenOne.address;
         if (tokenOne.address === "BNB") {
           tokenAddress = WETH;
@@ -325,7 +328,13 @@ const AddLiquidity = (props) => {
                   (reserves[1] / 10 ** token1Decimal))
               ).toFixed(5);
             }
+            console.log("setTokenTwoValuesetTokenTwoValue",a);
+ if(a==0)
+ {
+  setTokenTwoValue('')
+ }else{
             setTokenTwoValue(a);
+ }
             if (!tokenTwoApproval) {
               const r = await getAllowance(a, "TK2");
               handleApprovalButton("TK2");
@@ -475,12 +484,13 @@ const AddLiquidity = (props) => {
   const handleSearchToken = async (data) => {
     try {
       const res = await dispatch(searchTokenByNameOrAddress(data));
-      // console.log("RESPONSE:", res);
-      setFilteredTokenList(res && res.reverse());
+       console.log("RESPONSE:", res);
+      setFilteredTokenList(res);
     } catch (error) {
       toast.error("Something went wrong!");
     }
   };
+  console.log("FilteredTokenList",filteredTokenList);
   const handleApprovalButton = (tokenType) => {
     if (tokenOneApproval && tokenType === "TK1") {
       return (

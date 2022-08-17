@@ -248,7 +248,7 @@ function AddTokenModal() {
                 <Button variant="secondary" onClick={Preview}>
                   Preview
                 </Button>
-                a
+                
               </div>
               <PreviewAddTokenModal
                 handleShow={handleShow}

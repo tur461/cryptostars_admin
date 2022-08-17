@@ -50,6 +50,7 @@ export const logout = () => {
   };
 };
 export const tokenListAdd = (data) => {
+  console.log("ddddddddddddddddddddddd",data);
   return {
     type: actionTypes.TOKEN_LIST_ADD,
     payload: data,

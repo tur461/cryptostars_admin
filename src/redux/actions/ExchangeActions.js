@@ -7,18 +7,22 @@ import { ExchangeService } from "../../services/ExchangeService";
 
 export const searchTokenByNameOrAddress =
   (address) => async (dispatch, getState) => {
+    
     try {
       const {
         persist: { tokenList },
       } = getState();
-
+console.log("bbbbbbbbbbbbbbbbbbbbb",tokenList);
       if (address.length === 42) {
-        const filteredTokenList = tokenList.filter((token) =>
+          const filteredTokenList = tokenList.filter((token) =>
           token.address.toLowerCase().includes(address.toLowerCase())
         );
-        if (filteredTokenList.length > 0) {
+
+      if (filteredTokenList.length > 0) {
+
           return filteredTokenList;
         }
+
         const tokenDecimal = await ContractServices.getDecimals(address);
         const tokenName = await ContractServices.getTokenName(address);
         const tokenSymbol = await ContractServices.getTokenSymbol(address);
@@ -33,11 +37,14 @@ export const searchTokenByNameOrAddress =
           decimals: tokenDecimal,
           symbol: tokenSymbol,
         };
-        tokenList.push(obj);
+        
+     tokenList.push(obj);
        
-       
+     console.log("aaaaaaaaaaaaaaaaa",tokenList);
+
         return tokenList;
-      }
+      
+    }
       return tokenList.filter((token) =>
         token.name.toLowerCase().includes(address.toLowerCase())
       );

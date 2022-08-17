@@ -34,13 +34,20 @@
     justify-content: center;
     max-width: 500px;
     width: 100%;
+    padding: 43px 29px;
     .modal-content {
       .modal-body {
         p {
           color: $yellowClr;
           margin-bottom: 10px;
+          
+        }
+        img{
+          height: 113px;
+          width: 80px;
         }
       }
     }
   }
 }
+

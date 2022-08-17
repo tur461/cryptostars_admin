@@ -9,8 +9,11 @@ import { Modal, FormLabel, Button } from "react-bootstrap";
 import { ContractServices } from "../../services/ContractServices";
 import { MAIN_CONTRACT_LIST } from "../../assets/tokens/index";
 import { TokenList } from "../../Pages/Tokenlist/TokenList";
-import { useDispatch } from "react-redux";
-import { savetoken } from "../../redux/actions";
+import { Provider, useDispatch } from "react-redux";
+import { savetoken, startLoading, stopLoading } from "../../redux/actions";
+import { BSC_SCAN } from "../../constant";
+import checkicon from "../../assets/images/check_icon.svg";
+
 
 // import xtype from "xtypejs";
 function PreviewAddTokenModal({
@@ -29,6 +32,7 @@ function PreviewAddTokenModal({
   //   const handleShow = () => setShow(true);
   // const [token, setToken] = useState({});
   const [data, setData] = useState();
+  const [finalhash,setFinalhash] = useState('')
   const dispatch = useDispatch();
   const [result, setResult] = useState("");
   useEffect(async () => {
@@ -57,6 +61,7 @@ function PreviewAddTokenModal({
   let tokenObject = { name: "", symbol: "", totalSupply: "" };
 
   const letsCallTheContract = async () => {
+    dispatch(startLoading())
     let contract = await ContractServices.callContract(
       MAIN_CONTRACT_LIST.tokenFactory.address,
       MAIN_CONTRACT_LIST.tokenFactory.abi
@@ -72,13 +77,18 @@ function PreviewAddTokenModal({
         ownerAddress
       )
       .send({ from: userAddress });
+      // const r = await Provider.waitForTransaction(callCreate.blockhash);
+      //       console.log('finalised..', r);
+    let cc = callCreate?.transactionHash
+    console.log("callCreate", cc);
 
-    console.log("callCreate", callCreate);
-
+    setFinalhash(cc)
+    console.log("finalhash",finalhash);
     let tokenAddresess = await contract.methods.getCitizenAddress().call();
+    console.log(contract.methods,"nnnnnnnnnnnnnnnnnn --------------------")
     let tokenAddressArray = tokenAddresess;
     console.log(userAddress, "userAddress");
-    console.log("llllllllll", tokenAddressArray);
+    console.log("llllllllllllkk", tokenAddressArray);
     let result = await getAnsArr(tokenAddressArray);
     setResult(result);
     //    if(result){
@@ -87,6 +97,7 @@ function PreviewAddTokenModal({
 
     console.log("arrry hai", tokenAddressArray);
     //dispatch(savetoken(tokenAddressArray))
+    dispatch(stopLoading())
   };
 
   //getting the contract data below
@@ -241,7 +252,17 @@ function PreviewAddTokenModal({
           <Modal.Dialog className="confirmation_modal" centered>
             {/* <Modal.Header closeButton></Modal.Header> */}
             <Modal.Body>
-              <p>Modal body text goes here.</p>
+            
+            <img src={checkicon} alt="icon" />
+              <a
+                href={`${BSC_SCAN}tx/${finalhash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <p>View on Cronos Scan</p>
+              </a>
+           
+
               <Link to={"/tokenList"}>View Token</Link>
             </Modal.Body> 
           </Modal.Dialog>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./ModalSelectTokenStyle.scss";
 import { Link } from "react-router-dom";
 import sortIcon from "../../assets/images/arrow_sorting@2x.png";
@@ -23,28 +23,34 @@ const ModalSelectToken = ({
   searchToken,
   searchByName,
   currencyName,
+  symbol
 }) => {
   const dispatch = useDispatch();
   console.log("hahahahahaha", TOKEN_LIST);
   const [isAdded, setTokenAdd] = useState(true);
+
   const handleTokenList = (data) => {
     console.log("ltltltltltltltl",data);
     data.isAdd = false;
     data.isDel = true;
     dispatch(tokenListAdd(data));
     setTokenAdd(false);
+    closeModal()
+    
   };
   const handleRemoveTokenList = async (data) => {
     dispatch(tokenListDel(data));
     searchByName("");
     window.location.reload();
   };
-  localStorage.setItem('response', JSON.stringify(tokenList) );
 
-  let list = JSON.parse(localStorage.getItem('response'));
+  console.log("TOKEN_LISTTOKEN_LISTTOKEN_LISTTOKEN_LIST",TOKEN_LIST);
 
-  console.log("t222okenlist", tokenList,list);
-  
+
+  // let list = JSON.parse(localStorage.getItem('response'));
+
+  console.log("t222okenlist",tokenList);
+
   // if(tokenList)
   // {
   //   TOKEN_LIST.push(tokenList)
@@ -96,8 +102,8 @@ const ModalSelectToken = ({
           <ul className="tokenList">
             {tokenList &&
               tokenList.map((t, index) => (
-                <li key={index}>
-                  {currencyName === t.symbol ? (
+                <li key={index} id={t.symbol}>
+                  {symbol === t.symbol ? (
                     <div className="dis">
                       <span>
                         <img src={t.icon} alt="icon" />
@@ -124,7 +130,11 @@ const ModalSelectToken = ({
                       {t.isDel && (
                         <span
                           className="tokenName_textStyle add_token"
-                          onClick={() => handleRemoveTokenList(t)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation(); 
+                            handleRemoveTokenList(t)
+                          }}
                         >
                           Remove
                         </span>
