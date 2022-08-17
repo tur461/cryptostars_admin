@@ -61,6 +61,9 @@ function PreviewAddTokenModal({
   let tokenObject = { name: "", symbol: "", totalSupply: "" };
 
   const letsCallTheContract = async () => {
+    try {
+      
+
     dispatch(startLoading())
     let contract = await ContractServices.callContract(
       MAIN_CONTRACT_LIST.tokenFactory.address,
@@ -94,8 +97,11 @@ function PreviewAddTokenModal({
     //    if(result){
     // alert("hello");
     //    }
-
     console.log("arrry hai", tokenAddressArray);
+  } catch (error) {
+    dispatch(stopLoading())
+    return;
+  }
     //dispatch(savetoken(tokenAddressArray))
     dispatch(stopLoading())
   };
