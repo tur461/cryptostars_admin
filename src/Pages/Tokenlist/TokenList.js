@@ -43,11 +43,13 @@ export const TokenList = ({ data }) => {
       MAIN_CONTRACT_LIST.clonedToken.abi
     );
 
+    const dec = await contract.methods.decimals().call()
+
     return {
       addr,
       name: await contract.methods.name().call(),
       sym: await contract.methods.symbol().call(),
-      supply: await contract.methods.totalSupply().call(),
+      supply: (await contract.methods.totalSupply().call() / dec).toLocaleString('fullwide', {useGrouping:false}),
     }
   }
 
@@ -55,12 +57,12 @@ export const TokenList = ({ data }) => {
     const tokenInfoList = [];
     const addresses = JSON.parse(LocalStore.get(LS_KEYS.TOKEN_ADDR_LIST));
     async addr => await getTokenInfo(addr);
-    for(let i=start; i < end && i < addresses.length; ++i ) tokenInfoList.push(await getTokenInfo(addresses[i]));
+    for(let i=start; i <= end && i < addresses.length; ++i ) tokenInfoList.push(await getTokenInfo(addresses[i]));
     return tokenInfoList;
   }
 
   const getAddrList = _ => [
-    (currentPage - 1) * PAGE_SIZE, lastIndex, 
+    (currentPage - 1) * PAGE_SIZE, 
     currentPage * PAGE_SIZE - 1
   ];
 
@@ -82,19 +84,6 @@ export const TokenList = ({ data }) => {
     return list;
   }
 
-  const getAnsArr = async (array) => {
-    let count;
-    let map = [];
-    // console.log("arraghy", array);
-    let promises = array.map(async (item) => {
-      return await doSomethingAsync(item);
-    });
-    let data = await Promise.all(promises);
-    console.log(data, "yw ahi final daata");
-
-    return Promise.all(promises);
-  };
-
   const tokenlistdata = async () => {
     let contract = await ContractServices.callContract(
       MAIN_CONTRACT_LIST.tokenFactory.address,
@@ -105,7 +94,7 @@ export const TokenList = ({ data }) => {
 
     console.log("tokenAddresess.tokenlist", tokenAddresess);
 
-    const list = await getAnsArr(tokenAddresess);
+    const list = await getDataForCurrentPage();
   let arrayoflist = list.reverse()
 
     setListdata(arrayoflist);
@@ -142,17 +131,17 @@ export const TokenList = ({ data }) => {
 
           {currentPosts?.map((item) => (
             <tbody>
-              <tr key={item}>
+              <tr key={btoa(item?.addr)}>
                 <td>{item?.name}</td>
-                <td>{item?.symbol}</td>
+                <td>{item?.sym}</td>
                 <td>
                   <p>
-                    <span id={btoa(item?.item)}>{trunc(item?.item)}</span>
+                    <span id={btoa(item?.item)}>{trunc(item?.addr)}</span>
                     <CopyToClipboard
-                      text={item?.item}
+                      text={item?.addr}
                       onCopy={() => {
                         selectText(
-                          document.querySelector(`#${btoa(item?.item)}`)
+                          document.querySelector(`#${btoa(item?.addr)}`)
                         );
                         toast.success("Copied!");
                       }}
@@ -165,7 +154,7 @@ export const TokenList = ({ data }) => {
                     </CopyToClipboard>
                   </p>
                 </td>
-                <td>{item?.totalSupply}</td>
+                <td>{item?.supply}</td>
               </tr>
             </tbody>
           ))}
