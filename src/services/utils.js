@@ -14,6 +14,15 @@ function selectText(node) {
     }
 }
 
+const LocalStore = {
+    has: key => key in localStorage,
+    get: key => localStorage.getItem(key),
+    del: key => localStorage.removeItem(key),
+    add: (key, value) => localStorage.setItem(key, value), 
+
+}
+
 export {
+    LocalStore,
     selectText,
 }

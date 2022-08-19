@@ -4,7 +4,7 @@ console.log("tokeeeeee", TOKEN_LIST);
 const initialState = {
   walletType: "Metamask",
   isUserConnected: "",
-  tokenList: TOKEN_LIST,
+  tokenList: [],
   slippagePercentage: 1,
   deadline: 20,
   userInfo: "",
@@ -17,7 +17,7 @@ const initialState = {
 };
 
 const persist = (state = initialState, action) => {
-  console.log(state.tokenList, "newadedd");
+  // console.log(state.tokenList, "newadedd");
   switch (action.type) {
     case actionTypes.USER_CONNECTED:
       return {

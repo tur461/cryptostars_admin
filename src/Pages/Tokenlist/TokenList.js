@@ -11,14 +11,14 @@ import copyIcon from "../../assets/images/icon_copyAddress.png";
 import SkeletonCard from "./SkeletonCard";
 
 import "./Tokenlist.scss";
-import { selectText } from "../../services/utils";
+import { LocalStore, selectText } from "../../services/utils";
+import { LS_KEYS, PAGE_SIZE } from "../../services/constants";
 
 export const TokenList = ({ data }) => {
   console.log("", data);
   const [bbb, setBBewq] = useState(data);
   const [listdata, setListdata] = useState([]);
   const [isloading, setLoading] = useState(true);
-
   //   const [pageData,setPageData] = useState({
   //     perPage: 10,
   //     page: 1,
@@ -26,7 +26,7 @@ export const TokenList = ({ data }) => {
   // })
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(10);
+  const [postsPerPage] = useState(PAGE_SIZE);
 
   // const handlePageClick = (event) => {
   //   console.log(event);
@@ -36,34 +36,56 @@ export const TokenList = ({ data }) => {
 
   // }
 
-  const functionThatReturnsAPromise = async (item) => {
-    //a function that returns a promise
 
+  const getTokenInfo = async addr => {
     let contract = await ContractServices.callContract(
-      item,
+      addr,
       MAIN_CONTRACT_LIST.clonedToken.abi
     );
-    //0xfdce5F5FbBC561719fd459ebb665705A9Ed6B2ad
 
-    let symbol = await contract.methods.symbol().call();
-    let name = await contract.methods.name().call();
-    let totalSupply = await contract.methods.totalSupply().call();
-    return Promise.resolve({
-      symbol,
-      name,
-      totalSupply,
-      item,
-    });
-  };
+    return {
+      addr,
+      name: await contract.methods.name().call(),
+      sym: await contract.methods.symbol().call(),
+      supply: await contract.methods.totalSupply().call(),
+    }
+  }
 
-  const doSomethingAsync = async (item) => {
-    return await functionThatReturnsAPromise(item);
-  };
+  const getTokenListInfos = async (start, end) => {
+    const tokenInfoList = [];
+    const addresses = JSON.parse(LocalStore.get(LS_KEYS.TOKEN_ADDR_LIST));
+    async addr => await getTokenInfo(addr);
+    for(let i=start; i < end && i < addresses.length; ++i ) tokenInfoList.push(await getTokenInfo(addresses[i]));
+    return tokenInfoList;
+  }
+
+  const getAddrList = _ => [
+    (currentPage - 1) * PAGE_SIZE, lastIndex, 
+    currentPage * PAGE_SIZE - 1
+  ];
+
+  const tryGetTokenListInfosFromChache = (start, end) => {
+
+    const data = JSON.parse(LocalStore.get(LS_KEYS.TOKEN_INFO_LIST) || '[]');
+    if(!data.length) return data;
+    return data.slice(start, end+1);
+  }
+
+  // function to be called from UI
+  const getDataForCurrentPage = async _ => {
+    const idxInterval = getAddrList();
+    let list  = tryGetTokenListInfosFromChache(...idxInterval);
+    if(!list.length) list = await getTokenListInfos(...idxInterval);
+    else return list;
+    const oldList = JSON.parse(LocalStore.get(LS_KEYS.TOKEN_INFO_LIST) || '[]');
+    LocalStore.add(LS_KEYS.TOKEN_INFO_LIST, JSON.stringify([...oldList, ...list]));
+    return list;
+  }
 
   const getAnsArr = async (array) => {
     let count;
     let map = [];
-    console.log("arraghy", array);
+    // console.log("arraghy", array);
     let promises = array.map(async (item) => {
       return await doSomethingAsync(item);
     });
@@ -79,10 +101,12 @@ export const TokenList = ({ data }) => {
       MAIN_CONTRACT_LIST.tokenFactory.abi
     );
     let tokenAddresess = await contract.methods.getCitizenAddress().call();
-    console.log("rrrrrrrrrrrrrrrrr", tokenAddresess);
+    LocalStore.add(LS_KEYS.TOKEN_ADDR_LIST, JSON.stringify(tokenAddresess));
+
+    console.log("tokenAddresess.tokenlist", tokenAddresess);
+
     const list = await getAnsArr(tokenAddresess);
   let arrayoflist = list.reverse()
-  console.log("jjjjjjjjjjjjjjjjj", arrayoflist);
 
     setListdata(arrayoflist);
     setLoading(false);
@@ -90,14 +114,14 @@ export const TokenList = ({ data }) => {
   useEffect(() => {
     tokenlistdata();
   }, []);
-  console.log("llllllllllllllllllkkkkkkkkkk", listdata, isloading);
+  // console.log("llllllllllllllllllkkkkkkkkkk", listdata);
   let arrayoflist = listdata.reverse()
-  console.log("vvvvvvvvvvvv",arrayoflist);
+  // console.log("vvvvvvvvvvvv",arrayoflist);
   // Get current posts
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = arrayoflist.slice(indexOfFirstPost, indexOfLastPost);
-
+  
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const trunc = (a) => `${a.slice(0, 5)}...${a.slice(39, 42)}`;

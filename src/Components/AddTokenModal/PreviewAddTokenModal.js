@@ -62,8 +62,6 @@ function PreviewAddTokenModal({
 
   const letsCallTheContract = async () => {
     try {
-      
-
     dispatch(startLoading())
     let contract = await ContractServices.callContract(
       MAIN_CONTRACT_LIST.tokenFactory.address,
@@ -140,7 +138,7 @@ function PreviewAddTokenModal({
       return await doSomethingAsync(item);
     });
     let data = await Promise.all(promises);
-    console.log(data, "yw ahi final daata");
+    // console.log(data, "yw ahi final daata");
     if (data) {
       setData(data);
     }
@@ -156,7 +154,6 @@ function PreviewAddTokenModal({
     let count = 0;
 
     const promises = newArray.map(async (item, index) => {
-      // console.log(item, index, "item", "index");
       contract = await ContractServices.callContract(
         item,
         MAIN_CONTRACT_LIST.clonedToken.abi
@@ -176,30 +173,16 @@ function PreviewAddTokenModal({
     count += 1;
     return await Promise.all(promises.PromiseResult);
 
-    // tokenObject.totalSupply = await contract.methods.totalSupply().call();
-    console.log(tokenObject.name, count, "ye raha naam token aka");
-    console.log(tokenObject.symbol, count, "ye raha symbol token aka");
     // setToken(tokenObject);
     // console.log(token, "aa gya token");
     // let tokenArray = [];
     // tokenArray.push(token);
     // tokenDetails.push(...tokenArray, token);
 
-    // console.log("ye hai tokenDetails", tokenDetails);
   };
-  console.log("ye bhi data hi hai", data);
-  console.log(getAnsArr, "getAnsArr");
 
-  //0x5D0CbFEBc66D6D0282c1DD9146Ef79f3C4EA5629
-  console.log(tokenObject.name, "  tokenObject.name last");
-  console.log(
-    tokenName,
-    tokenSymbol,
-    totalSupply,
-    mintAddress,
-    ownerAddress,
-    "oooo"
-  );
+
+
   return (
     <div>
       <Modal
