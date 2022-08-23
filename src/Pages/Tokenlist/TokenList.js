@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table } from "react-bootstrap";
+import { InputGroup, Table } from "react-bootstrap";
 import { ContractServices } from "../../services/ContractServices";
 import { MAIN_CONTRACT_LIST } from "../../assets/tokens/index";
 import { toast } from "../../Components/Toast/Toast";
@@ -11,31 +11,24 @@ import copyIcon from "../../assets/images/icon_copyAddress.png";
 import SkeletonCard from "./SkeletonCard";
 
 import "./Tokenlist.scss";
-import { LocalStore, selectText } from "../../services/utils";
+import { LocalStore, selectText, sortArr, toB64, truncAddr } from "../../services/utils";
 import { LS_KEYS, PAGE_SIZE } from "../../services/constants";
 
 export const TokenList = ({ data }) => {
-  console.log("", data);
-  const [bbb, setBBewq] = useState(data);
-  const [listdata, setListdata] = useState([]);
-  const [isloading, setLoading] = useState(true);
-  //   const [pageData,setPageData] = useState({
-  //     perPage: 10,
-  //     page: 1,
-  //     pages: 1
-  // })
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(PAGE_SIZE);
-
-  // const handlePageClick = (event) => {
-  //   console.log(event);
-  //   let page1= event.selected;
-  //   console.log("kkkkk",page1);
-  //   setPageData({...pageData, page:page1})
-
-  // }
-
+    
+    const [tokensPerPage] = useState(PAGE_SIZE);
+    const [isLoading, setLoading] = useState(!0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalTokens, setTotalTokens] = useState(0);
+    const [currentTokenList, setCurrentTokenList] = useState([]);
+    
+    const endInterval = num => ((num ? num : currentPage) * PAGE_SIZE) - 1;
+    const startInterval = num => ((num ? num : currentPage) - 1) * PAGE_SIZE;
+  
+  const [interval, setInterval] = useState({
+    start: startInterval(),
+    end: endInterval(),
+  })
 
   const getTokenInfo = async addr => {
     let contract = await ContractServices.callContract(
@@ -56,70 +49,62 @@ export const TokenList = ({ data }) => {
   const getTokenListInfos = async (start, end) => {
     const tokenInfoList = [];
     const addresses = JSON.parse(LocalStore.get(LS_KEYS.TOKEN_ADDR_LIST));
-    async addr => await getTokenInfo(addr);
     for(let i=start; i <= end && i < addresses.length; ++i ) tokenInfoList.push(await getTokenInfo(addresses[i]));
     return tokenInfoList;
   }
 
-  const getAddrList = _ => [
-    (currentPage - 1) * PAGE_SIZE, 
-    currentPage * PAGE_SIZE - 1
+  const getInterval = num => [
+    startInterval(num), 
+    endInterval(num)
   ];
 
-  const tryGetTokenListInfosFromChache = (start, end) => {
-
+  const tryGetTokenListInfosFromCache = (start, end) => {
     const data = JSON.parse(LocalStore.get(LS_KEYS.TOKEN_INFO_LIST) || '[]');
     if(!data.length) return data;
     return data.slice(start, end+1);
   }
 
   // function to be called from UI
-  const getDataForCurrentPage = async _ => {
-    const idxInterval = getAddrList();
-    let list  = tryGetTokenListInfosFromChache(...idxInterval);
-    if(!list.length) list = await getTokenListInfos(...idxInterval);
-    else return list;
-    const oldList = JSON.parse(LocalStore.get(LS_KEYS.TOKEN_INFO_LIST) || '[]');
-    LocalStore.add(LS_KEYS.TOKEN_INFO_LIST, JSON.stringify([...oldList, ...list]));
-    return list;
+  const getDataForPageNumber = async num => {
+    const idxInterval = getInterval(num);
+    console.log('interval:', idxInterval);
+    setInterval(idxInterval);
+    return tryGetTokenListInfosFromCache(...idxInterval);
   }
 
-  const tokenlistdata = async () => {
+  const fetchTokenListData = async () => {
+    setLoading(!0);
     let contract = await ContractServices.callContract(
       MAIN_CONTRACT_LIST.tokenFactory.address,
       MAIN_CONTRACT_LIST.tokenFactory.abi
     );
-    let tokenAddresess = await contract.methods.getCitizenAddress().call();
-    LocalStore.add(LS_KEYS.TOKEN_ADDR_LIST, JSON.stringify(tokenAddresess));
-
-    console.log("tokenAddresess.tokenlist", tokenAddresess);
-
-    const list = await getDataForCurrentPage();
-  let arrayoflist = list.reverse()
-
-    setListdata(arrayoflist);
-    setLoading(false);
+    const tokenAddrList = [...(await contract.methods.getCitizenAddress().call())];
+    console.log("tokenAddrList", tokenAddrList);
+    const reversed = sortArr(tokenAddrList);
+    console.log("tokenAddrList (reversed)", tokenAddrList);
+    LocalStore.add(LS_KEYS.TOKEN_ADDR_LIST, JSON.stringify(tokenAddrList));
+    const infoList = await Promise.all(reversed.map(async addr => await getTokenInfo(addr)));
+    LocalStore.add(LS_KEYS.TOKEN_INFO_LIST, JSON.stringify(infoList));
+    setTotalTokens(tokenAddrList.length);
+    setCurrentTokenList(await getDataForPageNumber(1));
+    setLoading(!1);
   };
-  useEffect(() => {
-    tokenlistdata();
-  }, []);
-  // console.log("llllllllllllllllllkkkkkkkkkk", listdata);
-  let arrayoflist = listdata.reverse()
-  // console.log("vvvvvvvvvvvv",arrayoflist);
-  // Get current posts
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = arrayoflist.slice(indexOfFirstPost, indexOfLastPost);
   
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const trunc = (a) => `${a.slice(0, 5)}...${a.slice(39, 42)}`;
+  useEffect(() => {
+    if(totalTokens === 0) fetchTokenListData();
+  }, []);
+  
+  const handleCurrentPageChange = async num => {
+    console.log('current page change event: ' + num);
+    setCurrentPage(num);
+    setCurrentTokenList(await getDataForPageNumber(num));
+  }
 
   return (
     <div className="table_responsive">
-      {isloading && <SkeletonCard />}
-      {!isloading ? (
-        <Table striped bordered hover>
+      {isLoading && <SkeletonCard />}
+      {!isLoading ? (
+        <Table striped bordered hover className="table--token-list">
           <thead>
             <tr>
               <th>Token Name</th>
@@ -128,21 +113,18 @@ export const TokenList = ({ data }) => {
               <th>Total Supply</th>
             </tr>
           </thead>
-
-          {currentPosts?.map((item) => (
-            <tbody>
-              <tr key={btoa(item?.addr)}>
-                <td>{item?.name}</td>
-                <td>{item?.sym}</td>
+          <tbody>
+          {currentTokenList.map(token => (
+              <tr key={toB64(token.addr)}>
+                <td>{token.name}</td>
+                <td>{token.sym}</td>
                 <td>
                   <p>
-                    <span id={btoa(item?.item)}>{trunc(item?.addr)}</span>
+                    <span id={toB64(token.addr)}>{truncAddr(token.addr)}</span>
                     <CopyToClipboard
-                      text={item?.addr}
-                      onCopy={() => {
-                        selectText(
-                          document.querySelector(`#${btoa(item?.addr)}`)
-                        );
+                      text={token.addr}
+                      onCopy={_ => {
+                        selectText(document.querySelector(`#${toB64(token.addr)}`));
                         toast.success("Copied!");
                       }}
                     >
@@ -154,33 +136,18 @@ export const TokenList = ({ data }) => {
                     </CopyToClipboard>
                   </p>
                 </td>
-                <td>{item?.supply}</td>
+                <td>{token.supply}</td>
               </tr>
-            </tbody>
           ))}
+          </tbody>
         </Table>
       ) : (
         ""
       )}
-      {/* <Pagination>
-        <Pagination.Prev />
-        <Pagination.Item>{1}</Pagination.Item>
-        <Pagination.Item>{2}</Pagination.Item>
-        <Pagination.Item>{3}</Pagination.Item>
-        <Pagination.Next />
-      </Pagination> */}
-      {/* <ReactPaginate
-                          previousLabel={'<<'}
-                          nextLabel={'>>'}
-                          pageCount={pageData?.pages}
-                          onPageChange={handlePageClick}
-                          containerClassName={'pagination'}
-                          activeClassName={'active'}
-                      /> */}
       <Pagination
-        postsPerPage={postsPerPage}
-        totalPosts={listdata.length}
-        paginate={paginate}
+        totalTokens={totalTokens}
+        tokensPerPage={tokensPerPage}
+        onPageChange={handleCurrentPageChange}
       />
     </div>
   );

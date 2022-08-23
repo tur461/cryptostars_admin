@@ -11,6 +11,7 @@ import {
   NETWORK_RPC_URL,
 } from "../constant";
 import WalletConnectProvider from "@walletconnect/web3-provider";
+import { toHex } from "./utils";
 
 let web3Object;
 let contractOjbect;
@@ -66,42 +67,26 @@ const isMetamaskInstalled = async (type) => {
 };
 
 const isBinanceChainInstalled = async () => {
-  //Have to check the ethereum binding on the window object to see if it's installed
-  const { BinanceChain } = window;
-  if (BinanceChain) {
-    walletTypeObject = "BinanceChain";
-    try {
-      const accounts = await BinanceChain.request({
-        method: "eth_requestAccounts",
-      });
-      return accounts[0];
-    } catch (err) {
-      toast.error(err.message);
-      return false;
-    }
-  } else {
-    toast.error("Install BinanceChain extension first!");
-    return false;
-  }
+  
 };
 
 //Network switch protection
 const walletWindowListener = async () => {
-  const { BinanceChain, ethereum } = window;
+  const { ethereum } = window;
   console.log(
     "ethereum.chainId ",
     ethereum.chainId,
     "NETWORK_CHAIN_ID",
-    NETWORK_CHAIN_ID
+    toHex(NETWORK_CHAIN_ID)
   );
   if (walletTypeObject === "Metamask") {
     const result = Boolean(ethereum && ethereum.isMetaMask);
     if (result) {
-      if (ethereum.chainId !== NETWORK_CHAIN_ID) {
+      if (ethereum.chainId !== toHex(NETWORK_CHAIN_ID)) {
         try {
           const chain = await ethereum.request({
             method: "wallet_switchEthereumChain",
-            params: [{ chainId: NETWORK_CHAIN_ID }],
+            params: [{ chainId: toHex(NETWORK_CHAIN_ID) }],
           });
         } catch (error) {
           console.log("metamask error", error);
@@ -111,7 +96,7 @@ const walletWindowListener = async () => {
                 method: "wallet_addEthereumChain",
                 params: [
                   {
-                    chainId: NETWORK_CHAIN_ID,
+                    chainId: toHex(NETWORK_CHAIN_ID),
                     chainName: NETWORK_CHAIN_NAME,
                     nativeCurrency: {
                       name: NETWORK_NATIVE_CURRENCY_NAME,
@@ -130,12 +115,12 @@ const walletWindowListener = async () => {
       }
 
       ethereum.on("chainChanged", async (chainId) => {
-        if (chainId !== NETWORK_CHAIN_ID) {
+        if (chainId !== toHex(NETWORK_CHAIN_ID)) {
           // toast.error('Select Binance Smart Chain Mainnet Network in wallet!')
           try {
             const chain = await ethereum.request({
               method: "wallet_switchEthereumChain",
-              params: [{ chainId: NETWORK_CHAIN_ID }],
+              params: [{ chainId: toHex(NETWORK_CHAIN_ID) }],
             });
           } catch (error) {
             console.log("metamask error", error);
@@ -164,23 +149,7 @@ const walletWindowListener = async () => {
       });
     }
   }
-  if (walletTypeObject === "BinanceChain") {
-    if (BinanceChain) {
-      BinanceChain.on("chainChanged", async (chainId) => {
-        if (chainId !== NETWORK_CHAIN_ID) {
-          // toast.error('Select Binance Smart Chain Mainnet Network in wallet!')
-          try {
-            const chain = await BinanceChain.request({
-              method: "wallet_switchEthereumChain",
-              params: [{ chainId: NETWORK_CHAIN_ID }],
-            });
-          } catch (error) {
-            console.log("binance error", error);
-          }
-        }
-      });
-    }
-  }
+  
 };
 
 const callWeb3 = async () => {
@@ -202,12 +171,7 @@ const callWeb3 = async () => {
       toast.error("You have to install Wallet!");
     }
   } else {
-    if (BinanceChain) {
-      web3Object = new Web3(BinanceChain);
-      return web3Object;
-    } else {
-      toast.error("You have to install Wallet!");
-    }
+    toast.error("You have to install Wallet!");
   }
 };
 

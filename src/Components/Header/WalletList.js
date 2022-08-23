@@ -15,14 +15,7 @@ const WalletList = ({ isWalletShow }) => {
 
     const loginCall = async (walletType, type) => {
         try {
-            if (walletType === 'BinanceChain') {
-                const account = await ContractServices.isBinanceChainInstalled();
-                if (account) {
-                    dispatch(login({ account, walletType }));
-                    isWalletShow(false);
-                    window.location.reload();
-                }
-            } else if (walletType === 'Walletconnect') {
+            if (walletType === 'Walletconnect') {
                 try {
                     const provider = new WalletConnectProvider({
                         //infuraId: "8570afa4d18b4c5d9cb3a629b08de069",

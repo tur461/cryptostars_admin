@@ -26,6 +26,7 @@ import { BigNumber } from "bignumber.js";
 // import { ContractServices } from "../../../services/ContractServices";
 import { NETWORK_CHAIN_ID } from "../../../constant";
 import { isCompositeComponent } from "react-dom/test-utils";
+import { toHex } from "../../../services/utils";
 const AddLiquidity = (props) => {
   const dispatch = useDispatch();
 
@@ -151,7 +152,7 @@ const AddLiquidity = (props) => {
     if (!isUserConnected) {
       return toast.error("Connect wallet first!");
     }
-    if (ethereum.chainId !== NETWORK_CHAIN_ID) {
+    if (ethereum.chainId !== toHex(NETWORK_CHAIN_ID)) {
       return ContractServices.walletWindowListener();
     }
 

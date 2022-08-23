@@ -6,7 +6,7 @@
     height: 350px;
     white-space: nowrap;
   }
-  .table {
+  .table.table--token-list {
     margin: 0 auto;
     border-color: #fff;
     border: 1px solid $secondaryColor;
@@ -26,6 +26,8 @@
       }
     }
     tbody {
+      height: 400px;
+      
       tr {
         td {
           padding: 18px;

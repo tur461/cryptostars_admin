@@ -1,20 +1,26 @@
 import React from 'react';
+import { eHandle, range } from '../../services/utils';
 
-const Pagination = ({ postsPerPage, totalPosts, paginate }) => {
+const Pagination = ({ tokensPerPage, totalTokens, onPageChange}) => {
   const pageNumbers = [];
-  console.log(postsPerPage,totalPosts,paginate);
+  totalTokens = totalTokens > 130 ? totalTokens - 130 : totalTokens;
+  console.log('[Pagination]:', tokensPerPage, totalTokens);
 
-  for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) {
+  for (let i = 1; i <= Math.ceil(totalTokens / tokensPerPage); i++) {
     pageNumbers.push(i);
   }
 
   return (
     <nav>
       <ul className='pagination'>
-        {pageNumbers.map(number => (
-          <li key={number} className='page-item'>
-            <a onClick={() => paginate(number)}  className='page-link'>
-              {number}
+        {range(totalTokens).map(num => (
+          <li key={num} className='page-item'>
+            <a
+              href='default(void)'
+              className='page-link'
+              onClick={e => eHandle(e) && onPageChange(num)} 
+            > 
+              {num}
             </a>
           </li>
         ))}
