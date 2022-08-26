@@ -259,7 +259,7 @@ const getTokenBalance = async (tokenAddress, address) => {
     result = (Number(result) / 10 ** decimals).toFixed(5);
     return Number(result);
   } catch (error) {
-    console.log("Error:", error);
+    console.log("Error:>>>>", error);
     return error;
   }
 };

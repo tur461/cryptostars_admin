@@ -35,17 +35,13 @@ const ModalSelectToken = ({
     data.isDel = true;
     dispatch(tokenListAdd(data));
     setTokenAdd(false);
-    closeModal()
-    
+    closeModal();
   };
   const handleRemoveTokenList = async (data) => {
     dispatch(tokenListDel(data));
     searchByName("");
-    window.location.reload();
   };
-
   console.log("TOKEN_LISTTOKEN_LISTTOKEN_LISTTOKEN_LIST",TOKEN_LIST);
-
 
   // let list = JSON.parse(localStorage.getItem('response'));
 
@@ -100,8 +96,7 @@ const ModalSelectToken = ({
         </div>
         <div className="col tokenList__column">
           <ul className="tokenList">
-            {tokenList &&
-              tokenList.map((t, index) => (
+            {tokenList.map((t, index) => (
                 <li key={index} id={t.symbol}>
                   {symbol === t.symbol ? (
                     <div className="dis">

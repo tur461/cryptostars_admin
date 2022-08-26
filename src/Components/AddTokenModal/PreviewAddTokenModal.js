@@ -13,6 +13,7 @@ import { Provider, useDispatch } from "react-redux";
 import { savetoken, startLoading, stopLoading } from "../../redux/actions";
 import { BSC_SCAN } from "../../constant";
 import checkicon from "../../assets/images/check_icon.svg";
+import { saveTokenInfoToDB } from "../../services/api";
 
 
 // import xtype from "xtypejs";
@@ -20,6 +21,7 @@ function PreviewAddTokenModal({
   handleClose,
   handleShow,
   show,
+  tokenIcon,
   setShow,
   tokenName,
   tokenSymbol,
@@ -27,159 +29,83 @@ function PreviewAddTokenModal({
   mintAddress,
   ownerAddress,
 }) {
-  //   const [show, setShow] = useState(false);
-  //   const handleClose = () => setShow(false);
-  //   const handleShow = () => setShow(true);
-  // const [token, setToken] = useState({});
+  
   const [data, setData] = useState();
   const [finalhash,setFinalhash] = useState('')
   const dispatch = useDispatch();
   const [result, setResult] = useState("");
-  useEffect(async () => {
-    let contract = await ContractServices.callContract(
-      "0xAeD9eB10741eEe2340A308029D1A905F1F2a4625",
-      MAIN_CONTRACT_LIST.clonedToken.abi
-    );
-    //0xfdce5F5FbBC561719fd459ebb665705A9Ed6B2ad
-    // console.log("hahahahahahahahaahahaha", contract);
-    tokenObject.name = await contract.methods.name().call();
-    tokenObject.symbol = await contract.methods.symbol().call();
-    console.log("adress1 gotcha", tokenObject.name);
-    console.log("symbol1 gotcha", tokenObject.symbol);
-    //-------------------------------------------
-    contract = await ContractServices.callContract(
-      "0x1b0fF6793078034D4005473bAC0CE8FfC83Dfc6E",
-      MAIN_CONTRACT_LIST.clonedToken.abi
-    );
-    tokenObject.name = await contract.methods.name().call();
-    tokenObject.symbol = await contract.methods.symbol().call();
-    console.log("adress2 gotcha", tokenObject.name);
-    console.log("symbol2 gotcha", tokenObject.symbol);
-  }, []);
+  const [contractAddress, setContractAddress] = useState('');
+  
   console.log("mmmmm", totalSupply);
   let web3 = new Web3(window.ethereum);
-  let tokenObject = { name: "", symbol: "", totalSupply: "" };
+
+  
 
   const letsCallTheContract = async () => {
     try {
-    dispatch(startLoading())
-    let contract = await ContractServices.callContract(
-      MAIN_CONTRACT_LIST.tokenFactory.address,
-      MAIN_CONTRACT_LIST.tokenFactory.abi
-    );
-    let userAddress = await ContractServices.isMetamaskInstalled();
+          dispatch(startLoading())
+          let contract = await ContractServices.callContract(
+          MAIN_CONTRACT_LIST.tokenFactory.address,
+          MAIN_CONTRACT_LIST.tokenFactory.abi
+          );
 
-    let callCreate = await contract.methods
-      .create(
-        tokenName,
-        tokenSymbol,
-        mintAddress,
-        web3.utils.toWei(totalSupply, "ether"),
-        ownerAddress
-      )
-      .send({ from: userAddress });
-      // const r = await Provider.waitForTransaction(callCreate.blockhash);
-      //       console.log('finalised..', r);
-    let cc = callCreate?.transactionHash
-    console.log("callCreate", cc);
+          let userAddress = await ContractServices.isMetamaskInstalled();
+  
+          let callCreate = await contract.methods
+          .create(
+          tokenName,
+          tokenSymbol,
+          mintAddress,
+          web3.utils.toWei(totalSupply, "ether"),
+          ownerAddress
+          )
+         .send({ from: userAddress });
 
-    setFinalhash(cc)
-    console.log("finalhash",finalhash);
-    let tokenAddresess = await contract.methods.getCitizenAddress().call();
-    console.log(contract.methods,"nnnnnnnnnnnnnnnnnn --------------------")
-    let tokenAddressArray = tokenAddresess;
-    console.log(userAddress, "userAddress");
-    console.log("llllllllllllkk", tokenAddressArray);
-    let result = await getAnsArr(tokenAddressArray);
-    setResult(result);
-    //    if(result){
-    // alert("hello");
-    //    }
-    console.log("arrry hai", tokenAddressArray);
+         console.log("CallCreate>>>>>>",callCreate)
+
+         const contract_address = await callCreate.events[0].address
+
+         setContractAddress(contract_address);
+
+         console.log("contract_address>>>>>>",contract_address)
+     
+         let cc = callCreate?.transactionHash
+         console.log("callCreate", cc);
+     
+         setFinalhash(cc)
+         console.log("finalhash",finalhash);
+         
+
+
+         if (cc !== "") {
+           const token_obj = {
+             icon: tokenIcon,
+             name: tokenName,
+             sym: tokenSymbol,
+             addr: contract_address,
+             dec: 18,
+             tokenSupply: totalSupply,
+           };
+           console.log("PPP", token_obj);
+           console.log("yyyyyyyyyyyyyyyyyy");
+
+           const ress = saveTokenInfoToDB(token_obj, (d) => {
+             console.log("HHHHHHHHHHHIIIIIIITTTTTTTT");
+             console.log("lllll", token_obj);
+             console.log("saved:", d);
+           });
+
+           console.log("ress", ress);
+         }
+         setResult(cc)
   } catch (error) {
     dispatch(stopLoading())
     return;
   }
-    //dispatch(savetoken(tokenAddressArray))
     dispatch(stopLoading())
   };
 
-  //getting the contract data below
-
-  const functionThatReturnsAPromise = async (item) => {
-    //a function that returns a promise
-
-    let contract = await ContractServices.callContract(
-      item,
-      MAIN_CONTRACT_LIST.clonedToken.abi
-    );
-    //0xfdce5F5FbBC561719fd459ebb665705A9Ed6B2ad
-
-    let symbol = await contract.methods.symbol().call();
-    let name = await contract.methods.name().call();
-    let totalSupply = await contract.methods.totalSupply().call();
-    return Promise.resolve({
-      symbol,
-      name,
-      totalSupply,
-      item,
-    });
-  };
-
-  const doSomethingAsync = async (item) => {
-    return await functionThatReturnsAPromise(item);
-  };
-
-  const getAnsArr = async (array) => {
-    let count;
-    let map = [];
-    console.log("arraghy", array);
-    let promises = array.map(async (item) => {
-      return await doSomethingAsync(item);
-    });
-    let data = await Promise.all(promises);
-    // console.log(data, "yw ahi final daata");
-    if (data) {
-      setData(data);
-    }
-    return Promise.all(promises);
-  };
-
-  const arrayItration = async (array) => {
-    let contract;
-    let tokenDetails = [];
-    let newArray = [...array];
-
-    alert("haha i got you");
-    let count = 0;
-
-    const promises = newArray.map(async (item, index) => {
-      contract = await ContractServices.callContract(
-        item,
-        MAIN_CONTRACT_LIST.clonedToken.abi
-      );
-      //0xfdce5F5FbBC561719fd459ebb665705A9Ed6B2ad
-      console.log("hahahahahahahahaahahaha", contract);
-      let name1 = await contract.methods.name().call();
-      let totalSupply1 = await contract.methods.totalSupply().call();
-      return {
-        symbol: await contract.methods.symbol().call(),
-        name: name1,
-        totalSupply: totalSupply1,
-      };
-    });
-    console.log(await Promise.all(promises), "promises");
-    console.log("aa gye promises", promises);
-    count += 1;
-    return await Promise.all(promises.PromiseResult);
-
-    // setToken(tokenObject);
-    // console.log(token, "aa gya token");
-    // let tokenArray = [];
-    // tokenArray.push(token);
-    // tokenDetails.push(...tokenArray, token);
-
-  };
+  
 
 
 

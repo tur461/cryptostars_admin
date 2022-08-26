@@ -17,7 +17,7 @@ function AddTokenModal() {
   const [mintAddress, setMintAddress] = useState("");
   const [ownerAddress, setOwnerAddress] = useState("");
   // const [errorCount, setErrorCount] = useState("0");
-
+  const [tokenIcon, setTokenIcon] = useState(null);
   const [nameError, setnameError] = useState("");
   const [symbolError, setSymbolError] = useState("");
   const [supplyError, setSupplyError] = useState("");
@@ -26,12 +26,18 @@ function AddTokenModal() {
   const [error, setError] = useState(false);
   const [symbolsArr] = useState(["e", "E", "+", "-"]);
 
+  const handleImagedata = e => {
+    const imgDat = new FormData();
+    imgDat.append('file', e.target.files[0])
+    setTokenIcon(imgDat);
+  }
+
   const handleChange = (e, fieldName) => {
     switch ((e, fieldName)) {
       case "tokenName":
         const { value } = e.target;
         console.log("Input value: ", value);
-        const re = /^[A-Za-z]+$/;
+        const re = /^[a-z 0-9]+( [a-z 0-9]+)*$/gi;
 
         if (value === "" || re.test(value)) {
           setTokenName(value);
@@ -164,6 +170,20 @@ function AddTokenModal() {
               <ul>
                 <li>
                   <div className="token_info d-flex mb-3">
+                    <FormLabel className="text_head">Token Icon</FormLabel>
+                    <div className="input_text">
+                      <input
+                        label="Token Icon"
+                        type="file"
+                        accept=".png,.jpg"
+                        onChange={handleImagedata}
+                      />
+                      <span>{nameError}</span>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div className="token_info d-flex mb-3">
                     <FormLabel className="text_head">Token Name</FormLabel>
                     <div className="input_text">
                       <input
@@ -255,6 +275,7 @@ function AddTokenModal() {
                 handleClose={handleClose}
                 show={show}
                 setShow={setShow}
+                tokenIcon={tokenIcon}
                 tokenName={tokenName}
                 tokenSymbol={tokenSymbol}
                 totalSupply={totalSupply}

@@ -32,14 +32,13 @@ const Swap = props => {
     const tokenList = useSelector(state => state.persist.tokenList);
     const deadline = useSelector(state => state.persist.deadline);
     const slippagePercentage = useSelector(state => state.persist.slippagePercentage);
-
     const [modalCurrency, setModalCurrency] = useState(false);
-    const [tokenOne, setTokenOne] = useState(TOKEN_LIST[0]);
+    const [tokenOne, setTokenOne] = useState({});
     const [tokenTwo, setTokenTwo] = useState({});
     const [tokenOneValue, setTokenOneValue] = useState();
     const [tokenTwoValue, setTokenTwoValue] = useState();
     const [sharePoolValue, setSharePoolValue] = useState(100);
-    const [tokenOneCurrency, setCurrencyNameForTokenOne] = useState(TOKEN_LIST[0].symbol);
+    const [tokenOneCurrency, setCurrencyNameForTokenOne] = useState('Select a token');
     const [tokenTwoCurrency, setCurrencyNameForTokenTwo] = useState('Select a token');
     const [tokenOneBalance, setTokenOneBalance] = useState(0);
     const [tokenTwoBalance, setTokenTwoBalance] = useState(0);
@@ -164,7 +163,6 @@ const Swap = props => {
         setModalCurrency(!modalCurrency);
         setSearch('');
         setFilteredTokenList(tokenList);
-
         if (a1 && a2) {
             let currentPairAddress;
             if (a1 === 'BNB') {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { withRouter } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -35,6 +35,7 @@ const AddLiquidity = (props) => {
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
   const walletType = useSelector((state) => state.persist.walletType);
   const tokenList = useSelector((state) => state.persist.tokenList);
+  console.log("PERSIST>TOKENLIST>ADDLIQUIDITY",tokenList)
   const result = useSelector((state) =>
     console.log(state.persist, "cheingggg")
   );
@@ -44,13 +45,14 @@ const AddLiquidity = (props) => {
   );
 
   const [modalCurrency, setModalCurrency] = useState(false);
-  const [tokenOne, setTokenOne] = useState(TOKEN_LIST[0]);
+  const [tokenOne, setTokenOne] = useState({});
   const [tokenTwo, setTokenTwo] = useState({});
   const [tokenOneValue, setTokenOneValue] = useState();
   const [tokenTwoValue, setTokenTwoValue] = useState();
   const [sharePoolValue, setSharePoolValue] = useState(100);
   const [tokenOneCurrency, setCurrencyNameForTokenOne] = useState(
-    TOKEN_LIST[0].symbol
+    // TOKEN_LIST[0].symbol
+    "Select a token"
   );
   const [tokenTwoCurrency, setCurrencyNameForTokenTwo] =
     useState("Select a token");
@@ -81,15 +83,26 @@ const AddLiquidity = (props) => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [txHash, setTxHash] = useState("");
 
-  console.log("jjjjj",tokenList);
   useEffect(() => {
     setFilteredTokenList(
       tokenList?.filter((token) =>
         token?.name?.toLowerCase().includes(search.toLowerCase())
       )
     );
-    init();
-  },[search, tokenList,]);
+    console.log('searching for: ' + search);
+  },[search]);
+
+  useEffect(_ => {
+    setFilteredTokenList(tokenList);
+    console.log('tokenlist changed.', tokenList);
+  }, [tokenList])
+
+  const lock = useRef(!0);
+  useEffect(_ => {
+    (
+      async _ => lock.current && await init() && (lock.current = !1)
+    )();
+  }, []);
   useEffect(() => {
     ContractServices.walletWindowListener();
     console.log("hey");
@@ -139,6 +152,7 @@ const AddLiquidity = (props) => {
         }
       }
     }
+    return !0;
   };
 
   const closeTransactionModal = () => {
@@ -484,9 +498,8 @@ const AddLiquidity = (props) => {
   };
   const handleSearchToken = async (data) => {
     try {
-      const res = await dispatch(searchTokenByNameOrAddress(data));
-       console.log("RESPONSE:", res);
-      setFilteredTokenList(res);
+      dispatch(searchTokenByNameOrAddress(data));
+      // setFilteredTokenList(res);
     } catch (error) {
       toast.error("Something went wrong!");
     }
@@ -804,7 +817,7 @@ const AddLiquidity = (props) => {
           <InputSelectCurrency
             label="From"
             onClick={() => onHandleOpenModal("TK1")}
-            currencyType={tokenOne?.icon}
+            currencyType={tokenOne?.icon ? tokenOne.icon : defaultImg}
             currnecyName={tokenOneCurrency}
             defaultValue={tokenOneValue}
             balance={tokenOneBalance}

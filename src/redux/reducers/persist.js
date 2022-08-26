@@ -1,6 +1,6 @@
 import { TOKEN_LIST } from "../../assets/tokens";
 import { actionTypes } from "../actions/PersistActions";
-console.log("tokeeeeee", TOKEN_LIST);
+
 const initialState = {
   walletType: "Metamask",
   isUserConnected: "",
@@ -17,7 +17,7 @@ const initialState = {
 };
 
 const persist = (state = initialState, action) => {
-  // console.log(state.tokenList, "newadedd");
+  console.log(state.tokenList, "newadedd");
   switch (action.type) {
     case actionTypes.USER_CONNECTED:
       return {
@@ -26,33 +26,22 @@ const persist = (state = initialState, action) => {
         walletType: action.payload.walletType,
       };
     case actionTypes.TOKEN_LIST_ADD:
-      console.log("action.payload",initialState.tokenList);
-      let i = -1;
-      const items = initialState.tokenList.filter((t, ii) => {
-        if(t.address === action.payload.address) {
-          i = ii;
-          return !0;
-        }
-        return !1;
-      });
-      if(!items.length) {
-        // initialState.tokenList.splice(i, 1);
-        initialState.tokenList.push(action.payload);
-      }
-
-      console.log("action.payload",initialState.tokenList);
-
+      console.log(action.payload,'actionpayload')
+      const items = initialState.tokenList.filter(t => t.address === action.payload.address);
+      console.log(items.length,'item.length')
+      if(!items.length)
+        // initialState.tokenList.push(action.payload);
+        initialState.tokenList = state.tokenList;
       return {
         ...state,
         tokenList: initialState.tokenList,
       };
     case actionTypes.TOKEN_LIST_DEL:
-      const idx = initialState.tokenList.findIndex(
-        (a) =>
-          a.address.toLowerCase() === action.payload.address.toLowerCase()
+      const idx = initialState.tokenList.findIndex(a => 
+        a.address.toLowerCase() === action.payload.address.toLowerCase()
       );
       console.log('removing item at:', idx, {...initialState.tokenList});  
-      idx>-1 && initialState.tokenList.splice(idx, 1);
+      idx > -1 && initialState.tokenList.splice(idx, 1);
       return {
         ...state,
         tokenList: initialState.tokenList,

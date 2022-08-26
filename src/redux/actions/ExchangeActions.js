@@ -12,39 +12,31 @@ export const searchTokenByNameOrAddress =
       const {
         persist: { tokenList },
       } = getState();
-console.log("bbbbbbbbbbbbbbbbbbbbb",tokenList);
+      address = address.trim();
       if (address.length === 42) {
-          const filteredTokenList = tokenList.filter((token) =>
-          token.address.toLowerCase().includes(address.toLowerCase())
+        const filteredTokenList = tokenList.filter((token) =>
+        token.address.toLowerCase().includes(address.toLowerCase())
         );
-
-      if (filteredTokenList.length > 0) {
-
-          return filteredTokenList;
-        }
-
-        const tokenDecimal = await ContractServices.getDecimals(address);
-        const tokenName = await ContractServices.getTokenName(address);
-        const tokenSymbol = await ContractServices.getTokenSymbol(address);
-        const tokenBalance = await ContractServices.getTokenBalance(address);
+        if (filteredTokenList.length) return filteredTokenList;
         
-        const obj = {
-          icon: default_icon,
-          name: tokenName,
-          address,
-          isAdd: true,
-          isDel: false,
-          decimals: tokenDecimal,
-          symbol: tokenSymbol,
-        };
-        
-     tokenList.push(obj);
-       
-     console.log("aaaaaaaaaaaaaaaaa",tokenList);
-
-        return tokenList;
-      
-    }
+        console.log('passed ADDRESS:', address)
+          const tokenDecimal = await ContractServices.getDecimals(address);
+          const tokenName = await ContractServices.getTokenName(address);
+          const tokenSymbol = await ContractServices.getTokenSymbol(address);
+          const tokenBalance = await ContractServices.getTokenBalance(address);
+          
+          const obj = {
+            icon: default_icon,
+            name: tokenName,
+            address,
+            isAdd: true,
+            isDel: false,
+            decimals: tokenDecimal,
+            symbol: tokenSymbol,
+          };
+          tokenList.push(obj);
+          return tokenList;
+      }
       return tokenList.filter((token) =>
         token.name.toLowerCase().includes(address.toLowerCase())
       );
@@ -59,12 +51,9 @@ export const delTokenFromList = (data) => async (dispatch, getState) => {
     const {
       persist: { tokenList },
     } = getState();
-    tokenList.splice(
-      tokenList.findIndex(
-        (a) => a.address.toLowerCase() === data.address.toLowerCase()
-      ),
-      1
-    );
+    const idx = tokenList.findIndex(a => a.address.toLowerCase() === data.address.toLowerCase())
+    if(idx < 0) return tokenList;
+    tokenList.splice(idx, 1);
     return tokenList;
   } catch (error) {
     console.log("Error: ", error);
