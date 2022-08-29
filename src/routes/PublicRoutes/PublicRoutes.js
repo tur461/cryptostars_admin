@@ -14,10 +14,14 @@ import Pools from "../../Pages/Public/Pools/Pools";
 import AddTokenModal from "../../Components/AddTokenModal/AddTokenModal";
 import Referrals from "../../Pages/Public/Referrals/Referrals";
 import ReactGA from "react-ga";
+import './Publicrouter.scss'
+import { useSelector } from 'react-redux';
 import { TokenList } from "../../Pages/Tokenlist/TokenList";
+import CryptoStarHome from "../../Pages/Public/Home/CryptoStarHome";
 
 const PublicRoutes = () => {
   const location = useLocation();
+  const isUserConnected = useSelector((state) => state.persist.isUserConnected);
 
   useEffect(() => {
     ReactGA.initialize("UA-203869190-3");
@@ -52,7 +56,9 @@ const PublicRoutes = () => {
 
   return (
     <>
-      <Header
+      {isUserConnected &&
+      <>
+       <Header
         className={`fixed ${small ? "isFixed" : ""}`}
         small_nav={() => handleNavCollapse()}
         mobileIcon={navCollapse}
@@ -78,9 +84,10 @@ const PublicRoutes = () => {
           openCloseTradeDropdown(!open);
         }}
       />
+      </>}
       <Switch>
-        <Route path={HOME_ROUTE} component={Liquidity} exact={true} />
-        <Route path={`${HOME_ROUTE}r/:ref`} component={Home} exact={true} />
+        <Route path={{HOME_ROUTE}} component={CryptoStarHome} exact={true} />
+        {/* <Route path={`${HOME_ROUTE}` component={Liquidity} exact={true} /> */}
         <Route
           path={`${HOME_ROUTE}addmodal`}
           component={AddTokenModal}

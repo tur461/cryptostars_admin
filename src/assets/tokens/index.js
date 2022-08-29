@@ -102,12 +102,12 @@ export const MAIN_CONTRACT_LIST = {
     blockNumber: 0,
   },
   router: {
-    address: "0x1f6FC677FD7ef2B23bbD5D0CC5280B1268323122",
+    address: "0x416E6daB641028ABa1B2730C2620ef933e586c2d",
     blockNumber: 3089767,
     abi: routerABI,
   },
   factory: {
-    address: "0x0EfAD05151EAd32ECc89BB049124c9efe18e55A5",
+    address: "0x729a51708A550a22e89Ad64AfD26B5B1104504AC",
     blockNumber: 3089684,
     abi: factoryABI,
   },
@@ -132,7 +132,7 @@ export const MAIN_CONTRACT_LIST = {
     abi: anchorABI,
   },
   tokenFactory: {
-    address: "0xB84F0D8D1F9828999Ba4b3DD542e6B7dD027Cf79",
+    address: "0xFC4Bf4a12027FC05cF3C5eA5929087B70AA1ac92",
     blockNumber: 68765876,
     abi: tokenFactoryABI,
   },

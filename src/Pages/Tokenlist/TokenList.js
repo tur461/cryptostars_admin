@@ -101,7 +101,7 @@ export const TokenList = ({ data }) => {
       MAIN_CONTRACT_LIST.tokenFactory.abi
     );
     const tokenAddrList = [
-      ...(await contract.methods.getCitizenAddress().call()),
+      ...(await contract.methods.getAllTokenAddress().call()),
     ];
     console.log("tokenAddrList", tokenAddrList);
     const reversed = sortArr(tokenAddrList);

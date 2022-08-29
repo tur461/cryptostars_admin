@@ -37,6 +37,18 @@ const Header = (props) => {
       setProvider();
     }
   }, []);
+  
+  useEffect(() => {
+    window.ethereum.on('accountsChanged', function (accounts) {
+      dispatch(logout());
+      // Time to reload your interface with accounts[0]!
+      localStorage.clear();
+    
+      window.location.reload()
+      
+    })
+  }, [isUserConnected])
+
   const setProvider = async () => {
     const provider = new WalletConnectProvider({
       //infuraId: "8570afa4d18b4c5d9cb3a629b08de069",
@@ -76,7 +88,7 @@ const Header = (props) => {
     if (address) {
       window.ethereum.on("accountsChanged", function (accounts) {
         const account = accounts[0];
-        dispatch(login({ account, walletType }));
+        // dispatch(login({ account, walletType }));
         window.location.reload();
       });
     }
