@@ -148,7 +148,7 @@ const ImportPool = (props) => {
 
   const handleSearchToken = async (data) => {
     try {
-      const res = await dispatch(searchTokenByNameOrAddress(data));
+      const res = await dispatch(searchTokenByNameOrAddress(data, isUserConnected));
       setFilteredTokenList(res);
     } catch (error) {
       toast.error("Something went wrong!");

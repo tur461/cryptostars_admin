@@ -82,27 +82,31 @@ const AddLiquidity = (props) => {
   const [showPoolShare, setShowPoolShare] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [txHash, setTxHash] = useState("");
-
+  
+  console.log("tokenlist1",tokenList)
   useEffect(() => {
     setFilteredTokenList(
       tokenList?.filter((token) =>
         token?.name?.toLowerCase().includes(search.toLowerCase())
       )
     );
+    init();
     console.log('searching for: ' + search);
-  },[search]);
+  },[search,tokenList]);
 
-  useEffect(_ => {
-    setFilteredTokenList(tokenList);
-    console.log('tokenlist changed.', tokenList);
-  }, [tokenList])
+  // useEffect(_ => {
+  //   console.log("tokenlist2",tokenList)
+  //   setFilteredTokenList(tokenList);
+  //   console.log('tokenlist changed.', tokenList);
+  // }, [tokenList])
 
-  const lock = useRef(!0);
-  useEffect(_ => {
-    (
-      async _ => lock.current && await init() && (lock.current = !1)
-    )();
-  }, []);
+  // const lock = useRef(!0);
+  // useEffect(_ => {
+  //   (
+  //     async _ => lock.current && await init() && (lock.current = !1)
+  //   )();
+  // }, []);
+
   useEffect(() => {
     ContractServices.walletWindowListener();
     console.log("hey");
@@ -312,7 +316,6 @@ const AddLiquidity = (props) => {
       const r = await getAllowance(amount, tokenType);
 
       if (r && tokenOne.address && tokenTwo.address && amount >= 0) {
-
         let tokenAddress = tokenOne.address;
         if (tokenOne.address === "BNB") {
           tokenAddress = WETH;
@@ -343,13 +346,12 @@ const AddLiquidity = (props) => {
                   (reserves[1] / 10 ** token1Decimal))
               ).toFixed(5);
             }
-            console.log("setTokenTwoValuesetTokenTwoValue",a);
- if(a==0)
- {
-  setTokenTwoValue('')
- }else{
-            setTokenTwoValue(a);
- }
+            console.log("setTokenTwoValuesetTokenTwoValue", a);
+            if (a == 0) {
+              setTokenTwoValue("");
+            } else {
+              setTokenTwoValue(a);
+            }
             if (!tokenTwoApproval) {
               const r = await getAllowance(a, "TK2");
               handleApprovalButton("TK2");
@@ -498,8 +500,10 @@ const AddLiquidity = (props) => {
   };
   const handleSearchToken = async (data) => {
     try {
-      dispatch(searchTokenByNameOrAddress(data));
-      // setFilteredTokenList(res);
+      const res = await dispatch(searchTokenByNameOrAddress(data, isUserConnected));
+      console.log("RES",res)
+      setFilteredTokenList(res);
+
     } catch (error) {
       toast.error("Something went wrong!");
     }
@@ -619,6 +623,8 @@ const AddLiquidity = (props) => {
   };
 
   const addLiquidity = async () => {
+    console.log("HIT")
+    // dispatch(startLoading())
     const acc = await ContractServices.getDefaultAccount();
     if (acc && acc.toLowerCase() !== isUserConnected.toLowerCase()) {
       return toast.error("Wallet address doesn`t match!");
@@ -970,6 +976,7 @@ const AddLiquidity = (props) => {
           </ul>
         </Card>
       )}
+      {console.log("Filtered",filteredTokenList)}
       {modalCurrency && (
         <ModalSelectToken
           tokenList={filteredTokenList}

@@ -13,7 +13,7 @@ import { Provider, useDispatch } from "react-redux";
 import { savetoken, startLoading, stopLoading } from "../../redux/actions";
 import { BSC_SCAN } from "../../constant";
 import checkicon from "../../assets/images/check_icon.svg";
-import { saveTokenInfoToDB } from "../../services/api";
+import { saveTokenIconToDB, saveTokenInfoToDB } from "../../services/api";
 
 
 // import xtype from "xtypejs";
@@ -79,20 +79,19 @@ function PreviewAddTokenModal({
 
          if (cc !== "") {
            const token_obj = {
-             icon: tokenIcon,
+             icon: `${tokenSymbol}_${Date.now()}.${tokenIcon.type.split('/')[1]}`,
              name: tokenName,
              sym: tokenSymbol,
              addr: contract_address,
              dec: 18,
-             tokenSupply: totalSupply,
+             supply: totalSupply,
            };
            console.log("PPP", token_obj);
            console.log("yyyyyyyyyyyyyyyyyy");
 
            const ress = saveTokenInfoToDB(token_obj, (d) => {
-             console.log("HHHHHHHHHHHIIIIIIITTTTTTTT");
-             console.log("lllll", token_obj);
-             console.log("saved:", d);
+             console.log("HIT to saveTokenInfoToDB")
+             saveTokenIconToDB(tokenIcon, _ => console.log('All data saved'));
            });
 
            console.log("ress", ress);
@@ -104,10 +103,6 @@ function PreviewAddTokenModal({
   }
     dispatch(stopLoading())
   };
-
-  
-
-
 
   return (
     <div>

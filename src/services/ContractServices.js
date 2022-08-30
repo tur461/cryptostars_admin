@@ -253,13 +253,21 @@ const allowanceToken = async (tokenAddress, mainContractAddress, address) => {
 
 const getTokenBalance = async (tokenAddress, address) => {
   try {
-    const contract = await callTokenContract(tokenAddress);
-    const decimals = await contract.methods.decimals().call();
-    let result = await contract.methods.balanceOf(address).call();
-    result = (Number(result) / 10 ** decimals).toFixed(5);
-    return Number(result);
+    return new Promise((r, j) => {
+      callTokenContract(tokenAddress)
+      .then(c => {
+        c.methods.decimals().call()
+        .then(dec=> {
+          c.methods.balanceOf(address).call()
+          .then(bal => r(Number((Number(bal) / 10 ** dec).toFixed(5))))
+          .catch(e => j(e));
+        })
+        .catch(e => j(e));
+      })
+      .catch(e => j(e));
+    })
   } catch (error) {
-    console.log("Error:>>>>", error);
+    console.log("Error:", error);
     return error;
   }
 };

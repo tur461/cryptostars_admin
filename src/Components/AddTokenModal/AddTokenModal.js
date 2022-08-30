@@ -27,9 +27,8 @@ function AddTokenModal() {
   const [symbolsArr] = useState(["e", "E", "+", "-"]);
 
   const handleImagedata = e => {
-    const imgDat = new FormData();
-    imgDat.append('file', e.target.files[0])
-    setTokenIcon(imgDat);
+    const file = e.target.files[0];
+    setTokenIcon(file);
   }
 
   const handleChange = (e, fieldName) => {
@@ -171,7 +170,7 @@ function AddTokenModal() {
                 <li>
                   <div className="token_info d-flex mb-3">
                     <FormLabel className="text_head">Token Icon</FormLabel>
-                    <div className="input_text">
+                    <div >
                       <input
                         label="Token Icon"
                         type="file"

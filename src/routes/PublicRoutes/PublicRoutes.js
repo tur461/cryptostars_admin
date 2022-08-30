@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Link, Route, Switch } from "react-router-dom";
 import { useLocation, withRouter } from "react-router";
 import Header from "../../Components/Header/Header";
 import Sidebar from "../../Components/Sidebar/Sidebar";
@@ -18,6 +18,7 @@ import './Publicrouter.scss'
 import { useSelector } from 'react-redux';
 import { TokenList } from "../../Pages/Tokenlist/TokenList";
 import CryptoStarHome from "../../Pages/Public/Home/CryptoStarHome";
+import ConnectWalletModal from "../../Components/Connect/ConnectWalletModal";
 
 const PublicRoutes = () => {
   const location = useLocation();
@@ -85,6 +86,7 @@ const PublicRoutes = () => {
         }}
       />
       </>}
+      {isUserConnected ?
       <Switch>
         <Route path={{HOME_ROUTE}} component={CryptoStarHome} exact={true} />
         {/* <Route path={`${HOME_ROUTE}` component={Liquidity} exact={true} /> */}
@@ -111,7 +113,11 @@ const PublicRoutes = () => {
         <Route path={`${HOME_ROUTE}oceans`} component={Oceans} exact={true} />
         <Route path={`${HOME_ROUTE}lottery`} component={Lottery} exact={true} />
         <Route path={`${HOME_ROUTE}pools`} component={Pools} exact={true} />
-      </Switch>
+      </Switch> 
+      : 
+      <>
+      <CryptoStarHome/> 
+      </>}
     </>
   );
 };

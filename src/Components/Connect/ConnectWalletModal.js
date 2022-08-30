@@ -80,18 +80,6 @@ const ConnectWalletModal = ({ setShowModal }) => {
                 const account = await ContractServices.isMetamaskInstalled(type);
 
                 console.log("account",account);
-                // const acc = await ContractServices.getDefaultAccount()
-                // console.log("kkkkkkkkkkkkkkk",acc);
-
-            //    provider.on('accountsChanged', async (accounts) => {
-            //         setTimeout(function () {
-            //             window.location.reload()
-            //         }, 500)
-            //         let account = accounts[0]
-            //         dispatch(login({ account, walletType }));
-            //         setShowModal(false);
-
-            //     });
                 {console.log("account",account,MAIN_CONTRACT_LIST.router.abi[17])}
                 const admin1 = await ContractServices.callContract(MAIN_CONTRACT_LIST.router.address, MAIN_CONTRACT_LIST.router.abi)
                 

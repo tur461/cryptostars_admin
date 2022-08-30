@@ -4,14 +4,18 @@ import { UserService } from "../../services/UserService";
 import { checkUserLpTokens, saveUserLpTokens } from "./PersistActions";
 import { WETH } from "../../assets/tokens";
 import { ExchangeService } from "../../services/ExchangeService";
+import { useSelector } from "react-redux";
 
 export const searchTokenByNameOrAddress =
-  (address) => async (dispatch, getState) => {
+  (address, priAccount) => async (dispatch, getState) => {
     
+    console.log('token addr: ' + address);
+    console.log('pri account addr: ' + priAccount);
     try {
       const {
         persist: { tokenList },
       } = getState();
+      console.log("tokenLIST>>",tokenList)
       address = address.trim();
       if (address.length === 42) {
         const filteredTokenList = tokenList.filter((token) =>
@@ -23,7 +27,7 @@ export const searchTokenByNameOrAddress =
           const tokenDecimal = await ContractServices.getDecimals(address);
           const tokenName = await ContractServices.getTokenName(address);
           const tokenSymbol = await ContractServices.getTokenSymbol(address);
-          const tokenBalance = await ContractServices.getTokenBalance(address);
+          const tokenBalance = await ContractServices.getTokenBalance(address, priAccount);
           
           const obj = {
             icon: default_icon,
@@ -36,6 +40,7 @@ export const searchTokenByNameOrAddress =
           };
           tokenList.push(obj);
           return tokenList;
+          // return [...tokenList, obj];
       }
       return tokenList.filter((token) =>
         token.name.toLowerCase().includes(address.toLowerCase())

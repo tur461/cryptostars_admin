@@ -6,7 +6,7 @@ import Card from "../Card/Card";
 import icon_information from "../../assets/images/icon_information.png";
 import closeBtn from "../../assets/images/ionic-md-close.svg";
 import icon_bnb from "../../assets/images/icon_bnb.svg";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   tokenListAdd,
   tokenListDel,
@@ -26,7 +26,7 @@ const ModalSelectToken = ({
   symbol
 }) => {
   const dispatch = useDispatch();
-  console.log("hahahahahaha", TOKEN_LIST);
+  console.log("hahahahahaha", tokenList);
   const [isAdded, setTokenAdd] = useState(true);
 
   const handleTokenList = (data) => {
@@ -40,18 +40,9 @@ const ModalSelectToken = ({
   const handleRemoveTokenList = async (data) => {
     dispatch(tokenListDel(data));
     searchByName("");
+    window.location.reload();
   };
-  console.log("TOKEN_LISTTOKEN_LISTTOKEN_LISTTOKEN_LIST",TOKEN_LIST);
-
-  // let list = JSON.parse(localStorage.getItem('response'));
-
   console.log("t222okenlist",tokenList);
-
-  // if(tokenList)
-  // {
-  //   TOKEN_LIST.push(tokenList)
-  // }
-  console.log("TOKEN_LISTTOKEN_LISTTOKEN_LISTTOKEN_LIST",TOKEN_LIST);
 
   return (
     <>
@@ -96,7 +87,9 @@ const ModalSelectToken = ({
         </div>
         <div className="col tokenList__column">
           <ul className="tokenList">
-            {tokenList.map((t, index) => (
+            {console.log("tokenlist??",tokenList)}
+            {tokenList &&
+              tokenList.map((t, index) => (
                 <li key={index} id={t.symbol}>
                   {symbol === t.symbol ? (
                     <div className="dis">
@@ -117,7 +110,12 @@ const ModalSelectToken = ({
                       {t.isAdd && isAdded && (
                         <span
                           className="tokenName_textStyle add_token"
-                          onClick={() => handleTokenList(t)}
+                          onClick={(e) => { 
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleTokenList(t)
+                          }
+                          }
                         >
                           Add
                         </span>

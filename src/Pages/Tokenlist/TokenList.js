@@ -19,7 +19,7 @@ import {
   toB64,
   truncAddr,
 } from "../../services/utils";
-import { LS_KEYS, PAGE_SIZE } from "../../services/constants";
+import { BACK_END_URL, LS_KEYS, PAGE_SIZE } from "../../services/constants";
 import { retreiveTokenList } from "../../services/api";
 
 export const TokenList = ({ data }) => {
@@ -132,7 +132,7 @@ export const TokenList = ({ data }) => {
         {newTokenListBackend?.map((token) => (
           <div className="token_card">
             <div className="token_img">
-              <img src={Logo} alt="icon" height='165' width='165'/>
+              <img src={`${BACK_END_URL}/uploads/${token.icon}`} alt="icon" height='165' width='165'/>
             </div>
 
             <div className="add_sec">
@@ -169,7 +169,7 @@ export const TokenList = ({ data }) => {
             <div className="supply_sec">
               <span>
                 <label for="html">Token Supply:</label>
-                <li style={{ color: "white" }}>{token.tokenSupply}</li>
+                <li style={{ color: "white" }}>{token.supply}</li>
               </span>
               <span>
                 <label for="html">Token Decimal:</label>

@@ -21,6 +21,19 @@ function saveTokenInfoToDB(tokenInfo, callback) {
     })
 }
 
+function saveTokenIconToDB(file, callback) {
+    console.log("HIT SAVE TOKEN ICON");
+    const imgData = new FormData();
+    imgData.append('token_icon', file)
+    fetch('/api/save/tokenIcon', {
+        method: 'POST',
+        body: imgData
+    })
+    .then(r => r.json())
+    .then(r => callback(null, r))
+    .catch(er => callback(er, null));
+}
+
 function retreiveTokenList(callback) {
         fetch("http://localhost:8448/api/get/tokenInfoList", {
             method: 'GET',
@@ -42,4 +55,5 @@ function retreiveTokenList(callback) {
 export {
     saveTokenInfoToDB,
     retreiveTokenList,
+    saveTokenIconToDB,
 }
