@@ -45,21 +45,22 @@ export const login = (data) => {
 export const logout = () => {
   ContractServices.setWalletType("Metamask");
   window.location.reload();
+  console.log('ccccccc');
   return {
     type: actionTypes.LOGOUT,
   };
 };
-export const tokenListAdd = (data) => {
-  console.log("ddddddddddddddddddddddd",data);
+export const tokenListAdd = (token) => {
+  
   return {
     type: actionTypes.TOKEN_LIST_ADD,
-    payload: data,
+    payload: {...token, isAdd: !1},
   };
 };
-export const tokenListDel = (data) => {
+export const tokenListDel = (token) => {
   return {
     type: actionTypes.TOKEN_LIST_DEL,
-    payload: data,
+    payload: {...token, isAdd: true},
   };
 };
 export const saveSlippagePercentage = (data) => {

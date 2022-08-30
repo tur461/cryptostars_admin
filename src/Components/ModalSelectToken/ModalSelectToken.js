@@ -26,36 +26,28 @@ const ModalSelectToken = ({
   symbol
 }) => {
   const dispatch = useDispatch();
-  console.log("hahahahahaha", TOKEN_LIST);
   const [isAdded, setTokenAdd] = useState(true);
 
-  const handleTokenList = (data) => {
-    console.log("ltltltltltltltl",data);
-    data.isAdd = false;
-    data.isDel = true;
-    dispatch(tokenListAdd(data));
+  const handleTokenList = (token) => {
+    token.isAdd = false; 
+    token.isDel = true;
     setTokenAdd(false);
-    closeModal()
+    dispatch(tokenListAdd(token));
+    // closeModal()
+    
     
   };
-  const handleRemoveTokenList = async (data) => {
-    dispatch(tokenListDel(data));
-    searchByName("");
-    window.location.reload();
+  const handleRemoveTokenList = async (token) => {
+    dispatch(tokenListDel(token));
+    // searchByName("");
+    // window.location.reload();
   };
-
-  console.log("TOKEN_LISTTOKEN_LISTTOKEN_LISTTOKEN_LIST",TOKEN_LIST);
 
 
   // let list = JSON.parse(localStorage.getItem('response'));
 
   console.log("t222okenlist",tokenList);
 
-  // if(tokenList)
-  // {
-  //   TOKEN_LIST.push(tokenList)
-  // }
-  console.log("TOKEN_LISTTOKEN_LISTTOKEN_LISTTOKEN_LIST",TOKEN_LIST);
 
   return (
     <>
@@ -100,8 +92,7 @@ const ModalSelectToken = ({
         </div>
         <div className="col tokenList__column">
           <ul className="tokenList">
-            {tokenList &&
-              tokenList.map((t, index) => (
+            {tokenList.map((t, index) => (
                 <li key={index} id={t.symbol}>
                   {symbol === t.symbol ? (
                     <div className="dis">
@@ -111,7 +102,7 @@ const ModalSelectToken = ({
                           {t.symbol}
                         </span>{" "}
                       </span>
-                      <TokenBalance address={t.address} />
+                      
                     </div>
                   ) : (
                     <>
@@ -119,21 +110,28 @@ const ModalSelectToken = ({
                         <img src={t.icon} alt="icon" />
                         <span className="tokenName_textStyle">{t.symbol}</span>
                       </Link>
-                      {t.isAdd && isAdded && (
+                      {/* {console.log("t.isAdd",t.isAdd,"isAdded",isAdded)} */}
+                      {t.isAdd ? (
                         <span
                           className="tokenName_textStyle add_token"
-                          onClick={() => handleTokenList(t)}
+                          onClick={(e) => { 
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleTokenList(t)
+                          }
+                          }
                         >
                           Add
                         </span>
-                      )}
-                      {t.isDel && (
+                      )
+                      
+                      : (
                         <span
                           className="tokenName_textStyle add_token"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation(); 
-                            handleRemoveTokenList(t)
+                            handleRemoveTokenList(t);
                           }}
                         >
                           Remove

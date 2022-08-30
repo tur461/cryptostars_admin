@@ -1,10 +1,12 @@
 import { TOKEN_LIST } from "../../assets/tokens";
+import { empty, rEqual } from "../../services/utils";
 import { actionTypes } from "../actions/PersistActions";
 console.log("tokeeeeee", TOKEN_LIST);
 const initialState = {
   walletType: "Metamask",
   isUserConnected: "",
-  tokenList: TOKEN_LIST,
+  tokenList: [],
+  tokenListTempo: [],
   slippagePercentage: 1,
   deadline: 20,
   userInfo: "",
@@ -17,7 +19,8 @@ const initialState = {
 };
 
 const persist = (state = initialState, action) => {
-  console.log(state.tokenList, "newadedd");
+  const token = action.payload;
+      const tList = initialState.tokenList;
   switch (action.type) {
     case actionTypes.USER_CONNECTED:
       return {
@@ -25,37 +28,36 @@ const persist = (state = initialState, action) => {
         isUserConnected: action.payload.account,
         walletType: action.payload.walletType,
       };
+      
     case actionTypes.TOKEN_LIST_ADD:
-      console.log("action.payload",initialState.tokenList);
-      let i = -1;
-      const items = initialState.tokenList.filter((t, ii) => {
-        if(t.address === action.payload.address) {
-          i = ii;
-          return !0;
+      const list = tList.filter(t=> rEqual(t.addr, token.addr));
+      // check if already in the list
+      if(empty(list)) {
+        // token not in the list
+        initialState.tokenList = [...state.tokenList, token]
+        initialState.tokenListTempo = [...state.tokenList, token];
+        return {
+          ...state,
+          tokenList: initialState.tokenList,
+          tokenListTempo: initialState.tokenListTempo,
         }
-        return !1;
-      });
-      if(!items.length) {
-        // initialState.tokenList.splice(i, 1);
-        initialState.tokenList.push(action.payload);
       }
 
-      console.log("action.payload",initialState.tokenList);
+      return state;
 
-      return {
-        ...state,
-        tokenList: initialState.tokenList,
-      };
     case actionTypes.TOKEN_LIST_DEL:
-      const idx = initialState.tokenList.findIndex(
-        (a) =>
-          a.address.toLowerCase() === action.payload.address.toLowerCase()
-      );
-      console.log('removing item at:', idx, {...initialState.tokenList});  
-      idx>-1 && initialState.tokenList.splice(idx, 1);
+      
+      const idx = tList.findIndex(t => rEqual(t.addr, token.addr));
+      console.log('removing item at:', idx, '\ntoken to be removed:', token);  
+      
+      if(idx > -1) {
+        initialState.tokenList.splice(idx, 1);
+        initialState.tokenListTempo.splice(idx, 1);
+      } 
       return {
         ...state,
         tokenList: initialState.tokenList,
+        tokenListTempo: initialState.tokenListTempo,
       };
     case actionTypes.SAVE_SLIPPAGE_PERCENTAGE:
       return {

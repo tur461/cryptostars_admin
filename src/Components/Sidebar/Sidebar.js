@@ -122,10 +122,15 @@ const Sidebar = (props) => {
               }
             }}
           >
-            <Link to={isUserConnected ? "/AddModal" : null}>Add Token</Link>
+            <Link to={isUserConnected ? "/AddModal" : ''}>Add Token</Link>
           </MenuItem>
-          <MenuItem>
-            <Link to={"/tokenList"}>Token List</Link>
+          <MenuItem
+           onClick={() => {
+              if (!isUserConnected) {
+                return toast.error("Connect wallet first!");
+              }
+            }}>
+            <Link to={isUserConnected?"/tokenList": ' '  }>Token List</Link>
           </MenuItem>
         </SubMenu>
       </Menu>

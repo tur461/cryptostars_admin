@@ -10,14 +10,15 @@ import { ContractServices } from "../../services/ContractServices";
 import ProfileModal from "../ProfileModal/ProfileModal";
 import Logo from "../../assets/images/logo_crypto.png";
 import { toast } from "../Toast/Toast";
-import WalletList from "./WalletList";
 import { HOME_ROUTE } from "../../constant";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-
+import ConnectWalletModal from "../ConnectWalletModal";
+// import Web3 from "web3";
 const Header = (props) => {
+  // const {web3} = window;
   const dispatch = useDispatch();
-  const [isOpen, setModal] = useState(false);
   const [walletShow, setWalletShow] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
   const walletType = useSelector((state) => state.persist.walletType);
@@ -76,7 +77,7 @@ const Header = (props) => {
     if (address) {
       window.ethereum.on("accountsChanged", function (accounts) {
         const account = accounts[0];
-        dispatch(login({ account, walletType }));
+        // dispatch(login({ account, walletType }));
         window.location.reload();
       });
     }
@@ -101,13 +102,31 @@ const Header = (props) => {
     }
   };
   const logoutCall = () => {
+    console.log("ooooooooooooooooo");
     dispatch(logout());
-    setModal(false);
+    setShowWalletModal(false);
     localStorage.clear();
+
   };
   const connectCall = () => {
-    isUserConnected ? setModal(!isOpen) : setWalletShow(true);
+    isUserConnected ? setShowWalletModal(!showWalletModal) : setWalletShow(true);
   };
+
+  useEffect(() => {
+    window.ethereum.on('accountsChanged', function (accounts) {
+      dispatch(logout());
+      // Time to reload your interface with accounts[0]!
+      // console.log("ggggggggg",accounts[0]);
+      localStorage.clear();
+    
+      window.location.reload()
+      
+      // setShowWalletModal(false);
+    })
+  }, [isUserConnected])
+  
+
+
 
   return (
     <div className={`header_style ${props.className}`}>
@@ -121,6 +140,7 @@ const Header = (props) => {
             )}
           </Link>
         </div>
+
         <div className="for_mobile">
           <Link to="#" onClick={props.small_nav}>
             {props.mobileIcon ? (
@@ -147,14 +167,14 @@ const Header = (props) => {
             : "Connect"}
         </Link>
       </div>
-      {isOpen && (
+      {showWalletModal && (
         <ProfileModal
-          closeModal={() => setModal(!isOpen)}
+          closeModal={() => setShowWalletModal(!showWalletModal)}
           address={isUserConnected}
           logout={logoutCall}
         />
       )}
-      {walletShow && <WalletList isWalletShow={setWalletShow} />}
+      {walletShow && <ConnectWalletModal showModal={setWalletShow} />}
     </div>
   );
 };

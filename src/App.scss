@@ -73,6 +73,7 @@
 .backdrop{
   background: rgba(0,11,41, 0.7);
   position: fixed;
+  backdrop-filter: blur(7px);
   width: 100%;
   height: 100%;
   left:0px;

@@ -4,54 +4,36 @@ import { UserService } from "../../services/UserService";
 import { checkUserLpTokens, saveUserLpTokens } from "./PersistActions";
 import { WETH } from "../../assets/tokens";
 import { ExchangeService } from "../../services/ExchangeService";
+import { isAddr, notEmpty, rEqual } from "../../services/utils";
 
 export const searchTokenByNameOrAddress =
-  (address) => async (dispatch, getState) => {
-    
-    try {
+  (query, priAccount) => async (dispatch, getState) => {
       const {
-        persist: { tokenList },
+        persist: { tokenList, tokenListTempo },
       } = getState();
-console.log("bbbbbbbbbbbbbbbbbbbbb",tokenList);
-      if (address.length === 42) {
-          const filteredTokenList = tokenList.filter((token) =>
-          token.address.toLowerCase().includes(address.toLowerCase())
-        );
+      if (isAddr(query)) {
+        const list = tokenList.filter(t => rEqual(t.addr, query));
+        if(notEmpty(list)) tokenListTempo = list;
 
-      if (filteredTokenList.length > 0) {
-
-          return filteredTokenList;
-        }
-
-        const tokenDecimal = await ContractServices.getDecimals(address);
-        const tokenName = await ContractServices.getTokenName(address);
-        const tokenSymbol = await ContractServices.getTokenSymbol(address);
-        const tokenBalance = await ContractServices.getTokenBalance(address);
-        
-        const obj = {
-          icon: default_icon,
-          name: tokenName,
-          address,
-          isAdd: true,
-          isDel: false,
-          decimals: tokenDecimal,
-          symbol: tokenSymbol,
-        };
-        
-     tokenList.push(obj);
-       
-     console.log("aaaaaaaaaaaaaaaaa",tokenList);
-
-        return tokenList;
+        const name    = await ContractServices.getTokenName(query);
+        const dec = await ContractServices.getDecimals(query);
+        const sym  = await ContractServices.getTokenSymbol(query);
+        const bal = await ContractServices.getTokenBalance(query, priAccount);
+        tokenList = [
+          ...tokenList,
+          {
+            name,
+            dec: dec,
+            sym: sym,
+            addr: query,
+            isAdded: !1,
+            icon: default_icon,
+          }
+        ]
+        tokenListTempo = [...tokenList];
       
-    }
-      return tokenList.filter((token) =>
-        token.name.toLowerCase().includes(address.toLowerCase())
-      );
-    } catch (error) {
-      console.log("Error: ", error);
-      return error;
-    }
+    } else tokenListTempo = tokenList.filter(t => rEqual(t.name, query));
+    
   };
 
 export const delTokenFromList = (data) => async (dispatch, getState) => {

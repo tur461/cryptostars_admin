@@ -83,16 +83,18 @@ function PreviewAddTokenModal({
       // const r = await Provider.waitForTransaction(callCreate.blockhash);
       //       console.log('finalised..', r);
     let cc = callCreate?.transactionHash
-    console.log("callCreate", cc);
+    console.log("callCreate", callCreate.events[0].address);
+    const arr_callcreate_address = []
+    const call_address =  callCreate?.events[0]?.address;
+    arr_callcreate_address.push(call_address)
+    console.log(" arr_callcreate_address",arr_callcreate_address);
+   
 
     setFinalhash(cc)
     console.log("finalhash",finalhash);
     let tokenAddresess = await contract.methods.getCitizenAddress().call();
-    console.log(contract.methods,"nnnnnnnnnnnnnnnnnn --------------------")
     let tokenAddressArray = tokenAddresess;
-    console.log(userAddress, "userAddress");
-    console.log("llllllllllllkk", tokenAddressArray);
-    let result = await getAnsArr(tokenAddressArray);
+    let result = await getAnsArr(arr_callcreate_address);
     setResult(result);
     //    if(result){
     // alert("hello");
@@ -102,7 +104,7 @@ function PreviewAddTokenModal({
     dispatch(stopLoading())
     return;
   }
-    //dispatch(savetoken(tokenAddressArray))
+    // dispatch(savetoken(tokenAddressArray))
     dispatch(stopLoading())
   };
 

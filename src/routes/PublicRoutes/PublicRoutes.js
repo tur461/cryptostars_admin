@@ -15,7 +15,9 @@ import AddTokenModal from "../../Components/AddTokenModal/AddTokenModal";
 import Referrals from "../../Pages/Public/Referrals/Referrals";
 import ReactGA from "react-ga";
 import { TokenList } from "../../Pages/Tokenlist/TokenList";
-
+import { useSelector } from "react-redux";
+import "./Publicrouter.scss"
+import ConnectWalletModal from "../../Components/ConnectWalletModal";
 const PublicRoutes = () => {
   const location = useLocation();
 
@@ -27,6 +29,13 @@ const PublicRoutes = () => {
   const [small, setSmall] = useState(false);
   const [navCollapse, setNavCollapse] = useState(false);
   const [tradeDropdown, openCloseTradeDropdown] = useState(false);
+  const isUserConnected = useSelector((state) => state.persist.isUserConnected);
+  // constconnect==false = useSelector((state) => state.persist.isUserConnected);
+  const [connect , setConnect] = useState(false)
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  const [isOpen, setModal] = useState(false);
+  
+
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -50,63 +59,60 @@ const PublicRoutes = () => {
     setNavCollapse((prevNavCollapse) => prevNavCollapse);
   };
 
-  return (
-    <>
-      <Header
-        className={`fixed ${small ? "isFixed" : ""}`}
-        small_nav={() => handleNavCollapse()}
-        mobileIcon={navCollapse}
-      />
-      <Sidebar
-        className={`fixed ${small ? "isFixed" : ""} ${
-          navCollapse ? "small_nav" : ""
-        }`}
-        showSocial={navCollapse}
-        onClickOpenSidebar={() => handleSubNav()}
-        closeSidebar={() => {
-          handleNavCollapse();
-        }}
-        tradeDropdown={() => {
-          if (navCollapse === true) {
-            alert("collapsed");
-            handleNavCollapse();
-          }
-        }}
-        // tradeDropdown={!tradeDropdown}
-        onOpenChange={(open) => {
-          alert("fd");
-          openCloseTradeDropdown(!open);
-        }}
-      />
-      <Switch>
-        <Route path={HOME_ROUTE} component={Liquidity} exact={true} />
-        <Route path={`${HOME_ROUTE}r/:ref`} component={Home} exact={true} />
-        <Route
-          path={`${HOME_ROUTE}addmodal`}
-          component={AddTokenModal}
-          exact={true}
-        />
-        {/* <Route path={`${HOME_ROUTE}home`} component={Home} exact={true} /> */}
-        <Route path={`${HOME_ROUTE}swap`} component={Swap} exact={true} />
-        <Route
-          path={`${HOME_ROUTE}liquidity`}
-          component={Liquidity}
-          exact={true}
-        />
-        <Route path="/tokenList" component={TokenList} exact={true} />
-        <Route
-          path={`${HOME_ROUTE}referrals`}
-          component={Referrals}
-          exact={true}
-        />
+  const connectmodal = ()=>{
+    isUserConnected || setShowWalletModal(!0);
+  }
+   
+    return  (
+			<div>
+	{console.log("isUserConnectedisUserConnected",isUserConnected)}
 
-        <Route path={`${HOME_ROUTE}farm`} component={Farm} exact={true} />
-        <Route path={`${HOME_ROUTE}oceans`} component={Oceans} exact={true} />
-        <Route path={`${HOME_ROUTE}lottery`} component={Lottery} exact={true} />
-        <Route path={`${HOME_ROUTE}pools`} component={Pools} exact={true} />
-      </Switch>
-    </>
-  );
+				{
+ 
+					isUserConnected ?
+					<>
+						<Header 
+							mobileIcon={navCollapse} 
+							small_nav={() => handleNavCollapse()} 
+							className={`fixed ${small ? "isFixed" : ""}`} 
+						/>
+						<Sidebar
+							// tradeDropdown={!tradeDropdown}
+							showSocial={navCollapse}
+							closeSidebar={() => handleNavCollapse()}
+							onClickOpenSidebar={() => handleSubNav()}
+							onOpenChange={(open) => openCloseTradeDropdown(!open)}
+							tradeDropdown={() => navCollapse && handleNavCollapse()}
+							className={`fixed ${small ? "isFixed" : ""} ${navCollapse ? "small_nav" : ""}`}
+						/>
+						<Switch>
+							<Route path={HOME_ROUTE} component={Liquidity} exact={true} />
+							<Route path={`${HOME_ROUTE}swap`} component={Swap} exact={true} />
+							<Route path={`${HOME_ROUTE}farm`} component={Farm} exact={true} />
+							<Route path={`${HOME_ROUTE}r/:ref`} component={Home} exact={true} />
+							<Route path={`${HOME_ROUTE}pools`} component={Pools} exact={true} />
+							<Route path={`${HOME_ROUTE}oceans`} component={Oceans} exact={true} />
+							<Route path={`${HOME_ROUTE}lottery`} component={Lottery} exact={true} />
+							<Route path={`${HOME_ROUTE}liquidity`} component={Liquidity} exact={true}/>
+							<Route path={`${HOME_ROUTE}tokenList`} component={TokenList} exact={true} />
+							<Route path={`${HOME_ROUTE}referrals`} component={Referrals} exact={true} />
+							<Route path={`${HOME_ROUTE}addmodal`} component={AddTokenModal}  exact={true} />
+						</Switch>
+					</> :
+					<div className="connect--main">
+						{showWalletModal && <ConnectWalletModal setShowModal={setShowWalletModal} />}
+						<div className="connect_box">
+						<h2>Connect Wallet</h2>
+						<button className="btn--connect-main btn-pill" onClick={connectmodal}> Connect</button>
+						</div>
+					</div>
+				}
+			</div> 
+    );
+      
+      
+     
+      
 };
 
 export default withRouter(PublicRoutes);

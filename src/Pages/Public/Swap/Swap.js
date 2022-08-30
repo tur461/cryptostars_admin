@@ -14,7 +14,7 @@ import { ExchangeService } from '../../../services/ExchangeService';
 import { MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from '../../../assets/tokens'
 import circleDown from '../../../assets/images/awesome-arrow-alt-circle-down.svg'
 import StepsSwap from '../../../Components/StepsSwap/StepsSwap'
-import WalletList from "../../../Components/Header/WalletList"
+import WalletList from "../../../Components/ConnectWalletModal/ConnectWalletModal"
 import iconTimer from '../../../assets/images/ionic-ios-timer.svg'
 import iconSetting from '../../../assets/images/ionic-md-settings.svg'
 import SettingsModal from '../../../Components/Settings/SettingsModal'

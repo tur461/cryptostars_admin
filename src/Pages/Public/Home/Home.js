@@ -14,7 +14,7 @@ import { ExchangeService } from "../../../services/ExchangeService"
 import { useSelector } from "react-redux";
 import { toast } from "../../../Components/Toast/Toast";
 import { MAIN_CONTRACT_LIST, BURN_ADDRESS, ANCHOR_BUSD_LP, WETH, TOKEN_LIST, BNB_BUSD_LP } from "../../../assets/tokens";
-import WalletList from "../../../Components/Header/WalletList"
+import WalletList from "../../../Components/ConnectWalletModal/ConnectWalletModal"
 import Button from '../../../Components/Button/Button'
 import { addTransaction, savereffralAddress, startLoading, stopLoading } from '../../../redux/actions'
 import { ReferralsServices } from "../../../services/ReferralsServices"

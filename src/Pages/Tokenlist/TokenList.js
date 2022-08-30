@@ -12,29 +12,18 @@ import SkeletonCard from "./SkeletonCard";
 
 import "./Tokenlist.scss";
 import { selectText } from "../../services/utils";
+import { useSelector } from "react-redux";
 
 export const TokenList = ({ data }) => {
   console.log("", data);
   const [bbb, setBBewq] = useState(data);
   const [listdata, setListdata] = useState([]);
+  const [totalpost,setTotalposts] = useState('')
   const [isloading, setLoading] = useState(true);
-
-  //   const [pageData,setPageData] = useState({
-  //     perPage: 10,
-  //     page: 1,
-  //     pages: 1
-  // })
-
+  const [currentPosts,setCurrentPosts] = useState([])
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
-
-  // const handlePageClick = (event) => {
-  //   console.log(event);
-  //   let page1= event.selected;
-  //   console.log("kkkkk",page1);
-  //   setPageData({...pageData, page:page1})
-
-  // }
+  const [endlist,setEndlist] = useState(10)
 
   const functionThatReturnsAPromise = async (item) => {
     //a function that returns a promise
@@ -61,6 +50,7 @@ export const TokenList = ({ data }) => {
   };
 
   const getAnsArr = async (array) => {
+    console.log("zzzzzzzzzzzzzz",array);
     let count;
     let map = [];
     console.log("arraghy", array);
@@ -80,27 +70,61 @@ export const TokenList = ({ data }) => {
     );
     let tokenAddresess = await contract.methods.getCitizenAddress().call();
     console.log("rrrrrrrrrrrrrrrrr", tokenAddresess);
-    const list = await getAnsArr(tokenAddresess);
-  let arrayoflist = list.reverse()
-  console.log("jjjjjjjjjjjjjjjjj", arrayoflist);
+    setTotalposts(tokenAddresess.length)
+   
+     // Get current posts
+     console.log("cuuuu",currentPage,postsPerPage,postsPerPage);
+     const indexOfLastPost = currentPage * postsPerPage;
+     const indexOfFirstPost = indexOfLastPost - postsPerPage;
+     console.log("hhhhhhhhhhhhhh",indexOfLastPost,indexOfFirstPost);
+    // const currentPosts = arrayoflist.slice(indexOfFirstPost, indexOfLastPost);
+     const _currentposts = tokenAddresess?.slice(indexOfFirstPost, indexOfLastPost);
 
+    console.log("rrrrrrrrrkkkkkkkkk",_currentposts);
+  
+
+    console.log("ffffffffffff",_currentposts);
+
+    setCurrentPosts([..._currentposts])
+  
+    console.log("nnnnnnnnnnnnnnn",_currentposts);
+    setLoading(true)
+    const list = await getAnsArr(_currentposts);
+    let arrayoflist = list.reverse()
+    console.log("jjjjjjjjjjjjjjjjj", arrayoflist);
+   
     setListdata(arrayoflist);
+    if(list.length<10){
+      setEndlist(list.length)
+    }
     setLoading(false);
   };
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    
+
+  }
+
+  
+
   useEffect(() => {
     tokenlistdata();
-  }, []);
-  console.log("llllllllllllllllllkkkkkkkkkk", listdata, isloading);
+  
+  }, [currentPage]);
+  
+  
+
+  console.log("llllllllllllllllllkkkkkkkkkk", listdata, isloading,endlist);
   let arrayoflist = listdata.reverse()
   console.log("vvvvvvvvvvvv",arrayoflist);
-  // Get current posts
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = arrayoflist.slice(indexOfFirstPost, indexOfLastPost);
+  
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
+console.log("listdata",listdata.length);
+  
   const trunc = (a) => `${a.slice(0, 5)}...${a.slice(39, 42)}`;
+  const isUserConnected = useSelector((state) => state.persist.isUserConnected);
+  
 
   return (
     <div className="table_responsive">
@@ -116,7 +140,7 @@ export const TokenList = ({ data }) => {
             </tr>
           </thead>
 
-          {currentPosts?.map((item) => (
+          {listdata?.map((item) => (
             <tbody>
               <tr key={item}>
                 <td>{item?.name}</td>
@@ -149,24 +173,11 @@ export const TokenList = ({ data }) => {
       ) : (
         ""
       )}
-      {/* <Pagination>
-        <Pagination.Prev />
-        <Pagination.Item>{1}</Pagination.Item>
-        <Pagination.Item>{2}</Pagination.Item>
-        <Pagination.Item>{3}</Pagination.Item>
-        <Pagination.Next />
-      </Pagination> */}
-      {/* <ReactPaginate
-                          previousLabel={'<<'}
-                          nextLabel={'>>'}
-                          pageCount={pageData?.pages}
-                          onPageChange={handlePageClick}
-                          containerClassName={'pagination'}
-                          activeClassName={'active'}
-                      /> */}
       <Pagination
         postsPerPage={postsPerPage}
-        totalPosts={listdata.length}
+        totalPosts={totalpost}
+        currentPage={currentPage}
+        lastdata = {listdata.length}
         paginate={paginate}
       />
     </div>

@@ -289,6 +289,7 @@ const allowanceToken = async (tokenAddress, mainContractAddress, address) => {
 
 const getTokenBalance = async (tokenAddress, address) => {
   try {
+    console.log("tokenAddress",tokenAddress,"address",address);
     const contract = await callTokenContract(tokenAddress);
     const decimals = await contract.methods.decimals().call();
     let result = await contract.methods.balanceOf(address).call();

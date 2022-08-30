@@ -33,10 +33,9 @@ const AddLiquidity = (props) => {
 
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
   const walletType = useSelector((state) => state.persist.walletType);
+  const tokenListTempo = useSelector((state) => state.persist.tokenListTempo);
   const tokenList = useSelector((state) => state.persist.tokenList);
-  const result = useSelector((state) =>
-    console.log(state.persist, "cheingggg")
-  );
+  
   const deadline = useSelector((state) => state.persist.deadline);
   const slippagePercentage = useSelector(
     (state) => state.persist.slippagePercentage
@@ -481,15 +480,9 @@ const AddLiquidity = (props) => {
       toast.error("Transaction Reverted!");
     }
   };
-  const handleSearchToken = async (data) => {
-    try {
-      const res = await dispatch(searchTokenByNameOrAddress(data));
-       console.log("RESPONSE:", res);
-      setFilteredTokenList(res);
-    } catch (error) {
-      toast.error("Something went wrong!");
-    }
-  };
+  const handleSearchToken = q => dispatch(searchTokenByNameOrAddress(q.trim(), isUserConnected)
+  );
+    
   console.log("FilteredTokenList",filteredTokenList);
   const handleApprovalButton = (tokenType) => {
     if (tokenOneApproval && tokenType === "TK1") {
@@ -958,7 +951,7 @@ const AddLiquidity = (props) => {
       )}
       {modalCurrency && (
         <ModalSelectToken
-          tokenList={filteredTokenList}
+          tokenList={tokenListTempo}
           closeModal={() => setModalCurrency(!modalCurrency)}
           selectCurrency={onHandleSelectCurrency}
           searchToken={handleSearchToken}

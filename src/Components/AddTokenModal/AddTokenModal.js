@@ -4,11 +4,17 @@ import "./AddTokenModal.scss";
 import "../../App.scss";
 import "../../Pages/Public/Swap/Swap.scss";
 import back from "../../assets/images/back-arrow.svg";
-import { Modal, FormLabel, Button } from "react-bootstrap";
+import { Modal, FormLabel, Button, Toast } from "react-bootstrap";
 import PreviewAddTokenModal from "./PreviewAddTokenModal";
 import Web3 from "web3";
+import { useSelector } from "react-redux";
+import ProfileModal from "../ProfileModal/ProfileModal";
+import { logout } from "../../redux/actions";
+
 
 function AddTokenModal() {
+
+
   let refrenceVariable = false;
   const [show, setShow] = useState(false);
   const [tokenName, setTokenName] = useState("");
@@ -17,6 +23,9 @@ function AddTokenModal() {
   const [mintAddress, setMintAddress] = useState("");
   const [ownerAddress, setOwnerAddress] = useState("");
   // const [errorCount, setErrorCount] = useState("0");
+  const [isOpen, setModal] = useState(false);
+  const [walletShow, setWalletShow] = useState(false);
+
 
   const [nameError, setnameError] = useState("");
   const [symbolError, setSymbolError] = useState("");
@@ -26,12 +35,13 @@ function AddTokenModal() {
   const [error, setError] = useState(false);
   const [symbolsArr] = useState(["e", "E", "+", "-"]);
 
+  
   const handleChange = (e, fieldName) => {
     switch ((e, fieldName)) {
       case "tokenName":
         const { value } = e.target;
         console.log("Input value: ", value);
-        const re = /^[A-Za-z]+$/;
+        const re = /^[a-z 0-9]+( [a-z 0-9]+)*$/gi;
 
         if (value === "" || re.test(value)) {
           setTokenName(value);

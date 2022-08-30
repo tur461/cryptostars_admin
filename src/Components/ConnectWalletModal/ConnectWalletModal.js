@@ -1,7 +1,8 @@
 import React from "react"
 import { withRouter } from "react-router"
 import { useDispatch } from "react-redux"
-import './Header.scss'
+import './../Header/Header.scss'
+import './connect-wallet-modal.scss'
 import { Link } from 'react-router-dom'
 import { login } from "../../redux/actions"
 import { ContractServices } from "../../services/ContractServices"
@@ -10,7 +11,8 @@ import closeBtn from '../../assets/images/ionic-md-close.svg'
 import { toast } from "../Toast/Toast"
 import WalletConnectProvider from '@walletconnect/web3-provider'
 
-const WalletList = ({ isWalletShow }) => {
+const ConnectWalletModal = ({ setShowModal }) => {
+    console.log("clickhit");
     const dispatch = useDispatch();
 
     const loginCall = async (walletType, type) => {
@@ -18,8 +20,9 @@ const WalletList = ({ isWalletShow }) => {
             if (walletType === 'BinanceChain') {
                 const account = await ContractServices.isBinanceChainInstalled();
                 if (account) {
+                   
                     dispatch(login({ account, walletType }));
-                    isWalletShow(false);
+                    setShowModal(false);
                     window.location.reload();
                 }
             } else if (walletType === 'Walletconnect') {
@@ -50,31 +53,52 @@ const WalletList = ({ isWalletShow }) => {
                     const results = await provider.enable();
 
                     provider.on('accountsChanged', async (accounts) => {
+                        
                         setTimeout(function () {
                             window.location.reload()
                         }, 500)
                         let account = accounts[0]
                         dispatch(login({ account, walletType }));
-                        isWalletShow(false);
+                        setShowModal(false);
                         //return;
                         // window.location.reload();
                     });
                     await ContractServices.callWeb3ForWalletConnect(provider);
                     const account = await provider.accounts[0];
                     dispatch(login({ account, walletType }));
-                    isWalletShow(false);
+                    setShowModal(false);
                     //  window.location.reload();
                 } catch (error) {
                     console.log(error, 'wallet error')
                 }
 
             } else {
+                
                 const account = await ContractServices.isMetamaskInstalled(type);
-                if (account) {
+
+                console.log("account",account);
+                // const acc = await ContractServices.getDefaultAccount()
+                // console.log("kkkkkkkkkkkkkkk",acc);
+
+            //    provider.on('accountsChanged', async (accounts) => {
+            //         setTimeout(function () {
+            //             window.location.reload()
+            //         }, 500)
+            //         let account = accounts[0]
+            //         dispatch(login({ account, walletType }));
+            //         setShowModal(false);
+
+            //     });
+
+                if (account=="0xad9d8be72abdc7f7d2bff181c327b29402894e23") {
                     dispatch(login({ account, walletType }));
-                    isWalletShow(false);
+                    setShowModal(false);
                     window.location.reload();
                 }
+                else{
+                    alert("you are not admin")
+                }
+
             }
         } catch (err) {
             toast.error(err.message);
@@ -82,7 +106,7 @@ const WalletList = ({ isWalletShow }) => {
     }
 
     return (
-        <div>
+        <div className="modal--connect-wallet">
             <div className="backdrop"></div>
 
             <Card className="profile_modal">
@@ -92,7 +116,7 @@ const WalletList = ({ isWalletShow }) => {
                             <h2>Connect to a wallet</h2>
                         </div>
                         <div className="col modal_headerStyle__rowA_colRight">
-                            <Link to="#" onClick={() => isWalletShow(false)}><img src={closeBtn} alt="icon" /></Link>
+                            <Link to="#" onClick={() => setShowModal(false)}><img src={closeBtn} alt="icon" /></Link>
                         </div>
                     </div>
                 </div>
@@ -117,4 +141,4 @@ const WalletList = ({ isWalletShow }) => {
 
 
 
-export default withRouter(WalletList);
+export default withRouter(ConnectWalletModal);
