@@ -28,9 +28,9 @@ function AddTokenModal() {
 
   const handleImagedata = e => {
     const file = e.target.files[0];
+    console.log("File",file)
     setTokenIcon(file);
   }
-
   const handleChange = (e, fieldName) => {
     switch ((e, fieldName)) {
       case "tokenName":

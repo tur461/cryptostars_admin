@@ -7,10 +7,8 @@ import ConnectWalletModal from "../../../Components/Connect/ConnectWalletModal";
 const CryptoStarHome = () => {
     
     const [showWalletModal, setShowWalletModal] = useState(false);
-    const isUserConnected = useSelector(
-      (state) => state.persist.isUserConnected
-    );
-
+    const isUserConnected = useSelector( (state) =>state.persist.isUserConnected);
+console.log("isUserConnected",isUserConnected);
     const connectmodal = () => {
       isUserConnected || setShowWalletModal(!0);
       console.log("Hit")

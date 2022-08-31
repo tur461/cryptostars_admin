@@ -86,7 +86,7 @@ const PublicRoutes = () => {
         }}
       />
       </>}
-      {isUserConnected ?
+      {isUserConnected?
       <Switch>
         <Route path={{HOME_ROUTE}} component={CryptoStarHome} exact={true} />
         {/* <Route path={`${HOME_ROUTE}` component={Liquidity} exact={true} /> */}

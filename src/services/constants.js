@@ -9,6 +9,7 @@ export const LS_KEYS = {
 
 export const API_PATH = {
     SAVE_TOKEN_INFO: '/api/save/tokenInfo',
+    SAVE_POOL_INFO: '/api/save/poolInfo',
 }
 
 export const BACK_END_URL = 'http://localhost:8448';

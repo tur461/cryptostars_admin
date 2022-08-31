@@ -29,7 +29,6 @@ function PreviewAddTokenModal({
   mintAddress,
   ownerAddress,
 }) {
-  
   const [data, setData] = useState();
   const [finalhash,setFinalhash] = useState('')
   const dispatch = useDispatch();
@@ -73,25 +72,23 @@ function PreviewAddTokenModal({
          console.log("callCreate", cc);
      
          setFinalhash(cc)
-         console.log("finalhash",finalhash);
-         
-
 
          if (cc !== "") {
+           console.log("entered")
+           const iconName = `${tokenSymbol}_${Date.now()}.${tokenIcon.type.split('/')[1]}`;
            const token_obj = {
-             icon: `${tokenSymbol}_${Date.now()}.${tokenIcon.type.split('/')[1]}`,
+             icon: tokenIcon.name.split(' ').join('_'),
              name: tokenName,
              sym: tokenSymbol,
              addr: contract_address,
              dec: 18,
              supply: totalSupply,
            };
-           console.log("PPP", token_obj);
-           console.log("yyyyyyyyyyyyyyyyyy");
+           console.log("PPP", token_obj.icon);
 
            const ress = saveTokenInfoToDB(token_obj, (d) => {
-             console.log("HIT to saveTokenInfoToDB")
-             saveTokenIconToDB(tokenIcon, _ => console.log('All data saved'));
+             console.log("HIT to saveTokenInfoToDB",tokenIcon)
+             saveTokenIconToDB(tokenIcon, iconName, _ => console.log('All data saved'));
            });
 
            console.log("ress", ress);

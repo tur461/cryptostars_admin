@@ -21,13 +21,16 @@ function saveTokenInfoToDB(tokenInfo, callback) {
     })
 }
 
-function saveTokenIconToDB(file, callback) {
+function saveTokenIconToDB(file, iconName, callback) {
     console.log("HIT SAVE TOKEN ICON");
     const imgData = new FormData();
+    console.log('fff', file);
     imgData.append('token_icon', file)
-    fetch('/api/save/tokenIcon', {
+
+    fetch('http://localhost:8448/api/save/tokenIcon', {
         method: 'POST',
-        body: imgData
+        // headers: {'Content-Type': 'multipart/form-data'},
+        body: imgData,
     })
     .then(r => r.json())
     .then(r => callback(null, r))
@@ -50,10 +53,31 @@ function retreiveTokenList(callback) {
         .catch(err => {
             console.log('eeeeeeeeeee', err);
         })
-    }
+}
+
+function savePoolInfoToDB(poolInfo, callback) {
+        console.log(BACK_END_URL,API_PATH.SAVE_POOL_INFO);
+        console.log("tokenInfo-------",poolInfo);
+        
+        fetch(`${BACK_END_URL}${API_PATH.SAVE_POOL_INFO}`, {
+            method: 'POST',
+            body: JSON.stringify(poolInfo),
+            headers: {
+                'content-type': 'application/json'
+            },        
+        })
+        .then(d => {
+            console.log('sucess saving token info');
+            callback(d);
+        })
+        .catch(e => {
+            console.log("errrrrrr",e)
+        })
+}
 
 export {
     saveTokenInfoToDB,
     retreiveTokenList,
     saveTokenIconToDB,
+    savePoolInfoToDB,
 }

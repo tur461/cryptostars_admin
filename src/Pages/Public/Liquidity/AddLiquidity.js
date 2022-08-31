@@ -27,6 +27,7 @@ import { BigNumber } from "bignumber.js";
 import { NETWORK_CHAIN_ID } from "../../../constant";
 import { isCompositeComponent } from "react-dom/test-utils";
 import { toHex } from "../../../services/utils";
+import { savePoolInfoToDB } from "../../../services/api";
 const AddLiquidity = (props) => {
   const dispatch = useDispatch();
 
@@ -624,6 +625,13 @@ const AddLiquidity = (props) => {
 
   const addLiquidity = async () => {
     console.log("HIT")
+    const pool_Obj = {
+      token1:tokenOne.symbol,
+      token2:tokenTwo.symbol,
+    }
+    savePoolInfoToDB(pool_Obj,(d) => {
+      console.log("HIT to saveTokenInfoToDB",d)
+    })
     // dispatch(startLoading())
     const acc = await ContractServices.getDefaultAccount();
     if (acc && acc.toLowerCase() !== isUserConnected.toLowerCase()) {
@@ -640,7 +648,7 @@ const AddLiquidity = (props) => {
 
     let dl = Math.floor(new Date().getTime() / 1000);
     dl = dl + deadline * 60;
-
+    console.log("HIT1")
     if (tokenOne.address === "TCRO") {
       checkTCRO = true;
       value = tokenOneValue;
@@ -687,7 +695,7 @@ const AddLiquidity = (props) => {
         ).toFixed();
       }
       value = value.toString();
-
+      console.log("HIT2")
       const data = {
         token,
         amountTokenDesired,
@@ -697,12 +705,13 @@ const AddLiquidity = (props) => {
         deadline: dl,
         value,
       };
+      console.log("HIT3")
       try {
         dispatch(startLoading());
         const result = await ExchangeService.addLiquidityETH(data);
         console.log(result, "add liquidity transaction");
         dispatch(stopLoading());
-
+        console.log("HIT4")
         if (result) {
           setTxHash(result);
           setShowTransactionModal(true);
