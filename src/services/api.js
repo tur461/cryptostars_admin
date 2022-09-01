@@ -75,9 +75,28 @@ function savePoolInfoToDB(poolInfo, callback) {
         })
 }
 
+function retreivePoolInfoList(callback) {
+    fetch("http://localhost:8448/api/get/poolInfoList", {
+        method: 'GET',
+        headers: {
+            'content-type': 'application/json'
+        },      
+    })
+    .then(d => d.json())
+    .then(res => {
+        const poolInfoList = JSON.parse(res.data);
+        console.log('vvvvvvv',poolInfoList);
+        callback(poolInfoList)
+    })
+    .catch(err => {
+        console.log('eeeeeeeeeee', err);
+    })
+}
+
 export {
     saveTokenInfoToDB,
     retreiveTokenList,
     saveTokenIconToDB,
     savePoolInfoToDB,
+    retreivePoolInfoList,
 }

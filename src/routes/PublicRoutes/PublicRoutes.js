@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { TokenList } from "../../Pages/Tokenlist/TokenList";
 import CryptoStarHome from "../../Pages/Public/Home/CryptoStarHome";
 import ConnectWalletModal from "../../Components/Connect/ConnectWalletModal";
+import LiquidityPoolList from "../../Pages/Public/Liquidity/LiquidityPoolList";
 
 const PublicRoutes = () => {
   const location = useLocation();
@@ -113,6 +114,7 @@ const PublicRoutes = () => {
         <Route path={`${HOME_ROUTE}oceans`} component={Oceans} exact={true} />
         <Route path={`${HOME_ROUTE}lottery`} component={Lottery} exact={true} />
         <Route path={`${HOME_ROUTE}pools`} component={Pools} exact={true} />
+        <Route path={`${HOME_ROUTE}poolList`} component={LiquidityPoolList} exact={true} />
       </Switch> 
       : 
       <>

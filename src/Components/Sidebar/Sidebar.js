@@ -127,6 +127,9 @@ const Sidebar = (props) => {
           <MenuItem>
             <Link to={"/tokenList"}>Token List</Link>
           </MenuItem>
+          <MenuItem>
+            <Link to={"/poolList"}>Pool List</Link>
+          </MenuItem>
         </SubMenu>
       </Menu>
     </ProSidebar>

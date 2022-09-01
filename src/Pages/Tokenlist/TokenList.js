@@ -33,7 +33,7 @@ export const TokenList = ({ data }) => {
     <div className="token_list">
       <ul>
         {newTokenListBackend?.map((token) => (
-          <div className="token_card">
+          <div className="token_card" key={token.name}>
             <div className="token_img">
               <img
                 src={`${BACK_END_URL}/uploads/${token.icon}`}
@@ -45,15 +45,15 @@ export const TokenList = ({ data }) => {
 
             <div className="add_sec">
               <span>
-                <label for="html">Token Name:</label>
+                <label htmlFor="html">Token Name:</label>
                 <li style={{ color: "white" }}>{token.name}</li>
               </span>
               <span>
-                <label for="html">Token Symbol:</label>
+                <label htmlFor="html">Token Symbol:</label>
                 <li style={{ color: "white" }}>{token.sym}</li>
               </span>
               <span>
-                <label for="html">Token Address:</label>
+                <label htmlFor="html">Token Address:</label>
                 <div className="trunc_sec">
                   <li id={toB64(token.addr)} style={{ color: "white" }}>
                     {truncAddr(token.addr)}
@@ -78,11 +78,11 @@ export const TokenList = ({ data }) => {
             </div>
             <div className="supply_sec">
               <span>
-                <label for="html">Token Supply:</label>
+                <label htmlFor="html">Token Supply:</label>
                 <li style={{ color: "white" }}>{token.supply}</li>
               </span>
               <span>
-                <label for="html">Token Decimal:</label>
+                <label htmlFor="html">Token Decimal:</label>
                 <li style={{ color: "white" }}>{token.dec}</li>
               </span>
             </div>
