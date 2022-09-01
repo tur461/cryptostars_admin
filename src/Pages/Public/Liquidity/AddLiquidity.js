@@ -13,23 +13,26 @@ import { ContractServices } from "../../../services/ContractServices";
 import {
   addTransaction,
   checkUserLpTokens,
-  searchTokenByNameOrAddress,
   startLoading,
   stopLoading,
 } from "../../../redux/actions";
 import { toast } from "../../../Components/Toast/Toast";
 import { ExchangeService } from "../../../services/ExchangeService";
-import { MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from "../../../assets/tokens";
+import { INIT_VAL, MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from "../../../assets/tokens";
 import closeBtn from "../../../assets/images/ionic-md-close.svg";
 import TransactionModal from "../../../Components/TransactionModal/TransactionModal";
 import { BigNumber } from "bignumber.js";
 // import { ContractServices } from "../../../services/ContractServices";
 import { NETWORK_CHAIN_ID } from "../../../constant";
 import { isCompositeComponent } from "react-dom/test-utils";
+import useCommonHook from "../../../hooks/common";
+import { isAddr } from "../../../services/utils";
 const AddLiquidity = (props) => {
   const dispatch = useDispatch();
 
   const MINIMUM_LIQUIDITY = 10 ** 3;
+
+  const commonHook = useCommonHook();
 
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
   const walletType = useSelector((state) => state.persist.walletType);
@@ -399,7 +402,7 @@ const AddLiquidity = (props) => {
       } else {
         currentPairAddress = await ExchangeService.getPair(a1, a2);
       }
-      if (currentPairAddress !== "0x0000000000000000000000000000000000000000") {
+      if (isAddr(currentPairAddress)) {
         setCurrentPairAddress(currentPairAddress);
         const lpTokenBalance = await ContractServices.getTokenBalance(
           currentPairAddress,
@@ -480,9 +483,6 @@ const AddLiquidity = (props) => {
       toast.error("Transaction Reverted!");
     }
   };
-  const handleSearchToken = q => dispatch(searchTokenByNameOrAddress(q.trim(), isUserConnected)
-  );
-    
   console.log("FilteredTokenList",filteredTokenList);
   const handleApprovalButton = (tokenType) => {
     if (tokenOneApproval && tokenType === "TK1") {
@@ -954,11 +954,15 @@ const AddLiquidity = (props) => {
           tokenList={tokenListTempo}
           closeModal={() => setModalCurrency(!modalCurrency)}
           selectCurrency={onHandleSelectCurrency}
-          searchToken={handleSearchToken}
+          searchToken={q => commonHook.searchTokenByNameOrAddress(q.trim(), isUserConnected)}
           searchByName={setSearch}
           tokenType={tokenType}
           handleOrder={setFilteredTokenList}
           currencyName={selectedCurrency}
+          onRemoveToken={_ => {
+            setCurrencyNameForTokenOne(INIT_VAL.TOKEN_1);
+            setCurrencyNameForTokenTwo(INIT_VAL.TOKEN_2);     
+          }}
         />
       )}
       {showTransactionModal && (

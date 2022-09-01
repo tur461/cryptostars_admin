@@ -10,7 +10,6 @@ import ModalSelectToken from "../../../Components/ModalSelectToken/ModalSelectTo
 import { ContractServices } from "../../../services/ContractServices";
 import {
   addTransaction,
-  searchTokenByNameOrAddress,
   startLoading,
   stopLoading,
 } from "../../../redux/actions";
@@ -24,9 +23,12 @@ import "./ImportPool.scss";
 import RangeSlider from "./RangeSlider";
 import Button from "../../../Components/Button/Button";
 import { BigNumber } from "bignumber.js";
+import useCommonHook from "../../../hooks/common";
 
 const RemoveLiquidity = (props) => {
   const dispatch = useDispatch();
+
+  const commonHook = useCommonHook();
 
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
   const tokenList = useSelector((state) => state.persist.tokenList);
@@ -243,14 +245,6 @@ const RemoveLiquidity = (props) => {
     }
   };
 
-  const handleSearchToken = async (data) => {
-    try {
-      const res = await dispatch(searchTokenByNameOrAddress(data));
-      setFilteredTokenList(res);
-    } catch (error) {
-      toast.error("Something went wrong!");
-    }
-  };
   const handleLiquidityChange = (value, totalValue, type) => {
     if (value > 0) {
       if (value >= totalValue) {
@@ -929,7 +923,7 @@ const RemoveLiquidity = (props) => {
             tokenList={filteredTokenList}
             closeModal={() => setModalCurrency(!modalCurrency)}
             selectCurrency={onHandleSelectCurrency}
-            searchToken={handleSearchToken}
+            searchToken={q => commonHook.searchTokenByNameOrAddress(q.trim(), isUserConnected)}
             searchByName={setSearch}
             tokenType={tokenType}
             handleOrder={setFilteredTokenList}

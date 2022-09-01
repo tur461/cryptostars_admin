@@ -14,7 +14,6 @@ import ModalSelectToken from "../../../Components/ModalSelectToken/ModalSelectTo
 import { ContractServices } from "../../../services/ContractServices";
 import {
   addLpToken,
-  searchTokenByNameOrAddress,
   startLoading,
   stopLoading,
 } from "../../../redux/actions";
@@ -24,9 +23,11 @@ import { TOKEN_LIST, WETH } from "../../../assets/tokens";
 import closeBtn from "../../../assets/images/ionic-md-close.svg";
 import "./ImportPool.scss";
 import TokenBalance from "../../../Components/ModalSelectToken/TokenBalance";
+import useCommonHook from "../../../hooks/common";
 
 const ImportPool = (props) => {
   const dispatch = useDispatch();
+  const commonHook = useCommonHook();
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
   const tokenList = useSelector((state) => state.persist.tokenList);
 
@@ -146,14 +147,6 @@ const ImportPool = (props) => {
     }
   };
 
-  const handleSearchToken = async (data) => {
-    try {
-      const res = await dispatch(searchTokenByNameOrAddress(data));
-      setFilteredTokenList(res);
-    } catch (error) {
-      toast.error("Something went wrong!");
-    }
-  };
   return (
     <>
       <Card>
@@ -238,7 +231,7 @@ const ImportPool = (props) => {
           tokenList={filteredTokenList}
           closeModal={() => setModalCurrency(!modalCurrency)}
           selectCurrency={onHandleSelectCurrency}
-          searchToken={handleSearchToken}
+          searchToken={q => commonHook.searchTokenByNameOrAddress(q.trim(), isUserConnected)}
           searchByName={setSearch}
           tokenType={tokenType}
           handleOrder={setFilteredTokenList}

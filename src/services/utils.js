@@ -1,5 +1,7 @@
 import { ADDRESS } from "../constant";
 
+const eHandle = e => e.preventDefault() || !0;
+
 const isArr = a => a instanceof Array;
 const isObj = o => typeof o === 'object';
 const isStr = s => typeof s === 'string';
@@ -19,6 +21,8 @@ function empty(v) {
 }
 
 const notEmpty = v => !empty(v);
+
+const contains = (s, q) => notEqual(s.toLowerCase().indexOf(q), -1);
 
 function selectText(node) {
     if (document.body.createTextRange) {
@@ -49,6 +53,8 @@ export {
     empty,
     isAddr,
     rEqual,
+    contains,
+    eHandle,
     notEqual,
     notEmpty,
     selectText,

@@ -11,9 +11,12 @@ import {
   tokenListAdd,
   tokenListDel,
   removeTokenList,
+  tokenShowRemove,
 } from "../../redux/actions";
 import TokenBalance from "./TokenBalance";
 import { TOKEN_LIST } from "../../assets/tokens/index";
+import useCommonHook from "../../hooks/common";
+import { eHandle, rEqual } from "../../services/utils";
 const ModalSelectToken = ({
   closeModal,
   tokenList,
@@ -21,33 +24,11 @@ const ModalSelectToken = ({
   selectCurrency,
   tokenType,
   searchToken,
-  searchByName,
-  currencyName,
-  symbol
+  symbol,
+  onRemoveToken,
 }) => {
   const dispatch = useDispatch();
-  const [isAdded, setTokenAdd] = useState(true);
-
-  const handleTokenList = (token) => {
-    token.isAdd = false; 
-    token.isDel = true;
-    setTokenAdd(false);
-    dispatch(tokenListAdd(token));
-    // closeModal()
-    
-    
-  };
-  const handleRemoveTokenList = async (token) => {
-    dispatch(tokenListDel(token));
-    // searchByName("");
-    // window.location.reload();
-  };
-
-
-  // let list = JSON.parse(localStorage.getItem('response'));
-
-  console.log("t222okenlist",tokenList);
-
+  const commonHook = useCommonHook();
 
   return (
     <>
@@ -92,52 +73,48 @@ const ModalSelectToken = ({
         </div>
         <div className="col tokenList__column">
           <ul className="tokenList">
-            {tokenList.map((t, index) => (
-                <li key={index} id={t.symbol}>
-                  {symbol === t.symbol ? (
+            {tokenList.map((token, i) => (
+                <li key={i} id={token.symbol}>
+                  {rEqual(symbol, token.symbol) ? (
                     <div className="dis">
                       <span>
-                        <img src={t.icon} alt="icon" />
+                        <img src={token.icon} alt="icon" />
                         <span className="tokenName_textStyle">
-                          {t.symbol}
+                          {token.symbol}
                         </span>{" "}
                       </span>
                       
                     </div>
                   ) : (
                     <>
-                      <Link to="#" onClick={() => selectCurrency(t, tokenType)}>
-                        <img src={t.icon} alt="icon" />
-                        <span className="tokenName_textStyle">{t.symbol}</span>
+                      <Link to="#" onClick={() => selectCurrency(token, tokenType)}>
+                        <img src={token.icon} alt="icon" />
+                        <span className="tokenName_textStyle">{token.symbol}</span>
                       </Link>
                       {/* {console.log("t.isAdd",t.isAdd,"isAdded",isAdded)} */}
-                      {t.isAdd ? (
+                      {
+                      token.showAdd ? (
                         <span
-                          className="tokenName_textStyle add_token"
-                          onClick={(e) => { 
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleTokenList(t)
-                          }
-                          }
+                        className="tokenName_textStyle add_token"
+                        onClick={e => eHandle(e) && dispatch(tokenShowRemove(token))}
                         >
                           Add
                         </span>
-                      )
-                      
-                      : (
+                        
+                      ) : (
                         <span
                           className="tokenName_textStyle add_token"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation(); 
-                            handleRemoveTokenList(t);
-                          }}
-                        >
+                          onClick={e => {
+                              eHandle(e);
+                              commonHook.delTokenFromList(token)
+                              onRemoveToken();
+                            }
+                          }
+                          >
                           Remove
                         </span>
                       )}
-                      <TokenBalance address={t.address} />
+                      <TokenBalance address={token.address} />
                     </>
                   )}
                 </li>

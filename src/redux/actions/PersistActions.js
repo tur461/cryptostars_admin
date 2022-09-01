@@ -5,7 +5,10 @@ import { ContractServices } from "../../services/ContractServices";
 export const actionTypes = {
   USER_CONNECTED: "USER_CONNECTED",
   LOGOUT: "LOGOUT",
+  TOKEN_SHOW_REMOVE: 'TOKEN_SHOW_REMOVE',
   TOKEN_LIST_ADD: "TOKEN_LIST_ADD",
+  TOKEN_LIST_ADD_TEMPO: "TOKEN_LIST_ADD_TEMPO",
+  TOKEN_LIST_UPDATE_TEMPO: "TOKEN_LIST_UPDATE_TEMPO",
   TOKEN_LIST_DEL: "TOKEN_LIST_DEL",
   SAVE_SLIPPAGE_PERCENTAGE: "SAVE_SLIPPAGE_PERCENTAGE",
   SAVE_DEADLINE: "SAVE_DEADLINE",
@@ -51,16 +54,31 @@ export const logout = () => {
   };
 };
 export const tokenListAdd = (token) => {
-  
+  console.log('[dispatch] tokenListAdd', token);
   return {
     type: actionTypes.TOKEN_LIST_ADD,
-    payload: {...token, isAdd: !1},
+    payload: {...token, showAdd: !0},
   };
 };
-export const tokenListDel = (token) => {
+export const tokenShowRemove = (token) => {
+  console.log('[dispatch] tokenShowRemove', token);
+  return {
+    type: actionTypes.TOKEN_SHOW_REMOVE,
+    payload: token,
+  };
+};
+export const tokenListDel = idx => {
+  console.log('[dispatch] tokenListDel', idx);
   return {
     type: actionTypes.TOKEN_LIST_DEL,
-    payload: {...token, isAdd: true},
+    payload: idx,
+  };
+};
+export const updateTokenListTempo = list => {
+  console.log('[dispatch] updateTokenListTempo', list);
+  return {
+    type: actionTypes.TOKEN_LIST_UPDATE_TEMPO,
+    payload: [...list],
   };
 };
 export const saveSlippagePercentage = (data) => {
