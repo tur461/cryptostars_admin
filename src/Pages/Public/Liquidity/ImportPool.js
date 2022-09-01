@@ -14,10 +14,11 @@ import ModalSelectToken from "../../../Components/ModalSelectToken/ModalSelectTo
 import { ContractServices } from "../../../services/ContractServices";
 import {
   addLpToken,
-  searchTokenByNameOrAddress,
+  // searchTokenByNameOrAddress,
   startLoading,
   stopLoading,
 } from "../../../redux/actions";
+import useCommonHook from "../../../hooks/common";
 import { toast } from "../../../Components/Toast/Toast";
 import { ExchangeService } from "../../../services/ExchangeService";
 import { TOKEN_LIST, WETH } from "../../../assets/tokens";
@@ -27,6 +28,7 @@ import TokenBalance from "../../../Components/ModalSelectToken/TokenBalance";
 
 const ImportPool = (props) => {
   const dispatch = useDispatch();
+  const commonHook = useCommonHook();
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
   const tokenList = useSelector((state) => state.persist.tokenList);
 
@@ -146,14 +148,14 @@ const ImportPool = (props) => {
     }
   };
 
-  const handleSearchToken = async (data) => {
-    try {
-      const res = await dispatch(searchTokenByNameOrAddress(data, isUserConnected));
-      setFilteredTokenList(res);
-    } catch (error) {
-      toast.error("Something went wrong!");
-    }
-  };
+  // const handleSearchToken = async (data) => {
+  //   try {
+  //     const res = await dispatch(searchTokenByNameOrAddress(data, isUserConnected));
+  //     setFilteredTokenList(res);
+  //   } catch (error) {
+  //     toast.error("Something went wrong!");
+  //   }
+  // };
   return (
     <>
       <Card>
@@ -238,7 +240,8 @@ const ImportPool = (props) => {
           tokenList={filteredTokenList}
           closeModal={() => setModalCurrency(!modalCurrency)}
           selectCurrency={onHandleSelectCurrency}
-          searchToken={handleSearchToken}
+          // searchToken={handleSearchToken}
+          searchToken={q => commonHook.searchTokenByNameOrAddress(q.trim(), isUserConnected)}
           searchByName={setSearch}
           tokenType={tokenType}
           handleOrder={setFilteredTokenList}

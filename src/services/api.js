@@ -64,7 +64,7 @@ function savePoolInfoToDB(poolInfo, callback) {
             body: JSON.stringify(poolInfo),
             headers: {
                 'content-type': 'application/json'
-            },        
+            },
         })
         .then(d => {
             console.log('sucess saving token info');

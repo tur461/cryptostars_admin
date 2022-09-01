@@ -13,15 +13,18 @@ import { ContractServices } from "../../../services/ContractServices";
 import {
   addTransaction,
   checkUserLpTokens,
-  searchTokenByNameOrAddress,
+  // searchTokenByNameOrAddress,
   startLoading,
   stopLoading,
 } from "../../../redux/actions";
 import { toast } from "../../../Components/Toast/Toast";
 import { ExchangeService } from "../../../services/ExchangeService";
-import { MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from "../../../assets/tokens";
+// import { MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from "../../../assets/tokens";
+import { INIT_VAL, MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from "../../../assets/tokens";
 import closeBtn from "../../../assets/images/ionic-md-close.svg";
 import TransactionModal from "../../../Components/TransactionModal/TransactionModal";
+import useCommonHook from "../../../hooks/common";
+import { isAddr } from "../../../services/utils";
 import { BigNumber } from "bignumber.js";
 // import { ContractServices } from "../../../services/ContractServices";
 import { NETWORK_CHAIN_ID } from "../../../constant";
@@ -30,7 +33,7 @@ import { toHex } from "../../../services/utils";
 import { savePoolInfoToDB } from "../../../services/api";
 const AddLiquidity = (props) => {
   const dispatch = useDispatch();
-
+  const commonHook = useCommonHook();
   const MINIMUM_LIQUIDITY = 10 ** 3;
 
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
@@ -418,7 +421,8 @@ const AddLiquidity = (props) => {
       } else {
         currentPairAddress = await ExchangeService.getPair(a1, a2);
       }
-      if (currentPairAddress !== "0x0000000000000000000000000000000000000000") {
+      // if (currentPairAddress !== "0x0000000000000000000000000000000000000000") {
+        if (isAddr(currentPairAddress)) {
         setCurrentPairAddress(currentPairAddress);
         const lpTokenBalance = await ContractServices.getTokenBalance(
           currentPairAddress,
@@ -499,16 +503,16 @@ const AddLiquidity = (props) => {
       toast.error("Transaction Reverted!");
     }
   };
-  const handleSearchToken = async (data) => {
-    try {
-      const res = await dispatch(searchTokenByNameOrAddress(data, isUserConnected));
-      console.log("RES",res)
-      setFilteredTokenList(res);
+  // const handleSearchToken = async (data) => {
+  //   try {
+  //     const res = await dispatch(searchTokenByNameOrAddress(data, isUserConnected));
+  //     console.log("RES",res)
+  //     setFilteredTokenList(res);
 
-    } catch (error) {
-      toast.error("Something went wrong!");
-    }
-  };
+  //   } catch (error) {
+  //     toast.error("Something went wrong!");
+  //   }
+  // };
   console.log("FilteredTokenList",filteredTokenList);
   const handleApprovalButton = (tokenType) => {
     if (tokenOneApproval && tokenType === "TK1") {
@@ -625,13 +629,14 @@ const AddLiquidity = (props) => {
 
   const addLiquidity = async () => {
     console.log("HIT")
+    dispatch(startLoading())
     const pool_Obj = {
       token1:tokenOne.symbol,
       token2:tokenTwo.symbol,
     }
-    savePoolInfoToDB(pool_Obj,(d) => {
-      console.log("HIT to saveTokenInfoToDB",d)
-    })
+    // savePoolInfoToDB(pool_Obj,(d) => {
+    //   console.log("HIT to saveTokenInfoToDB",d)
+    // })
     // dispatch(startLoading())
     const acc = await ContractServices.getDefaultAccount();
     if (acc && acc.toLowerCase() !== isUserConnected.toLowerCase()) {
@@ -769,6 +774,11 @@ const AddLiquidity = (props) => {
         const result = await ExchangeService.addLiquidity(data);
         console.log(result, "add liquidity transaction");
 
+        if(result){
+          savePoolInfoToDB(pool_Obj,(d) => {
+            console.log("HIT to saveTokenInfoToDB",d)
+          })
+        }
         dispatch(stopLoading());
         if (result) {
           setTxHash(result);
@@ -991,11 +1001,17 @@ const AddLiquidity = (props) => {
           tokenList={filteredTokenList}
           closeModal={() => setModalCurrency(!modalCurrency)}
           selectCurrency={onHandleSelectCurrency}
-          searchToken={handleSearchToken}
+          // searchToken={handleSearchToken}
+          searchToken={q => commonHook.searchTokenByNameOrAddress(q.trim(), isUserConnected)}
           searchByName={setSearch}
           tokenType={tokenType}
           handleOrder={setFilteredTokenList}
           currencyName={selectedCurrency}
+          onRemoveToken={_ => {
+            setCurrencyNameForTokenOne(INIT_VAL.TOKEN_1);
+            setCurrencyNameForTokenTwo(INIT_VAL.TOKEN_2);     
+          }}
+
         />
       )}
       {showTransactionModal && (

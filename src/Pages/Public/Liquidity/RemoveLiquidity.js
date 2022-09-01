@@ -10,10 +10,11 @@ import ModalSelectToken from "../../../Components/ModalSelectToken/ModalSelectTo
 import { ContractServices } from "../../../services/ContractServices";
 import {
   addTransaction,
-  searchTokenByNameOrAddress,
+  // searchTokenByNameOrAddress,
   startLoading,
   stopLoading,
 } from "../../../redux/actions";
+import useCommonHook from "../../../hooks/common";
 import { toast } from "../../../Components/Toast/Toast";
 import { ExchangeService } from "../../../services/ExchangeService";
 import { MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from "../../../assets/tokens";
@@ -29,6 +30,7 @@ const RemoveLiquidity = (props) => {
   const dispatch = useDispatch();
 
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
+  const commonHook = useCommonHook();
   const tokenList = useSelector((state) => state.persist.tokenList);
   const deadline = useSelector((state) => state.persist.deadline);
   const slippagePercentage = useSelector(
@@ -243,14 +245,14 @@ const RemoveLiquidity = (props) => {
     }
   };
 
-  const handleSearchToken = async (data) => {
-    try {
-      const res = await dispatch(searchTokenByNameOrAddress(data));
-      setFilteredTokenList(res);
-    } catch (error) {
-      toast.error("Something went wrong!");
-    }
-  };
+  // const handleSearchToken = async (data) => {
+  //   try {
+  //     const res = await dispatch(searchTokenByNameOrAddress(data));
+  //     setFilteredTokenList(res);
+  //   } catch (error) {
+  //     toast.error("Something went wrong!");
+  //   }
+  // };
   const handleLiquidityChange = (value, totalValue, type) => {
     if (value > 0) {
       if (value >= totalValue) {
@@ -929,7 +931,8 @@ const RemoveLiquidity = (props) => {
             tokenList={filteredTokenList}
             closeModal={() => setModalCurrency(!modalCurrency)}
             selectCurrency={onHandleSelectCurrency}
-            searchToken={handleSearchToken}
+            // searchToken={handleSearchToken}
+            searchToken={q => commonHook.searchTokenByNameOrAddress(q.trim(), isUserConnected)}
             searchByName={setSearch}
             tokenType={tokenType}
             handleOrder={setFilteredTokenList}

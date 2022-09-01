@@ -1,11 +1,14 @@
 import packageJson from "../../../package.json";
 import { ContractServices } from "../../services/ContractServices";
 
-/** seting action types */
+/* seting action types */
 export const actionTypes = {
   USER_CONNECTED: "USER_CONNECTED",
   LOGOUT: "LOGOUT",
+  TOKEN_SHOW_REMOVE: 'TOKEN_SHOW_REMOVE',
   TOKEN_LIST_ADD: "TOKEN_LIST_ADD",
+  TOKEN_LIST_ADD_TEMPO: "TOKEN_LIST_ADD_TEMPO",
+  TOKEN_LIST_UPDATE_TEMPO: "TOKEN_LIST_UPDATE_TEMPO",
   TOKEN_LIST_DEL: "TOKEN_LIST_DEL",
   SAVE_SLIPPAGE_PERCENTAGE: "SAVE_SLIPPAGE_PERCENTAGE",
   SAVE_DEADLINE: "SAVE_DEADLINE",
@@ -45,23 +48,42 @@ export const login = (data) => {
 export const logout = () => {
   ContractServices.setWalletType("Metamask");
   window.location.reload();
+  console.log('ccccccc');
   return {
     type: actionTypes.LOGOUT,
   };
 };
-export const tokenListAdd = (data) => {
-  console.log("ddddddddddddddddddddddd",data);
+export const tokenListAdd = (token) => {
+  
   return {
     type: actionTypes.TOKEN_LIST_ADD,
-    payload: data,
+    // payload: {...token, isAdd: !1},
+    payload: {...token, showAdd: !0},
   };
 };
-export const tokenListDel = (data) => {
+// export const tokenListDel = (token) => {
+  export const tokenShowRemove = (token) => {
+    console.log('[dispatch] tokenShowRemove', token);
+    return {
+      type: actionTypes.TOKEN_SHOW_REMOVE,
+      payload: token,
+    };
+  };
+  export const tokenListDel = idx => {
+    console.log('[dispatch] tokenListDel', idx);  
   return {
     type: actionTypes.TOKEN_LIST_DEL,
-    payload: data,
+    // payload: {...token, isAdd: true},
+    payload: idx,
   };
 };
+export const updateTokenListTempo = list => {
+  console.log('[dispatch] updateTokenListTempo', list);
+  return {
+    type: actionTypes.TOKEN_LIST_UPDATE_TEMPO,
+    payload: [...list],
+  }
+}
 export const saveSlippagePercentage = (data) => {
   return {
     type: actionTypes.SAVE_SLIPPAGE_PERCENTAGE,

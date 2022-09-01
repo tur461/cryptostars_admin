@@ -8,7 +8,7 @@ import InputSelectCurrency from '../../../Components/InputSelectCurrency/InputSe
 import ModalSelectToken from '../../../Components/ModalSelectToken/ModalSelectToken'
 import SwapModal from '../../../Components/SwapModal/SwapModal'
 import { ContractServices } from "../../../services/ContractServices"
-import { searchTokenByNameOrAddress, addTransaction, startLoading, stopLoading } from "../../../redux/actions"
+import { addTransaction, startLoading, stopLoading } from "../../../redux/actions"
 import { toast } from '../../../Components/Toast/Toast';
 import { ExchangeService } from '../../../services/ExchangeService';
 import { MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from '../../../assets/tokens'
@@ -22,11 +22,13 @@ import RecentTransactions from '../../../Components/RecentTransactions/RecentTra
 import defaultImg from '../../../assets/images/token_icons/default.svg'
 import { BigNumber } from "bignumber.js"
 import TransactionModal from '../../../Components/TransactionModal/TransactionModal'
+import useCommonHook from '../../../hooks/common';
 import { LIQUIDITY_PROVIDER_FEE } from '../../../constant';
 
 const Swap = props => {
 
     const dispatch = useDispatch();
+    const commonHook = useCommonHook();
 
     const isUserConnected = useSelector(state => state.persist.isUserConnected);
     const tokenList = useSelector(state => state.persist.tokenList);
@@ -395,14 +397,14 @@ const Swap = props => {
         }
     }
 
-    const handleSearchToken = async (data) => {
-        try {
-            const res = await dispatch(searchTokenByNameOrAddress(data));
-            setFilteredTokenList(res);
-        } catch (error) {
-            toast.error("Something went wrong!");
-        }
-    }
+    // const handleSearchToken = async (data) => {
+    //     try {
+    //         const res = await dispatch(searchTokenByNameOrAddress(data));
+    //         setFilteredTokenList(res);
+    //     } catch (error) {
+    //         toast.error("Something went wrong!");
+    //     }
+    // }
     const handleCloseSettings = () => setShowSettings(false);
     const handleCloseRecent = () => setShowRecent(false);
 
@@ -820,7 +822,7 @@ const Swap = props => {
                 tokenList={filteredTokenList}
                 closeModal={() => setModalCurrency(!modalCurrency)}
                 selectCurrency={onHandleSelectCurrency}
-                searchToken={handleSearchToken}
+                searchToken={q => commonHook.searchTokenByNameOrAddress(q.trim(), isUserConnected)}
                 searchByName={setSearch}
                 tokenType={tokenType}
                 handleOrder={setFilteredTokenList}

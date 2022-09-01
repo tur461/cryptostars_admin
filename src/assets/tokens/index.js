@@ -142,3 +142,9 @@ export const MAIN_CONTRACT_LIST = {
     abi: clonedTokenABI,
   },
 };
+
+export const INIT_VAL = {
+  TOKEN_1: TOKEN_LIST[0].symbol,
+  TOKEN_2: 'Select a token',
+}
+

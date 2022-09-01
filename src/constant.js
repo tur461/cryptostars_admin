@@ -33,6 +33,9 @@ export const TWITTER_LINK = 'https://twitter.com/AnchorSwap';
 export const TELEGRAM_LINK = 'https://t.me/joinchat/KP-_HKro73ViZTZk';
 export const AUDIT_LINK = 'https://docs.anchorswap.finance/audit/';
 
+export const ADDRESS = {
+  ZERO: `0x${'0'.repeat(40)}`,
+}
 
 export const isMetamakConnected = async () => {
   const { ethereum } = window;

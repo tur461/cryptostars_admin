@@ -165,6 +165,7 @@ const getBurnedToken = async () => {
 
 const addLiquidity = async (data) => {
   return new Promise(async (resolve, reject) => {
+    
     try {
       let {
         tokenA,
