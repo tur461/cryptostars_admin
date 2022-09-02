@@ -27,7 +27,7 @@ console.log("isUserConnected",isUserConnected);
           Connect
         </button>
       </div>}
-        {isUserConnected && <h1>Welcome to Crypto Star</h1>}
+        {isUserConnected && <h1 className='m-0'>Welcome to Crypto Star</h1>}
     </div>
   );
 }

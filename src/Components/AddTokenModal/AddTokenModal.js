@@ -170,12 +170,13 @@ function AddTokenModal() {
                 <li>
                   <div className="token_info d-flex mb-3">
                     <FormLabel className="text_head">Token Icon</FormLabel>
-                    <div >
+                    <div className="p-2">
                       <input
                         label="Token Icon"
                         type="file"
                         accept=".png,.jpg"
                         onChange={handleImagedata}
+                        className="choose_file"
                       />
                       <span>{nameError}</span>
                     </div>

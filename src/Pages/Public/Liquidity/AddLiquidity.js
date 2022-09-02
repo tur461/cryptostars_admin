@@ -634,10 +634,6 @@ const AddLiquidity = (props) => {
       token1:tokenOne.symbol,
       token2:tokenTwo.symbol,
     }
-    // savePoolInfoToDB(pool_Obj,(d) => {
-    //   console.log("HIT to saveTokenInfoToDB",d)
-    // })
-    // dispatch(startLoading())
     const acc = await ContractServices.getDefaultAccount();
     if (acc && acc.toLowerCase() !== isUserConnected.toLowerCase()) {
       return toast.error("Wallet address doesn`t match!");
@@ -677,7 +673,7 @@ const AddLiquidity = (props) => {
         amountTokenDesired = tokenTwoValue;
         amountTokenMin = BigNumber(
           Math.floor(
-            (amountTokenDesired -
+            (amountTokenDesired-
               (amountTokenDesired * slippagePercentage) / 100) *
               10 ** tokenTwo.decimals
           )
@@ -737,6 +733,8 @@ const AddLiquidity = (props) => {
         setLiquidityConfirmation(false);
       }
     } else {
+      // dispatch(startLoading())
+      console.log("HIT4")
       let amountADesired = tokenOneValue;
       let amountBDesired = tokenTwoValue;
       let amountAMin = Math.floor(
@@ -770,6 +768,7 @@ const AddLiquidity = (props) => {
         value,
       };
       try {
+        console.log("HIT5")
         dispatch(startLoading());
         const result = await ExchangeService.addLiquidity(data);
         console.log(result, "add liquidity transaction");
