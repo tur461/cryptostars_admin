@@ -66,10 +66,6 @@ const isMetamaskInstalled = async (type) => {
   }
 };
 
-const isBinanceChainInstalled = async () => {
-  
-};
-
 //Network switch protection
 const walletWindowListener = async () => {
   const { ethereum } = window;
@@ -156,7 +152,7 @@ const callWeb3 = async () => {
   if (web3Object) {
     return web3Object;
   }
-  const { ethereum, web3, BinanceChain } = window;
+  const { ethereum, web3 } = window;
   if (walletTypeObject === "Metamask") {
     if (ethereum && ethereum.isMetaMask) {
       web3Object = new Web3(ethereum);
@@ -401,7 +397,6 @@ const callWeb3ForWalletConnect = async (provider) => {
 //exporting functions
 export const ContractServices = {
   isMetamaskInstalled,
-  isBinanceChainInstalled,
   callWeb3,
   callContract,
   calculateGasPrice,

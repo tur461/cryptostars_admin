@@ -80,9 +80,6 @@ const Header = (props) => {
     if (walletType === "Metamask") {
       address = await ContractServices.isMetamaskInstalled("");
     }
-    if (walletType === "BinanceChain") {
-      address = await ContractServices.isBinanceChainInstalled();
-    }
 
     ContractServices.walletWindowListener();
     if (address) {
@@ -95,18 +92,10 @@ const Header = (props) => {
   };
   const loginCall = async (walletType) => {
     try {
-      if (walletType === "BinanceChain") {
-        const account = await ContractServices.isBinanceChainInstalled();
-        if (account) {
-          dispatch(login({ account, walletType }));
-          setWalletShow(false);
-        }
-      } else {
-        const account = await ContractServices.isMetamaskInstalled("");
-        if (account) {
-          dispatch(login({ account, walletType }));
-          setWalletShow(false);
-        }
+      const account = await ContractServices.isMetamaskInstalled("");
+      if (account) {
+        dispatch(login({ account, walletType }));
+        setWalletShow(false);
       }
     } catch (err) {
       toast.error(err.message);
