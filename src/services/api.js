@@ -16,8 +16,8 @@ function saveTokenInfoToDB(tokenInfo, callback) {
         console.log('sucess saving token info');
         callback(d);
     })
-    .catch(e => {
-        console.log("errrrrrr",e)
+    .catch(err => {
+        console.log("saveTokenInfoToDB Error:", err)
     })
 }
 
@@ -27,7 +27,7 @@ function saveTokenIconToDB(file, iconName, callback) {
     console.log('fff', file);
     imgData.append('token_icon', file)
 
-    fetch('http://localhost:8448/api/save/tokenIcon', {
+    fetch(BACK_END_URL + '/api/save/tokenIcon', {
         method: 'POST',
         // headers: {'Content-Type': 'multipart/form-data'},
         body: imgData,
@@ -38,7 +38,7 @@ function saveTokenIconToDB(file, iconName, callback) {
 }
 
 function retreiveTokenList(callback) {
-        fetch("http://localhost:8448/api/get/tokenInfoList", {
+        fetch(BACK_END_URL + "/api/get/tokenInfoList", {
             method: 'GET',
             headers: {
                 'content-type': 'application/json'
@@ -51,7 +51,7 @@ function retreiveTokenList(callback) {
             callback(infoList)
         })
         .catch(err => {
-            console.log('eeeeeeeeeee', err);
+            console.log('retreiveTokenList Error:', err);
         })
 }
 
@@ -70,13 +70,13 @@ function savePoolInfoToDB(poolInfo, callback) {
             console.log('sucess saving token info');
             callback(d);
         })
-        .catch(e => {
-            console.log("errrrrrr",e)
+        .catch(err => {
+            console.log("savePoolInfoToDB Error:", err)
         })
 }
 
 function retreivePoolInfoList(callback) {
-    fetch("http://localhost:8448/api/get/poolInfoList", {
+    fetch(BACK_END_URL + "/api/get/poolInfoList", {
         method: 'GET',
         headers: {
             'content-type': 'application/json'
@@ -89,7 +89,7 @@ function retreivePoolInfoList(callback) {
         callback(poolInfoList)
     })
     .catch(err => {
-        console.log('eeeeeeeeeee', err);
+        console.log('retreivePoolInfoList Error', err);
     })
 }
 

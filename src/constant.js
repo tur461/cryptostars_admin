@@ -1,5 +1,3 @@
-import { toHex } from "./services/utils";
-
 export const HOME_ROUTE = process.env.REACT_APP_HOME_ROUTE;
 export const API_HOST = process.env.REACT_APP_API_URL;
 export const CAPTCHA_KEY = process.env.REACT_APP_GOOGLE_CAPTCHA_KEY;
@@ -8,7 +6,7 @@ export const NETWORK_CHAIN_NAME = process.env.REACT_APP_NETWORK_CHAIN_NAME;
 export const NETWORK_RPC_URL = process.env.REACT_APP_NETWORK_RPC_URL;
 export const NETWORK_LINK = process.env.REACT_APP_NETWORK_LINK;
 export const NETWORK_VERSION = process.env.REACT_APP_NETWORK_VERSION;
-export const NETWORK_CHAIN_ID = 0x152;
+export const NETWORK_CHAIN_ID = process.env.REACT_APP_NETWORK_CHAIN_ID;
 export const NETWORK_NATIVE_CURRENCY_NAME = process.env.REACT_APP_NETWORK_NATIVE_CURRENCY_NAME;
 export const NETWORK_NATIVE_CURRENCY_SYMBOL = process.env.REACT_APP_NETWORK_NATIVE_CURRENCY_SYMBOL;
 export const NETWORK_NATIVE_CURRENCY_DECIMALS = process.env.REACT_APP_NETWORK_NATIVE_CURRENCY_DECIMALS;
@@ -44,7 +42,7 @@ export const isMetamakConnected = async () => {
     if (result) {
       const chain = await ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: toHex(NETWORK_CHAIN_ID) }],
+        params: [{ chainId: NETWORK_CHAIN_ID }],
       });
       return true;
     } else {
