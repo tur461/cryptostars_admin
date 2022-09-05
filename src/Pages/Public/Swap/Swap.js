@@ -23,7 +23,8 @@ import defaultImg from '../../../assets/images/token_icons/default.svg'
 import { BigNumber } from "bignumber.js"
 import TransactionModal from '../../../Components/TransactionModal/TransactionModal'
 import useCommonHook from '../../../hooks/common';
-import { LIQUIDITY_PROVIDER_FEE } from '../../../constant';
+import { LIQUIDITY_PROVIDER_FEE, TOKEN } from '../../../constant';
+import { isAddr, rEqual } from '../../../services/utils';
 
 const Swap = props => {
 
@@ -51,7 +52,7 @@ const Swap = props => {
     const [tokenTwoApproved, setTokenTwoApproved] = useState(false);
 
     const [lpTokenBalance, setLpTokenBalance] = useState(0);
-    const [tokenType, setTokenType] = useState('TK1');
+    const [tokenType, setTokenType] = useState(TOKEN.A);
     const [showSupplyModal, setShowSupplyModal] = useState(false);
 
     const [search, setSearch] = useState("");
@@ -89,7 +90,7 @@ const Swap = props => {
 
     useEffect(() => {
         if (tokenOneValue) {
-            handleTokenValue(tokenOneValue, 'TK1');
+            handleTokenValue(tokenOneValue, TOKEN.A);
         }
     }, [tokenTwo, tokenTwoCurrency, tokenTwoBalance, tokenTwoIcon]);
 
@@ -105,19 +106,19 @@ const Swap = props => {
         if (!isUserConnected) {
             return toast.error('Connect wallet first!');
         }
-        setSelectedCurrency(tokenType === 'TK1' ? tokenTwoCurrency : tokenOneCurrency);
+        setSelectedCurrency(rEqual(tokenType, TOKEN.A) ? tokenTwoCurrency : tokenOneCurrency);
         setModalCurrency({
             modalCurrency: true,
         });
         setTokenType(tokenType);
     }
-    const onHandleSelectCurrency = async (token, selecting) => {
+    const onHandleSelectCurrency = async (token, selected) => {
         const { address, symbol, icon } = token;
         if (!isUserConnected) {
             return toast.error('Connect wallet first!');
         }
         let a1, a2, oneBalance = 0, twoBalance = 0;
-        if (selecting === 'TK1') {
+        if (rEqual(selected, TOKEN.A)) {
             a1 = address;
             if (address === 'BNB') {
                 oneBalance = await ContractServices.getBNBBalance(isUserConnected);
@@ -137,10 +138,10 @@ const Swap = props => {
                 a2 = tokenTwo.address;
             }
             if (tokenOneValue > 0) {
-                const r = await getAllowance(tokenOneValue, 'TK1');
+                const r = await getAllowance(tokenOneValue, TOKEN.A);
             }
         }
-        if (selecting === 'TK2') {
+        if (rEqual(selected, TOKEN.B)) {
             a2 = address;
             if (address === 'BNB') {
                 setTokenTwoApproved(true);
@@ -159,7 +160,7 @@ const Swap = props => {
                 a1 = tokenOne.address;
             }
             if (tokenTwoValue > 0) {
-                const r = await getAllowance(tokenTwoValue, 'TK2');
+                const r = await getAllowance(tokenTwoValue, TOKEN.B);
             }
         }
         setModalCurrency(!modalCurrency);
@@ -177,7 +178,7 @@ const Swap = props => {
                 currentPairAddress = await ExchangeService.getPair(a1, a2);
             }
 
-            if (currentPairAddress !== '0x0000000000000000000000000000000000000000') {
+            if (isAddr(currentPairAddress)) {
                 setCurrentPairAddress(currentPairAddress);
                 const lpTokenBalance = await ContractServices.getTokenBalance(currentPairAddress, isUserConnected);
                 setLpTokenBalance(lpTokenBalance);
@@ -197,7 +198,7 @@ const Swap = props => {
     }
 
     const getAllowance = async (amount, tokenType) => {
-        if (tokenType === 'TK1') {
+        if (rEqual(tokenType, TOKEN.A)) {
             if (isUserConnected && tokenOne.address !== 'BNB') {
                 let allowance = await ContractServices.allowanceToken(tokenOne.address, MAIN_CONTRACT_LIST.router.address, isUserConnected);
                 allowance = Number(allowance) / 10 ** Number(tokenOne.decimals);
@@ -212,7 +213,7 @@ const Swap = props => {
                 setTokenOneApproved(true);
             }
         }
-        if (tokenType === 'TK2') {
+        if (rEqual(tokenType, TOKEN.B)) {
             if (isUserConnected && tokenTwo.address !== 'BNB') {
                 let allowance = await ContractServices.allowanceToken(tokenTwo.address, MAIN_CONTRACT_LIST.router.address, isUserConnected);
                 allowance = Number(allowance) / 10 ** Number(tokenTwo.decimals);
@@ -252,7 +253,7 @@ const Swap = props => {
             if (acc && acc.toLowerCase() !== isUserConnected.toLowerCase()) {
                 return toast.error('Wallet address doesn`t match!');
             }
-            if (tokenType === 'TK1') {
+            if (rEqual(tokenType, TOKEN.A)) {
                 setTokenOneValue(amount);
                 if (tokenTwoCurrency === 'Select a token') {
                     setBtnText('Select token');
@@ -283,7 +284,7 @@ const Swap = props => {
                         const ratio = Number(amount) / Number(a);
                         setSharePoolValue(ratio.toFixed(10));
                         setTokenTwoValue(a);
-                        setAmountIn("TK1");
+                        setAmountIn(TOKEN.A);
                         let amountOut = BigNumber(a * 10 ** tokenTwo.decimals).toFixed();
                         const minimumReceived = Number(amountOut) - (Number(amountOut) * slippagePercentage / 100);
                         setMinReceived(minimumReceived);
@@ -291,9 +292,9 @@ const Swap = props => {
                     }
                 }
             }
-            if (tokenType === 'TK2') {
+            if (rEqual(tokenType, TOKEN.B)) {
                 setTokenTwoValue(amount);
-                if (tokenOneCurrency === 'Select a token') {
+                if (rEqual(tokenOneCurrency, 'Select a token')) {
                     setBtnText('Select token');
                     return;
                 }
@@ -322,7 +323,7 @@ const Swap = props => {
                         setTokenOneValue(a);
                         const ratio = Number(amount) / Number(a);
                         setSharePoolValue(ratio.toFixed(10))
-                        setAmountIn("TK2");
+                        setAmountIn(TOKEN.B);
                         let amountOut = BigNumber(a * 10 ** tokenTwo.decimals).toFixed();
                         const minimumReceived = Number(amountOut) - (Number(amountOut) * slippagePercentage / 100);
                         setMinReceived(minimumReceived);
@@ -344,7 +345,7 @@ const Swap = props => {
                     currentPairAddress = await ExchangeService.getPair(a1, a2);
                 }
 
-                if (currentPairAddress !== '0x0000000000000000000000000000000000000000') {
+                if (isAddr(currentPairAddress)) {
                     setCurrentPairAddress(currentPairAddress);
                     const lpTokenBalance = await ContractServices.getTokenBalance(currentPairAddress, isUserConnected);
                     setLpTokenBalance(lpTokenBalance);
@@ -438,7 +439,7 @@ const Swap = props => {
             dispatch(startLoading());
             const data = await handleBNBSwapForTK1(dl, value);
             try {
-                const result = amountIn === 'TK1' ?
+                const result = rEqual(amountIn, TOKEN.A) ?
 
                     await ExchangeService.swapExactETHForTokens(data) :
 
@@ -469,7 +470,7 @@ const Swap = props => {
             dispatch(startLoading());
             const data = await handleBNBSwapForTK2(value);
             try {
-                const result = amountIn === 'TK1' ?
+                const result = rEqual(amountIn, TOKEN.A) ?
 
                     await ExchangeService.swapExactTokensForETH(data, a1, a2) :
 
@@ -500,7 +501,7 @@ const Swap = props => {
             dispatch(startLoading());
             const data = await handleSwapAmoutnIn(value);
             try {
-                const result = amountIn === 'TK1' ?
+                const result = rEqual(amountIn, TOKEN.A) ?
 
                     await ExchangeService.swapExactTokensForTokens(data, a1, a2) :
 
@@ -534,7 +535,7 @@ const Swap = props => {
         let amountAMin;
         let amountBMin;
 
-        if (amountIn == "TK1") {
+        if (rEqual(amountIn, TOKEN.A)) {
             let amountADesired = tokenOneValue * 10 ** tokenOne.decimals;
             let amountBDesired = tokenTwoValue * 10 ** tokenTwo.decimals;
 
@@ -542,7 +543,7 @@ const Swap = props => {
             amountBMin = BigNumber(amountBDesired - (amountBDesired * slippagePercentage / 100)).toFixed();
         }
 
-        if (amountIn == "TK2") {
+        if (rEqual(amountIn, TOKEN.B)) {
             let amountADesired = tokenOneValue * 10 ** tokenOne.decimals;
             let amountBDesired = tokenTwoValue * 10 ** tokenTwo.decimals;
 
@@ -564,14 +565,14 @@ const Swap = props => {
     }
     const handleBNBSwapForTK1 = async (dl, value) => {
         let amountOutMin;
-        if (amountIn === "TK1") {
+        if (rEqual(amountIn, TOKEN.A)) {
             let amountOut = BigNumber(Math.floor(tokenTwoValue * 10 ** tokenTwo.decimals)).toFixed();
 
             amountOutMin = BigNumber(Math.floor(Number(amountOut) - (Number(amountOut) * slippagePercentage / 100))).toFixed();
             amountOutMin = amountOutMin.toString();
         }
 
-        if (amountIn === "TK2") {
+        if (rEqual(amountIn, TOKEN.B)) {
             let amountOut = BigNumber(Math.floor(tokenOneValue * 10 ** tokenOne.decimals)).toFixed();
             amountOutMin = BigNumber(Math.floor(amountOut)).toFixed();
             amountOutMin = amountOutMin.toString();
@@ -591,7 +592,7 @@ const Swap = props => {
         let dl = Math.floor((new Date()).getTime() / 1000);
         dl = dl + (deadline * 60);
 
-        if (amountIn === "TK1") {
+        if (rEqual(amountIn, TOKEN.A)) {
             let amountOut = tokenTwoValue * 10 ** tokenOne.decimals;
             let amountIn = BigNumber(Math.floor(tokenOneValue * 10 ** tokenOne.decimals)).toFixed();
             let amountOutMin = BigNumber(Math.floor(amountOut - (amountOut * slippagePercentage / 100))).toFixed();
@@ -606,7 +607,7 @@ const Swap = props => {
             };
         }
 
-        if (amountIn === "TK2") {
+        if (rEqual(amountIn, TOKEN.B)) {
             let amountIn = tokenTwoValue * 10 ** tokenTwo.decimals;
             let amountOut = BigNumber(Math.floor(tokenOneValue * 10 ** tokenOne.decimals)).toFixed();
             let amountInMax = BigNumber(Math.floor(amountIn + (amountIn * slippagePercentage / 100))).toFixed();
@@ -632,7 +633,7 @@ const Swap = props => {
         setTokenTwoIcon(tokenOneIcon);
         setTokenOne(tokenTwo);
         setTokenTwo(tokenOne);
-        amountIn == 'TK1' ? setAmountIn('TK2') : setAmountIn('TK1');
+        rEqual(amountIn, TOKEN.A) ? setAmountIn(TOKEN.B) : setAmountIn(TOKEN.A);
     }
     //call web3 approval function
     const handleTokenApproval = async (tokenType) => {
@@ -642,10 +643,10 @@ const Swap = props => {
         // const value = (2*256 - 1).toString();
         const value = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
         let tokenAddress = 'BNB';
-        if (tokenType === 'TK1') {
+        if (rEqual(tokenType, TOKEN.A)) {
             tokenAddress = tokenOne.address;
         }
-        if (tokenType === 'TK2') {
+        if (rEqual(tokenType, TOKEN.B)) {
             tokenAddress = tokenTwo.address;
         }
         try {
@@ -659,13 +660,13 @@ const Swap = props => {
                     message: `Approve`,
                     tx: r.transactionHash
                 };
-                if (tokenType === 'TK1') {
+                if (rEqual(tokenType, TOKEN.A)) {
                     setTokenOneApproved(true);
                     setTokenOneApproval(false);
 
                     data.message = `Approve ${tokenOne.symbol}`;
                 }
-                if (tokenType === 'TK2') {
+                if (rEqual(tokenType, TOKEN.B)) {
                     setTokenTwoApproved(true);
                     setTokenTwoApproval(false);
                     data.message = `Approve ${tokenTwo.symbol}`;
@@ -683,14 +684,14 @@ const Swap = props => {
         }
     }
     const handleApprovalButton = (tokenType) => {
-        if (tokenOneApproval && tokenType === 'TK1') {
+        if (tokenOneApproval && rEqual(tokenType, TOKEN.A)) {
             return (<div className="col button_unlockWallet">
                 <Button className="full" onClick={() => handleTokenApproval(tokenType)} disabled={approvalConfirmation}>
                     {`Approve ${tokenOne.symbol}`}
                 </Button>
             </div>);
         }
-        if (tokenTwoApproval && tokenType === 'TK2') {
+        if (tokenTwoApproval && rEqual(tokenType, TOKEN.B)) {
             return (<div className="col button_unlockWallet">
                 <Button className="full" onClick={() => handleTokenApproval(tokenType)} disabled={approvalConfirmation}>
                     {`Approve ${tokenTwo.symbol}`}
@@ -713,8 +714,8 @@ const Swap = props => {
         }
     }
     const liquidityProviderFee = () => {
-        const value = amountIn === 'TK1' ? tokenOneValue : tokenTwoValue;
-        const tokenCurrency = amountIn === 'TK1' ? tokenOneCurrency : tokenTwoCurrency;
+        const value = rEqual(amountIn, TOKEN.A) ? tokenOneValue : tokenTwoValue;
+        const tokenCurrency = rEqual(amountIn, TOKEN.A) ? tokenOneCurrency : tokenTwoCurrency;
         let lpf = (value * 2) / 1000;
         lpf = BigNumber(lpf).toFixed();
         const calLpf = lpf + ' ' + tokenCurrency
@@ -746,14 +747,14 @@ const Swap = props => {
                         <div className="col">
                             <InputSelectCurrency
                                 label="From"
-                                onClick={() => onHandleOpenModal('TK1')}
+                                onClick={() => onHandleOpenModal(TOKEN.A)}
                                 currencyType={tokenOneIcon}
                                 currnecyName={tokenOneCurrency}
                                 defaultValue={tokenOneValue}
                                 balance={tokenOneBalance}
-                                onChange={(e) => handleTokenValue(e.target.value, 'TK1')}
+                                onChange={(e) => handleTokenValue(e.target.value, TOKEN.A)}
                                 max={max}
-                                onMax={() => handleMaxBalance('TK1')}
+                                onMax={() => handleMaxBalance(TOKEN.A)}
 
                             />
                             <div className="Col btnSwap">
@@ -763,12 +764,12 @@ const Swap = props => {
                             </div>
                             <InputSelectCurrency
                                 label="To"
-                                onClick={() => onHandleOpenModal('TK2')}
+                                onClick={() => onHandleOpenModal(TOKEN.B)}
                                 currencyType={tokenTwoIcon}
                                 currnecyName={tokenTwoCurrency}
                                 defaultValue={tokenTwoValue}
                                 balance={tokenTwoBalance}
-                                onChange={(e) => handleTokenValue(e.target.value, 'TK2')}
+                                onChange={(e) => handleTokenValue(e.target.value, TOKEN.B)}
                                 max={false}
 
                             />
@@ -794,8 +795,8 @@ const Swap = props => {
 
                             </div>}
                         {/* approval buttons */}
-                        {handleApprovalButton('TK1')}
-                        {handleApprovalButton('TK2')}
+                        {handleApprovalButton(TOKEN.A)}
+                        {handleApprovalButton(TOKEN.B)}
                         <div className="col button_unlockWallet">
                             {(isDisabled && !isUserConnected) && <Button className="full" onClick={() => setWalletShow(true)}>
                                 {'Unlock Wallet'}

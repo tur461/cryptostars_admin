@@ -33,8 +33,25 @@ export const TWITTER_LINK = 'https://twitter.com/AnchorSwap';
 export const TELEGRAM_LINK = 'https://t.me/joinchat/KP-_HKro73ViZTZk';
 export const AUDIT_LINK = 'https://docs.anchorswap.finance/audit/';
 
+export const VAL_CONSTANT = {
+  MAX_256: '0x' + 'f'.repeat(64),
+}
+
 export const ADDRESS = {
   ZERO: `0x${'0'.repeat(40)}`,
+}
+
+export const STR_CONSTANT = {
+  TOKEN_ALREADY: 'already selected',
+  DEF_CURRENCY_SYM: 'Select a token',
+  CONNECT_WALLET: 'Connect wallet first!',
+  TOKEN_SIMILAR: 'please select dissimilar tokens',
+}
+
+export const TOKEN = {
+  A: 1,
+  B: 2,
+  BOTH: 0,
 }
 
 export const isMetamakConnected = async () => {

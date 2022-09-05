@@ -77,57 +77,53 @@ const ModalSelectToken = ({
         </div>
         <div className="col tokenList__column">
           <ul className="tokenList">
-            {console.log("tokenlist??",tokenList)}
-            {/* {tokenList &&
-              tokenList.map((t, index) => (
-                <li key={index} id={t.symbol}>
-                  {symbol === t.symbol ? ( */}
-                   {tokenList.map((token, i) => (
-                <li key={i} id={token.symbol}>
-                  {rEqual(symbol, token.symbol) ? (
-                    <div className="dis">
-                      <span>
-                        <img src={token.icon} alt="icon" />
-                        <span className="tokenName_textStyle">
-                          {token.symbol}
-                        </span>{" "}
-                      </span>
-                      <TokenBalance address={token.address} />
-                    </div>
-                  ) : (
-                    <>
-                      {/* <Link to="#" onClick={() => selectCurrency(t, tokenType)}>
-                        <img src={t.icon} alt="icon" />
-                        <span className="tokenName_textStyle">{t.symbol}</span> */}
-                         <Link to="#" onClick={() => selectCurrency(token, tokenType)}>
-                        <img src={token.icon} alt="icon" />
-                        <span className="tokenName_textStyle">{token.symbol}</span>
-                      </Link>
-                      {token.showAdd ? (
-                        <span
-                          className="tokenName_textStyle add_token"
-                          onClick={e => eHandle(e) && dispatch(tokenShowRemove(token))}
-                        >
-                          Add
-                        </span>
-                      ) : (
-                        <span
-                          className="tokenName_textStyle add_token"
-                          onClick={e => {
-                            eHandle(e);
-                            commonHook.delTokenFromList(token)
-                            onRemoveToken();
+            {
+              tokenList.map((token, i) => 
+                  <li key={i} id={token.symbol}>
+                    {
+                      rEqual(symbol, token.symbol) ?
+                        <div className="dis">
+                          <span>
+                            <img src={token.icon} alt="icon" />
+                            <span className="tokenName_textStyle">
+                              {token.symbol}
+                            </span>{" "}
+                          </span>
+                          <TokenBalance address={token.address} />
+                        </div> :
+                        <>
+                          <Link to="#" onClick={() => selectCurrency(token, tokenType)}>
+                            <img src={token.icon} alt="icon" />
+                            <span className="tokenName_textStyle">{token.symbol}</span>
+                          </Link>
+                          {
+                            token.showAdd ? (
+                              <span
+                                className="tokenName_textStyle add_token"
+                                onClick={e => eHandle(e) && dispatch(tokenShowRemove(token))}
+                              >
+                                Add
+                              </span>
+                            ) : (
+                              <span
+                                className="tokenName_textStyle add_token"
+                                onClick={e => {
+                                  eHandle(e);
+                                  commonHook.delTokenFromList(token)
+                                  onRemoveToken();
+                                }
+                              }
+                              >
+                                Remove
+                              </span>
+                            )
                           }
-                        }
-                        >
-                          Remove
-                        </span>
-                      )}
-                      <TokenBalance address={token.address} />
-                    </>
-                  )}
-                </li>
-              ))}
+                          <TokenBalance address={token.address} />
+                        </>
+                    }
+                  </li>
+                )
+              }
           </ul>
         </div>
       </Card>

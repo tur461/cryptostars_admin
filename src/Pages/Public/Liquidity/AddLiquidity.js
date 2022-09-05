@@ -24,10 +24,10 @@ import { INIT_VAL, MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from "../../../assets/
 import closeBtn from "../../../assets/images/ionic-md-close.svg";
 import TransactionModal from "../../../Components/TransactionModal/TransactionModal";
 import useCommonHook from "../../../hooks/common";
-import { isAddr } from "../../../services/utils";
+import { isAddr, notEqual, rEqual } from "../../../services/utils";
 import { BigNumber } from "bignumber.js";
 // import { ContractServices } from "../../../services/ContractServices";
-import { NETWORK_CHAIN_ID } from "../../../constant";
+import { NETWORK_CHAIN_ID, STR_CONSTANT, TOKEN, VAL_CONSTANT } from "../../../constant";
 import { isCompositeComponent } from "react-dom/test-utils";
 import { toHex } from "../../../services/utils";
 import { savePoolInfoToDB } from "../../../services/api";
@@ -36,56 +36,41 @@ const AddLiquidity = (props) => {
   const commonHook = useCommonHook();
   const MINIMUM_LIQUIDITY = 10 ** 3;
 
-  const isUserConnected = useSelector((state) => state.persist.isUserConnected);
-  const walletType = useSelector((state) => state.persist.walletType);
-  const tokenList = useSelector((state) => state.persist.tokenList);
-  console.log("PERSIST>TOKENLIST>ADDLIQUIDITY",tokenList)
-  const result = useSelector((state) =>
-    console.log(state.persist, "cheingggg")
-  );
   const deadline = useSelector((state) => state.persist.deadline);
-  const slippagePercentage = useSelector(
-    (state) => state.persist.slippagePercentage
-  );
+  const tokenList = useSelector((state) => state.persist.tokenList);
+  const walletType = useSelector((state) => state.persist.walletType);
+  const isUserConnected = useSelector((state) => state.persist.isUserConnected);
+  const slippagePercentage = useSelector(state => state.persist.slippagePercentage);
 
-  const [modalCurrency, setModalCurrency] = useState(false);
+  const [txHash, setTxHash] = useState('');
+  const [search, setSearch] = useState('');
   const [tokenOne, setTokenOne] = useState({});
   const [tokenTwo, setTokenTwo] = useState({});
+  const [tokenType, setTokenType] = useState(TOKEN.A);
   const [tokenOneValue, setTokenOneValue] = useState();
   const [tokenTwoValue, setTokenTwoValue] = useState();
+  const [lpTokenBalance, setLpTokenBalance] = useState(0);
   const [sharePoolValue, setSharePoolValue] = useState(100);
-  const [tokenOneCurrency, setCurrencyNameForTokenOne] = useState(
-    // TOKEN_LIST[0].symbol
-    "Select a token"
-  );
-  const [tokenTwoCurrency, setCurrencyNameForTokenTwo] =
-    useState("Select a token");
   const [tokenOneBalance, setTokenOneBalance] = useState(0);
   const [tokenTwoBalance, setTokenTwoBalance] = useState(0);
+  const [modalCurrency, setModalCurrency] = useState(!1);
   const [tokenOneDeposit, setTokenOneDeposit] = useState(0);
   const [tokenTwoDeposit, setTokenTwoDeposit] = useState(0);
-  const [tokenOneApproval, setTokenOneApproval] = useState(false);
-  const [tokenTwoApproval, setTokenTwoApproval] = useState(false);
-
-  const [tokenOneApproved, setTokenOneApproved] = useState(false);
-  const [tokenTwoApproved, setTokenTwoApproved] = useState(false);
-
-  const [lpTokenBalance, setLpTokenBalance] = useState(0);
-  const [tokenType, setTokenType] = useState("TK1");
-  const [showSupplyModal, setShowSupplyModal] = useState(false);
-
-  const [search, setSearch] = useState("");
+  const [firstProvider, setFirstProvider] = useState(!1);
+  const [showPoolShare, setShowPoolShare] = useState(!1);
+  const [selectedCurrency, setSelectedCurrency] = useState('');
+  const [showSupplyModal, setShowSupplyModal] = useState(!1);
   const [filteredTokenList, setFilteredTokenList] = useState([]);
-  const [approvalConfirmation, setApprovalConfirmation] = useState(false);
-  const [liquidityConfirmation, setLiquidityConfirmation] = useState(false);
-
-  const [selectedCurrency, setSelectedCurrency] = useState("");
-
-  const [currentPairAddress, setCurrentPairAddress] = useState("");
-  const [firstProvider, setFirstProvider] = useState(false);
-  const [showPoolShare, setShowPoolShare] = useState(false);
-  const [showTransactionModal, setShowTransactionModal] = useState(false);
-  const [txHash, setTxHash] = useState("");
+  const [tokenOneApproved, setTokenOneApproved] = useState(!1);
+  const [tokenTwoApproved, setTokenTwoApproved] = useState(!1);
+  const [tokenOneApproval, setTokenOneApproval] = useState(!1);
+  const [tokenTwoApproval, setTokenTwoApproval] = useState(!1);
+  const [currentPairAddress, setCurrentPairAddress] = useState('');
+  const [showTransactionModal, setShowTransactionModal] = useState(!1);
+  const [approvalConfirmation, setApprovalConfirmation] = useState(!1);
+  const [liquidityConfirmation, setLiquidityConfirmation] = useState(!1);
+  const [tokenOneCurrency, setCurrencyNameForTokenOne] = useState(STR_CONSTANT.DEF_CURRENCY_SYM);
+  const [tokenTwoCurrency, setCurrencyNameForTokenTwo] = useState(STR_CONSTANT.DEF_CURRENCY_SYM);
   
   console.log("tokenlist1",tokenList)
   useEffect(() => {
@@ -164,7 +149,7 @@ const AddLiquidity = (props) => {
   };
 
   const closeTransactionModal = () => {
-    setShowTransactionModal(false);
+    setShowTransactionModal(!1);
     props.backBtn();
     window.location.reload();
   };
@@ -172,36 +157,57 @@ const AddLiquidity = (props) => {
   const onHandleOpenModal = (tokenType) => {
     const { ethereum, web3 } = window;
     if (!isUserConnected) {
-      return toast.error("Connect wallet first!");
+      return toast.error(STR_CONSTANT.CONNECT_WALLET);
     }
-    if (ethereum.chainId !== toHex(NETWORK_CHAIN_ID)) {
+    if (notEqual(ethereum.chainId, toHex(NETWORK_CHAIN_ID))) {
       return ContractServices.walletWindowListener();
     }
 
     setSelectedCurrency(
-      tokenType === "TK1" ? tokenTwoCurrency : tokenOneCurrency
+      rEqual(tokenType, TOKEN.A) ? tokenTwoCurrency : tokenOneCurrency
     );
     setModalCurrency({
-      modalCurrency: true,
+      modalCurrency: !0,
     });
     setTokenType(tokenType);
   };
-  const onHandleSelectCurrency = async (token, selecting) => {
+
+  const resetTokenCurrency = (tokenType) => {
+    if(rEqual(tokenType, TOKEN.A)) {
+      setTokenOne({});
+      setTokenOneBalance(0);
+      setCurrencyNameForTokenOne(STR_CONSTANT.DEF_CURRENCY_SYM);
+    } else if(rEqual(tokenType, TOKEN.B)) {
+      setTokenTwo({});
+      setTokenTwoBalance(0);
+      setCurrencyNameForTokenTwo(STR_CONSTANT.DEF_CURRENCY_SYM);
+    }
+  } 
+
+  const onHandleSelectCurrency = async (token, selected) => {
     const { address, symbol } = token;
     if (!isUserConnected) {
-      return toast.error("Connect wallet first!");
+      return toast.error(STR_CONSTANT.CONNECT_WALLET);
     }
     let a1,
       a2,
       oneBalance = 0,
       twoBalance = 0;
-    if (selecting === "TK1") {
+    if (selected === TOKEN.A) {
+      if(rEqual(tokenOne.address, address)) {
+        toast.info(STR_CONSTANT.TOKEN_ALREADY);
+        return;
+      }
+      if(rEqual(tokenTwo.address, address)) {
+        resetTokenCurrency(TOKEN.B);
+        return;
+      }
       a1 = address;
       if (address === "BNB") {
         oneBalance = await ContractServices.getBNBBalance(isUserConnected);
-        setTokenOneApproved(true);
+        setTokenOneApproved(!0);
       } else {
-        setTokenOneApproved(false);
+        setTokenOneApproved(!1);
         oneBalance = await ContractServices.getTokenBalance(
           address,
           isUserConnected
@@ -214,16 +220,25 @@ const AddLiquidity = (props) => {
         a2 = tokenTwo.address;
       }
       if (tokenOneValue > 0) {
-        const r = await getAllowance(tokenOneValue, "TK1");
+        const r = await getAllowance(tokenOneValue, TOKEN.A);
       }
     }
-    if (selecting === "TK2") {
+    if (rEqual(selected, TOKEN.B)) {
+      if(rEqual(tokenTwo.address, address)) {
+        toast.info(STR_CONSTANT.TOKEN_ALREADY);
+        return;
+      }
+      if(rEqual(tokenOne.address, address)) {
+        resetTokenCurrency(TOKEN.A);
+        return;
+      }
+
       a2 = address;
       if (address === "BNB") {
-        setTokenTwoApproved(true);
+        setTokenTwoApproved(!0);
         twoBalance = await ContractServices.getBNBBalance(isUserConnected);
       } else {
-        setTokenTwoApproved(false);
+        setTokenTwoApproved(!1);
         twoBalance = await ContractServices.getTokenBalance(
           address,
           isUserConnected
@@ -236,11 +251,11 @@ const AddLiquidity = (props) => {
         a1 = tokenOne.address;
       }
       if (tokenTwoValue > 0) {
-        const r = await getAllowance(tokenTwoValue, "TK2");
+        const r = await getAllowance(tokenTwoValue, TOKEN.B);
       }
     }
     setModalCurrency(!modalCurrency);
-    setSearch("");
+    setSearch('');
     setFilteredTokenList(tokenList);
 
     if (a1 && a2) {
@@ -262,19 +277,19 @@ const AddLiquidity = (props) => {
           isUserConnected
         );
         setLpTokenBalance(lpTokenBalance);
-        setFirstProvider(false);
-        setShowPoolShare(true);
+        setFirstProvider(!1);
+        setShowPoolShare(!0);
       } else {
-        setCurrentPairAddress("");
-        setFirstProvider(true);
-        setShowPoolShare(true);
+        setCurrentPairAddress('');
+        setFirstProvider(!0);
+        setShowPoolShare(!0);
         setLpTokenBalance(0);
       }
     }
   };
 
   const getAllowance = async (amount, tokenType) => {
-    if (tokenType === "TK1") {
+    if (rEqual(tokenType, TOKEN.A)) {
       if (isUserConnected && tokenOne.address !== "BNB") {
         let allowance = await ContractServices.allowanceToken(
           tokenOne.address,
@@ -284,15 +299,15 @@ const AddLiquidity = (props) => {
         allowance = Number(allowance) / 10 ** Number(tokenOne.decimals);
         // console.log(allowance, 'token 1')
         if (amount > allowance) {
-          setTokenOneApproval(true);
+          setTokenOneApproval(!0);
         } else {
-          setTokenOneApproved(true);
+          setTokenOneApproved(!0);
         }
       } else {
-        setTokenOneApproved(true);
+        setTokenOneApproved(!0);
       }
     }
-    if (tokenType === "TK2") {
+    if (rEqual(tokenType, TOKEN.B)) {
       if (isUserConnected && tokenTwo.address !== "BNB") {
         let allowance = await ContractServices.allowanceToken(
           tokenTwo.address,
@@ -302,19 +317,19 @@ const AddLiquidity = (props) => {
         allowance = Number(allowance) / 10 ** Number(tokenTwo.decimals);
         // console.log(allowance, 'token 2')
         if (amount > allowance) {
-          setTokenTwoApproval(true);
+          setTokenTwoApproval(!0);
         } else {
-          setTokenTwoApproved(true);
+          setTokenTwoApproved(!0);
         }
       } else {
-        setTokenTwoApproved(true);
+        setTokenTwoApproved(!0);
       }
     }
-    return true;
+    return !0;
   };
 
   const handleTokenValue = async (amount, tokenType) => {
-    if (tokenType === "TK1") {
+    if (rEqual(tokenType, TOKEN.A)) {
       setTokenOneValue(amount);
 
       const r = await getAllowance(amount, tokenType);
@@ -352,19 +367,19 @@ const AddLiquidity = (props) => {
             }
             console.log("setTokenTwoValuesetTokenTwoValue", a);
             if (a == 0) {
-              setTokenTwoValue("");
+              setTokenTwoValue('');
             } else {
               setTokenTwoValue(a);
             }
             if (!tokenTwoApproval) {
-              const r = await getAllowance(a, "TK2");
-              handleApprovalButton("TK2");
+              const r = await getAllowance(a, TOKEN.B);
+              handleApprovalButton(TOKEN.B);
             }
           }
         }
       }
     }
-    if (tokenType === "TK2") {
+    if (rEqual(tokenType, TOKEN.B)) {
       setTokenTwoValue(amount);
       const r = await getAllowance(amount, tokenType);
       if (r && tokenOne.address && tokenTwo.address && amount > 0) {
@@ -400,8 +415,8 @@ const AddLiquidity = (props) => {
             }
             setTokenOneValue(a);
             if (!tokenOneApproval) {
-              const r = await getAllowance(a, "TK1");
-              handleApprovalButton("TK1");
+              const r = await getAllowance(a, TOKEN.A);
+              handleApprovalButton(TOKEN.A);
             }
           }
         }
@@ -436,12 +451,12 @@ const AddLiquidity = (props) => {
         // console.log(reserves, ratio, '---------------------------ratio');
         setSharePoolValue(ratio);
 
-        setFirstProvider(false);
-        setShowPoolShare(true);
+        setFirstProvider(!1);
+        setShowPoolShare(!0);
       } else {
-        setCurrentPairAddress("");
-        setFirstProvider(true);
-        setShowPoolShare(true);
+        setCurrentPairAddress('');
+        setFirstProvider(!0);
+        setShowPoolShare(!0);
         setLpTokenBalance(0);
       }
     }
@@ -456,13 +471,12 @@ const AddLiquidity = (props) => {
       return toast.info("Token approval is processing");
     }
     // const value = (2*256 - 1).toString();
-    const value =
-      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+    const value = VAL_CONSTANT.MAX_256;
     let tokenAddress = "BNB";
-    if (tokenType === "TK1") {
+    if (rEqual(tokenType, TOKEN.A)) {
       tokenAddress = tokenOne.address;
     }
-    if (tokenType === "TK2") {
+    if (rEqual(tokenType, TOKEN.B)) {
       tokenAddress = tokenTwo.address;
     }
     try {
@@ -476,46 +490,36 @@ const AddLiquidity = (props) => {
       if (r.code == 4001) {
         toast.error("User denied transaction signature.");
       } else {
-        setApprovalConfirmation(true);
+        setApprovalConfirmation(!0);
         let data = {
           message: `Approve`,
           tx: r.transactionHash,
         };
-        if (tokenType === "TK1") {
-          setTokenOneApproved(true);
-          setTokenOneApproval(false);
+        if (rEqual(tokenType, TOKEN.A)) {
+          setTokenOneApproved(!0);
+          setTokenOneApproval(!1);
 
           data.message = `Approve ${tokenOne.symbol}`;
         }
-        if (tokenType === "TK2") {
-          setTokenTwoApproved(true);
-          setTokenTwoApproval(false);
+        if (rEqual(tokenType, TOKEN.B)) {
+          setTokenTwoApproved(!0);
+          setTokenTwoApproval(!1);
           data.message = `Approve ${tokenTwo.symbol}`;
         }
         dispatch(addTransaction(data));
-        setApprovalConfirmation(false);
+        setApprovalConfirmation(!1);
       }
       dispatch(stopLoading());
     } catch (err) {
-      setApprovalConfirmation(false);
+      setApprovalConfirmation(!1);
       dispatch(stopLoading());
       console.log(err);
       toast.error("Transaction Reverted!");
     }
   };
-  // const handleSearchToken = async (data) => {
-  //   try {
-  //     const res = await dispatch(searchTokenByNameOrAddress(data, isUserConnected));
-  //     console.log("RES",res)
-  //     setFilteredTokenList(res);
-
-  //   } catch (error) {
-  //     toast.error("Something went wrong!");
-  //   }
-  // };
-  console.log("FilteredTokenList",filteredTokenList);
+  
   const handleApprovalButton = (tokenType) => {
-    if (tokenOneApproval && tokenType === "TK1") {
+    if (tokenOneApproval && rEqual(tokenType, TOKEN.A)) {
       return (
         <div className="col button_unlockWallet">
           <Button
@@ -528,7 +532,7 @@ const AddLiquidity = (props) => {
         </div>
       );
     }
-    if (tokenTwoApproval && tokenType === "TK2") {
+    if (tokenTwoApproval && rEqual(tokenType, TOKEN.B)) {
       return (
         <div className="col button_unlockWallet">
           <Button
@@ -578,15 +582,13 @@ const AddLiquidity = (props) => {
   };
   const checkAddLiquidity = async () => {
     if (!isUserConnected) {
-      return toast.error("Connect wallet first!");
+      return toast.error(STR_CONSTANT.CONNECT_WALLET);
     }
     let address;
     if (walletType === "Metamask") {
-      address = await ContractServices.isMetamaskInstalled("");
+      address = await ContractServices.isMetamaskInstalled('');
     }
-    if (walletType === "BinanceChain") {
-      address = await ContractServices.isBinanceChainInstalled();
-    }
+    
 
     if (isUserConnected.toLowerCase() !== address.toLowerCase()) {
       return toast.error("Mismatch wallet address!");
@@ -624,7 +626,7 @@ const AddLiquidity = (props) => {
         `Wallet have insufficient ${tokenTwo.symbol} balance!`
       );
     }
-    setShowSupplyModal(true);
+    setShowSupplyModal(!0);
   };
 
   const addLiquidity = async () => {
@@ -641,22 +643,22 @@ const AddLiquidity = (props) => {
     if (liquidityConfirmation) {
       return toast.info("Transaction is processing!");
     }
-    setLiquidityConfirmation(true);
+    setLiquidityConfirmation(!0);
 
     let value = 0,
-      checkTCRO = false,
+      checkTCRO = !1,
       token;
 
     let dl = Math.floor(new Date().getTime() / 1000);
     dl = dl + deadline * 60;
     console.log("HIT1")
     if (tokenOne.address === "TCRO") {
-      checkTCRO = true;
+      checkTCRO = !0;
       value = tokenOneValue;
       token = tokenTwo.address;
     }
     if (tokenTwo.address === "TCRO") {
-      checkTCRO = true;
+      checkTCRO = !0;
       value = tokenTwoValue;
       token = tokenOne.address;
     }
@@ -667,7 +669,7 @@ const AddLiquidity = (props) => {
       let amountETHMin = BigNumber(
         Math.floor(Number(value) - (Number(value) * slippagePercentage) / 100)
       ).toFixed();
-      let amountTokenMin = "";
+      let amountTokenMin = '';
       let amountTokenDesired = 0;
       if (tokenOne.address === "TCRO") {
         amountTokenDesired = tokenTwoValue;
@@ -715,22 +717,22 @@ const AddLiquidity = (props) => {
         console.log("HIT4")
         if (result) {
           setTxHash(result);
-          setShowTransactionModal(true);
-          setShowSupplyModal(false);
+          setShowTransactionModal(!0);
+          setShowSupplyModal(!1);
 
           const data = {
             message: `Add ${tokenOne.symbol} and ${tokenTwo.symbol}`,
             tx: result,
           };
           dispatch(addTransaction(data));
-          dispatch(checkUserLpTokens(false));
+          dispatch(checkUserLpTokens(!1));
         }
-        setLiquidityConfirmation(false);
+        setLiquidityConfirmation(!1);
       } catch (err) {
         dispatch(stopLoading());
         const message = await ContractServices.web3ErrorHandle(err);
         toast.error(message);
-        setLiquidityConfirmation(false);
+        setLiquidityConfirmation(!1);
       }
     } else {
       // dispatch(startLoading())
@@ -781,34 +783,34 @@ const AddLiquidity = (props) => {
         dispatch(stopLoading());
         if (result) {
           setTxHash(result);
-          setShowTransactionModal(true);
-          setShowSupplyModal(false);
+          setShowTransactionModal(!0);
+          setShowSupplyModal(!1);
 
           const data = {
             message: `Add ${tokenOne.symbol} and ${tokenTwo.symbol}`,
             tx: result,
           };
           dispatch(addTransaction(data));
-          dispatch(checkUserLpTokens(false));
+          dispatch(checkUserLpTokens(!1));
         }
-        setLiquidityConfirmation(false);
+        setLiquidityConfirmation(!1);
       } catch (err) {
         console.log(err);
         dispatch(stopLoading());
         const message = await ContractServices.web3ErrorHandle(err);
         toast.error(message);
-        setLiquidityConfirmation(false);
+        setLiquidityConfirmation(!1);
       }
     }
   };
   const calculateFraction = (tokenType) => {
     let r = 0;
     if (tokenOneValue && tokenTwoValue) {
-      if (tokenType === "TK1") {
+      if (rEqual(tokenType, TOKEN.A)) {
         if (tokenOneValue === 0) return 0;
         r = tokenTwoValue / tokenOneValue;
       }
-      if (tokenType === "TK2") {
+      if (rEqual(tokenType, TOKEN.B)) {
         if (tokenTwoValue === 0) return 0;
         r = tokenOneValue / tokenTwoValue;
       }
@@ -820,7 +822,7 @@ const AddLiquidity = (props) => {
 
   return (
     <>
-      <Card className="">
+      <Card className=''>
         <div className="col container_swapwrap__header liquidity_header">
           <Link to="#" onClick={props.backBtn} className="linkBack">
             <img src={awesomeArrowLeft} alt="icon" />
@@ -840,13 +842,13 @@ const AddLiquidity = (props) => {
 
           <InputSelectCurrency
             label="From"
-            onClick={() => onHandleOpenModal("TK1")}
+            onClick={() => onHandleOpenModal(TOKEN.A)}
             currencyType={tokenOne?.icon ? tokenOne.icon : defaultImg}
             currnecyName={tokenOneCurrency}
             defaultValue={tokenOneValue}
             balance={tokenOneBalance}
-            onChange={(e) => handleTokenValue(e.target.value, "TK1")}
-            max={false}
+            onChange={(e) => handleTokenValue(e.target.value, TOKEN.A)}
+            max={!1}
           />
           <div className="Col btnSwap">
             <button className="btnSwapStyle">
@@ -856,13 +858,13 @@ const AddLiquidity = (props) => {
           {/* <label className="right">Balance: {tokenTwoBalance}</label> */}
           <InputSelectCurrency
             label="To"
-            onClick={() => onHandleOpenModal("TK2")}
+            onClick={() => onHandleOpenModal(TOKEN.B)}
             currencyType={tokenTwo.icon ? tokenTwo.icon : defaultImg}
             currnecyName={tokenTwoCurrency}
             defaultValue={tokenTwoValue}
             balance={tokenTwoBalance}
-            onChange={(e) => handleTokenValue(e.target.value, "TK2")}
-            max={false}
+            onChange={(e) => handleTokenValue(e.target.value, TOKEN.B)}
+            max={!1}
           />
         </div>
         {showPoolShare && (
@@ -871,11 +873,11 @@ const AddLiquidity = (props) => {
             <div className="borderClass">
               <ul className="Liquidityint">
                 <li>
-                  {calculateFraction("TK1")} <br /> {tokenTwoCurrency} per{" "}
+                  {calculateFraction(TOKEN.A)} <br /> {tokenTwoCurrency} per{" "}
                   {tokenOneCurrency}
                 </li>
                 <li>
-                  {calculateFraction("TK2")} <br />
+                  {calculateFraction(TOKEN.B)} <br />
                   {tokenOneCurrency} per {tokenTwoCurrency}{" "}
                 </li>
                 {/* <li>
@@ -887,8 +889,8 @@ const AddLiquidity = (props) => {
           </div>
         )}
         {/* approval buttons */}
-        {handleApprovalButton("TK1")}
-        {handleApprovalButton("TK2")}
+        {handleApprovalButton(TOKEN.A)}
+        {handleApprovalButton(TOKEN.B)}
 
         <div className="col button_unlockWallet">
           <Button
@@ -906,7 +908,7 @@ const AddLiquidity = (props) => {
               <div className="col modal_headerStyle modal_headerbb">
                 <div className="row modal_headerStyle__rowA lessMargin_bottom">
                   <div className="col modal_headerStyle__rowA_colRight">
-                    <Link to="#" onClick={() => setShowSupplyModal(false)}>
+                    <Link to="#" onClick={() => setShowSupplyModal(!1)}>
                       <img src={closeBtn} alt="icon" />
                     </Link>
                   </div>
@@ -939,9 +941,9 @@ const AddLiquidity = (props) => {
                     <li>
                       Rates
                       <p>
-                        {1}&nbsp;{tokenOneCurrency} = {calculateFraction("TK1")}
+                        {1}&nbsp;{tokenOneCurrency} = {calculateFraction(TOKEN.A)}
                         &nbsp;{tokenTwoCurrency} <br />
-                        {1}&nbsp;{tokenTwoCurrency} = {calculateFraction("TK2")}
+                        {1}&nbsp;{tokenTwoCurrency} = {calculateFraction(TOKEN.B)}
                         &nbsp;{tokenOneCurrency}
                       </p>
                     </li>
@@ -994,7 +996,6 @@ const AddLiquidity = (props) => {
           </ul>
         </Card>
       )}
-      {console.log("Filtered",filteredTokenList)}
       {modalCurrency && (
         <ModalSelectToken
           tokenList={filteredTokenList}
