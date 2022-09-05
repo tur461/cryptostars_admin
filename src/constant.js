@@ -41,9 +41,21 @@ export const ADDRESS = {
   ZERO: `0x${'0'.repeat(40)}`,
 }
 
+export const EVENTS = {
+  SWITCH_CHANGED: '',
+  ACC_CHANGED: 'accountsChanged',
+}
+
+export const WALLET_TYPE = {
+  METAMASK: 'metamask',
+  W_CONNECT: 'wallet-connect',
+}
+
 export const STR_CONSTANT = {
+  WALLET_INVALID: 'invalid wallet',
   TOKEN_ALREADY: 'already selected',
   DEF_CURRENCY_SYM: 'Select a token',
+  NOT_AN_ADMIN: 'You are not an admin!',
   CONNECT_WALLET_AGAIN: 'pls connect wallet again',
   CONNECT_WALLET: 'Connect wallet first!',
   TOKEN_SIMILAR: 'please select dissimilar tokens',
