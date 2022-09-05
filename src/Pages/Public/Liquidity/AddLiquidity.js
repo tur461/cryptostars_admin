@@ -1,36 +1,33 @@
-import React, { useState, useEffect, useRef } from "react";
-import { withRouter } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import Card from "../../../Components/Card/Card";
-import Button from "../../../Components/Button/Button";
-import InputSelectCurrency from "../../../Components/InputSelectCurrency/InputSelectCurrency";
-import defaultImg from "../../../assets/images/token_icons/default.svg";
-import awesomePlus from "../../../assets/images/awesome-plus.svg";
-import awesomeArrowLeft from "../../../assets/images/awesome-arrow-left.svg";
-import ModalSelectToken from "../../../Components/ModalSelectToken/ModalSelectToken";
-import { ContractServices } from "../../../services/ContractServices";
 import {
+  stopLoading,
+  startLoading,
   addTransaction,
   checkUserLpTokens,
-  // searchTokenByNameOrAddress,
-  startLoading,
-  stopLoading,
 } from "../../../redux/actions";
-import { toast } from "../../../Components/Toast/Toast";
-import { ExchangeService } from "../../../services/ExchangeService";
-// import { MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from "../../../assets/tokens";
-import { INIT_VAL, MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from "../../../assets/tokens";
-import closeBtn from "../../../assets/images/ionic-md-close.svg";
-import TransactionModal from "../../../Components/TransactionModal/TransactionModal";
-import useCommonHook from "../../../hooks/common";
-import { isAddr, notEqual, rEqual } from "../../../services/utils";
 import { BigNumber } from "bignumber.js";
-// import { ContractServices } from "../../../services/ContractServices";
-import { NETWORK_CHAIN_ID, STR_CONSTANT, TOKEN, VAL_CONSTANT } from "../../../constant";
-import { isCompositeComponent } from "react-dom/test-utils";
+import { withRouter } from "react-router";
+import { Link } from "react-router-dom";
 import { toHex } from "../../../services/utils";
+import Card from "../../../Components/Card/Card";
+import useCommonHook from "../../../hooks/common";
+import React, { useState, useEffect } from "react";
+import Button from "../../../Components/Button/Button";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "../../../Components/Toast/Toast";
 import { savePoolInfoToDB } from "../../../services/api";
+import closeBtn from "../../../assets/images/ionic-md-close.svg";
+import awesomePlus from "../../../assets/images/awesome-plus.svg";
+import { isAddr, notEqual, rEqual } from "../../../services/utils";
+import { ExchangeService } from "../../../services/ExchangeService";
+import { ContractServices } from "../../../services/ContractServices";
+import defaultImg from "../../../assets/images/token_icons/default.svg";
+import awesomeArrowLeft from "../../../assets/images/awesome-arrow-left.svg";
+import TransactionModal from "../../../Components/TransactionModal/TransactionModal";
+import ModalSelectToken from "../../../Components/ModalSelectToken/ModalSelectToken";
+import { INIT_VAL, MAIN_CONTRACT_LIST, TOKEN_LIST, WETH } from "../../../assets/tokens";
+import { NETWORK_CHAIN_ID, STR_CONSTANT, TOKEN, VAL_CONSTANT } from "../../../constant";
+import InputSelectCurrency from "../../../Components/InputSelectCurrency/InputSelectCurrency";
+
 const AddLiquidity = (props) => {
   const dispatch = useDispatch();
   const commonHook = useCommonHook();
@@ -72,7 +69,6 @@ const AddLiquidity = (props) => {
   const [tokenOneCurrency, setCurrencyNameForTokenOne] = useState(STR_CONSTANT.DEF_CURRENCY_SYM);
   const [tokenTwoCurrency, setCurrencyNameForTokenTwo] = useState(STR_CONSTANT.DEF_CURRENCY_SYM);
   
-  console.log("tokenlist1",tokenList)
   useEffect(() => {
     setFilteredTokenList(
       tokenList?.filter((token) =>
@@ -80,27 +76,12 @@ const AddLiquidity = (props) => {
       )
     );
     init();
-    console.log('searching for: ' + search);
-  },[search,tokenList]);
-
-  // useEffect(_ => {
-  //   console.log("tokenlist2",tokenList)
-  //   setFilteredTokenList(tokenList);
-  //   console.log('tokenlist changed.', tokenList);
-  // }, [tokenList])
-
-  // const lock = useRef(!0);
-  // useEffect(_ => {
-  //   (
-  //     async _ => lock.current && await init() && (lock.current = !1)
-  //   )();
-  // }, []);
+  },[search, tokenList]);
 
   useEffect(() => {
     ContractServices.walletWindowListener();
     console.log("hey");
   }, []);
-  console.log("slippagePercentage", slippagePercentage);
 
   const init = async () => {
     if (isUserConnected) {
@@ -108,7 +89,6 @@ const AddLiquidity = (props) => {
       // setTokenOneBalance(oneBalance);
 
       const { lptoken } = props;
-      console.log(lptoken, "mnnnmnmnmnmmn");
       if (lptoken) {
         setCurrentPairAddress(lptoken.pair);
         setLpTokenBalance(lptoken.balance);
@@ -182,7 +162,7 @@ const AddLiquidity = (props) => {
       setTokenTwoBalance(0);
       setCurrencyNameForTokenTwo(STR_CONSTANT.DEF_CURRENCY_SYM);
     }
-  } 
+  }
 
   const onHandleSelectCurrency = async (token, selected) => {
     const { address, symbol } = token;
@@ -270,7 +250,7 @@ const AddLiquidity = (props) => {
         currentPairAddress = await ExchangeService.getPair(a1, a2);
       }
 
-      if (currentPairAddress !== "0x0000000000000000000000000000000000000000") {
+      if (isAddr(currentPairAddress)) {
         setCurrentPairAddress(currentPairAddress);
         const lpTokenBalance = await ContractServices.getTokenBalance(
           currentPairAddress,
@@ -350,7 +330,7 @@ const AddLiquidity = (props) => {
 
           if (tk0 && reserves) {
             let a;
-            if (tokenAddress.toLowerCase() === tk0.toLowerCase()) {
+            if (rEqual(tokenAddress, tk0)) {
               a = (
                 amount *
                 (reserves[1] /
@@ -365,7 +345,6 @@ const AddLiquidity = (props) => {
                   (reserves[1] / 10 ** token1Decimal))
               ).toFixed(5);
             }
-            console.log("setTokenTwoValuesetTokenTwoValue", a);
             if (a == 0) {
               setTokenTwoValue('');
             } else {
@@ -398,7 +377,7 @@ const AddLiquidity = (props) => {
 
           if (tk0 && reserves) {
             let a;
-            if (tokenAddress.toLowerCase() === tk0.toLowerCase()) {
+            if (rEqual(tokenAddress, tk0)) {
               a = (
                 amount *
                 (reserves[1] /
@@ -436,7 +415,6 @@ const AddLiquidity = (props) => {
       } else {
         currentPairAddress = await ExchangeService.getPair(a1, a2);
       }
-      // if (currentPairAddress !== "0x0000000000000000000000000000000000000000") {
         if (isAddr(currentPairAddress)) {
         setCurrentPairAddress(currentPairAddress);
         const lpTokenBalance = await ContractServices.getTokenBalance(
@@ -447,10 +425,7 @@ const AddLiquidity = (props) => {
 
         const reserves = await ExchangeService.getReserves(currentPairAddress);
         const ratio = await calculateLiquidityPercentage(reserves);
-
-        // console.log(reserves, ratio, '---------------------------ratio');
         setSharePoolValue(ratio);
-
         setFirstProvider(!1);
         setShowPoolShare(!0);
       } else {
@@ -463,9 +438,8 @@ const AddLiquidity = (props) => {
   };
   //call web3 approval function
   const handleTokenApproval = async (tokenType) => {
-    const acc = await ContractServices.getDefaultAccount();
-    if (acc && acc.toLowerCase() !== isUserConnected.toLowerCase()) {
-      return toast.error("Wallet address doesn`t match!");
+    if (!isUserConnected) {
+      return toast.info(STR_CONSTANT.CONNECT_WALLET);
     }
     if (approvalConfirmation) {
       return toast.info("Token approval is processing");
@@ -584,15 +558,7 @@ const AddLiquidity = (props) => {
     if (!isUserConnected) {
       return toast.error(STR_CONSTANT.CONNECT_WALLET);
     }
-    let address;
-    if (walletType === "Metamask") {
-      address = await ContractServices.isMetamaskInstalled('');
-    }
     
-
-    if (isUserConnected.toLowerCase() !== address.toLowerCase()) {
-      return toast.error("Mismatch wallet address!");
-    }
     if (!tokenOne.address) {
       return toast.error("Select first token!");
     }
@@ -698,7 +664,6 @@ const AddLiquidity = (props) => {
         ).toFixed();
       }
       value = value.toString();
-      console.log("HIT2")
       const data = {
         token,
         amountTokenDesired,
@@ -708,13 +673,11 @@ const AddLiquidity = (props) => {
         deadline: dl,
         value,
       };
-      console.log("HIT3")
       try {
         dispatch(startLoading());
         const result = await ExchangeService.addLiquidityETH(data);
         console.log(result, "add liquidity transaction");
         dispatch(stopLoading());
-        console.log("HIT4")
         if (result) {
           setTxHash(result);
           setShowTransactionModal(!0);
@@ -735,8 +698,6 @@ const AddLiquidity = (props) => {
         setLiquidityConfirmation(!1);
       }
     } else {
-      // dispatch(startLoading())
-      console.log("HIT4")
       let amountADesired = tokenOneValue;
       let amountBDesired = tokenTwoValue;
       let amountAMin = Math.floor(
@@ -770,14 +731,13 @@ const AddLiquidity = (props) => {
         value,
       };
       try {
-        console.log("HIT5")
         dispatch(startLoading());
         const result = await ExchangeService.addLiquidity(data);
         console.log(result, "add liquidity transaction");
 
         if(result){
           savePoolInfoToDB(pool_Obj,(d) => {
-            console.log("HIT to saveTokenInfoToDB",d)
+            console.log("saveTokenInfoToDB success",d)
           })
         }
         dispatch(stopLoading());

@@ -44,6 +44,7 @@ export const ADDRESS = {
 export const STR_CONSTANT = {
   TOKEN_ALREADY: 'already selected',
   DEF_CURRENCY_SYM: 'Select a token',
+  CONNECT_WALLET_AGAIN: 'pls connect wallet again',
   CONNECT_WALLET: 'Connect wallet first!',
   TOKEN_SIMILAR: 'please select dissimilar tokens',
 }
