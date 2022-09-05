@@ -47,7 +47,7 @@ function retreiveTokenList(callback) {
         .then(d => d.json())
         .then(res => {
             const infoList = JSON.parse(res.data);
-            console.log('vvvvvvv',infoList);
+            console.log('vvvvvvvinfoList',infoList);
             callback(infoList)
         })
         .catch(err => {
@@ -85,7 +85,7 @@ function retreivePoolInfoList(callback) {
     .then(d => d.json())
     .then(res => {
         const poolInfoList = JSON.parse(res.data);
-        console.log('vvvvvvv',poolInfoList);
+        console.log('vvvvvvvpoolInfoList',poolInfoList);
         callback(poolInfoList)
     })
     .catch(err => {

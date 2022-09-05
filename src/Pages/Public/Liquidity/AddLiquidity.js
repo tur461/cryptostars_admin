@@ -110,7 +110,7 @@ const AddLiquidity = (props) => {
   //     async _ => lock.current && await init() && (lock.current = !1)
   //   )();
   // }, []);
-
+// console.log("tokenOne",tokenOne);
   useEffect(() => {
     ContractServices.walletWindowListener();
     console.log("hey");
@@ -633,6 +633,8 @@ const AddLiquidity = (props) => {
     const pool_Obj = {
       token1:tokenOne.symbol,
       token2:tokenTwo.symbol,
+      token1Addr: tokenOne.address,
+      token2Addr: tokenTwo.address,
     }
     const acc = await ContractServices.getDefaultAccount();
     if (acc && acc.toLowerCase() !== isUserConnected.toLowerCase()) {

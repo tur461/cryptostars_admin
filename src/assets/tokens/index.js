@@ -112,7 +112,7 @@ export const MAIN_CONTRACT_LIST = {
     abi: factoryABI,
   },
   pair: {
-    address: "",
+    address: "0x4f6f809d1b30b13676768F5894C32D4136ff27Ea",
     blockNumber: 0,
     abi: pairABI,
   },
