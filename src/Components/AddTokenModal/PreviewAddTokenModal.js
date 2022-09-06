@@ -11,9 +11,11 @@ import { MAIN_CONTRACT_LIST } from "../../assets/tokens/index";
 import { TokenList } from "../../Pages/Tokenlist/TokenList";
 import { Provider, useDispatch } from "react-redux";
 import { savetoken, startLoading, stopLoading } from "../../redux/actions";
-import { BSC_SCAN } from "../../constant";
+import { BSC_SCAN, STR_CONSTANT } from "../../constant";
 import checkicon from "../../assets/images/check_icon.svg";
 import { saveTokenIconToDB, saveTokenInfoToDB } from "../../services/api";
+import { useSelector } from "react-redux";
+import { toast } from "../Toast/Toast";
 
 
 // import xtype from "xtypejs";
@@ -34,70 +36,53 @@ function PreviewAddTokenModal({
   const dispatch = useDispatch();
   const [result, setResult] = useState("");
   const [contractAddress, setContractAddress] = useState('');
-  
-  console.log("mmmmm", totalSupply);
-  let web3 = new Web3(window.ethereum);
-
-  
+  const priAccount = useSelector(s => s.persist.isUserConnected);
 
   const letsCallTheContract = async () => {
     try {
-          dispatch(startLoading())
-          let contract = await ContractServices.callContract(
-          MAIN_CONTRACT_LIST.tokenFactory.address,
-          MAIN_CONTRACT_LIST.tokenFactory.abi
-          );
+      if(!priAccount) return toast.error(STR_CONSTANT.CONNECT_WALLET);
+      dispatch(startLoading())
+      let contract = await ContractServices.callContract(
+      MAIN_CONTRACT_LIST.tokenFactory.address,
+      MAIN_CONTRACT_LIST.tokenFactory.abi
+      );
 
-          let userAddress = await ContractServices.isMetamaskInstalled();
-  
-          let callCreate = await contract.methods
-          .create(
-          tokenName,
-          tokenSymbol,
-          mintAddress,
-          web3.utils.toWei(totalSupply, "ether"),
-          ownerAddress
-          )
-         .send({ from: userAddress });
+      let callCreate = await contract.methods
+      .create(
+      tokenName,
+      tokenSymbol,
+      mintAddress,
+      ContractServices.web3Object.utils.toWei(totalSupply, "ether"),
+      ownerAddress
+      )
+      .send({ from: priAccount });
+      const contract_address = await callCreate.events[0].address
+      setContractAddress(contract_address);
+      let cc = callCreate?.transactionHash
+      setFinalhash(cc)
+      if (cc !== "") {
+        const iconName = `${tokenSymbol}_${Date.now()}.${tokenIcon.type.split('/')[1]}`;
+        const token_obj = {
+          icon: tokenIcon.name.split(' ').join('_'),
+          name: tokenName,
+          sym: tokenSymbol,
+          addr: contract_address,
+          dec: 18,
+          supply: totalSupply,
+        };
+        console.log("PPP", token_obj.icon);
 
-         console.log("CallCreate>>>>>>",callCreate)
+        const ress = saveTokenInfoToDB(token_obj, (d) => {
+          saveTokenIconToDB(tokenIcon, iconName, _ => console.log('All data saved'));
+        });
 
-         const contract_address = await callCreate.events[0].address
-
-         setContractAddress(contract_address);
-
-         console.log("contract_address>>>>>>",contract_address)
-     
-         let cc = callCreate?.transactionHash
-         console.log("callCreate", cc);
-     
-         setFinalhash(cc)
-
-         if (cc !== "") {
-           console.log("entered")
-           const iconName = `${tokenSymbol}_${Date.now()}.${tokenIcon.type.split('/')[1]}`;
-           const token_obj = {
-             icon: tokenIcon.name.split(' ').join('_'),
-             name: tokenName,
-             sym: tokenSymbol,
-             addr: contract_address,
-             dec: 18,
-             supply: totalSupply,
-           };
-           console.log("PPP", token_obj.icon);
-
-           const ress = saveTokenInfoToDB(token_obj, (d) => {
-             console.log("HIT to saveTokenInfoToDB",tokenIcon)
-             saveTokenIconToDB(tokenIcon, iconName, _ => console.log('All data saved'));
-           });
-
-           console.log("ress", ress);
-         }
-         setResult(cc)
-  } catch (error) {
-    dispatch(stopLoading())
-    return;
-  }
+        console.log("ress", ress);
+      }
+      setResult(cc)
+    } catch (error) {
+      dispatch(stopLoading())
+      return;
+    }
     dispatch(stopLoading())
   };
 

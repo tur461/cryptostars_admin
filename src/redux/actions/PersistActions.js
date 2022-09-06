@@ -1,4 +1,5 @@
 import packageJson from "../../../package.json";
+import { WALLET_TYPE } from "../../constant";
 import { ContractServices } from "../../services/ContractServices";
 
 /* seting action types */
@@ -46,9 +47,7 @@ export const login = (data) => {
   };
 };
 export const logout = () => {
-  ContractServices.setWalletType("Metamask");
-  window.location.reload();
-  console.log('ccccccc');
+  
   return {
     type: actionTypes.LOGOUT,
   };

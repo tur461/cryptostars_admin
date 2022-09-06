@@ -196,8 +196,7 @@ const Home = () => {
         return price;
     }
     const totalPotSize = async () => {
-        const address = await ContractServices.isMetamaskInstalled('');
-        if (address) {
+        if (isUserConnected) {
             try {
                 const { amount, decimals, prizeArray, price } =
                     await LotteryServices.getTotalPotSize();

@@ -4,67 +4,8 @@ import { UserService } from "../../services/UserService";
 import { checkUserLpTokens, saveUserLpTokens } from "./PersistActions";
 import { WETH } from "../../assets/tokens";
 import { ExchangeService } from "../../services/ExchangeService";
-import { useSelector } from "react-redux";
 
-export const searchTokenByNameOrAddress =
-  (address, priAccount) => async (dispatch, getState) => {
-    
-    console.log('token addr: ' + address);
-    console.log('pri account addr: ' + priAccount);
-    try {
-      const {
-        persist: { tokenList },
-      } = getState();
-      console.log("tokenLIST>>",tokenList)
-      address = address.trim();
-      if (address.length === 42) {
-        const filteredTokenList = tokenList.filter((token) =>
-        token.address.toLowerCase().includes(address.toLowerCase())
-        );
-        if (filteredTokenList.length) return filteredTokenList;
-        
-        console.log('passed ADDRESS:', address)
-          const tokenDecimal = await ContractServices.getDecimals(address);
-          const tokenName = await ContractServices.getTokenName(address);
-          const tokenSymbol = await ContractServices.getTokenSymbol(address);
-          const tokenBalance = await ContractServices.getTokenBalance(address, priAccount);
-          
-          const obj = {
-            icon: default_icon,
-            name: tokenName,
-            address,
-            isAdd: true,
-            isDel: false,
-            decimals: tokenDecimal,
-            symbol: tokenSymbol,
-          };
-          tokenList.push(obj);
-          return tokenList;
-          // return [...tokenList, obj];
-      }
-      return tokenList.filter((token) =>
-        token.name.toLowerCase().includes(address.toLowerCase())
-      );
-    } catch (error) {
-      console.log("Error: ", error);
-      return error;
-    }
-  };
 
-export const delTokenFromList = (data) => async (dispatch, getState) => {
-  try {
-    const {
-      persist: { tokenList },
-    } = getState();
-    const idx = tokenList.findIndex(a => a.address.toLowerCase() === data.address.toLowerCase())
-    if(idx < 0) return tokenList;
-    tokenList.splice(idx, 1);
-    return tokenList;
-  } catch (error) {
-    console.log("Error: ", error);
-    return error;
-  }
-};
 
 export const getUserLPTokens = () => async (dispatch, getState) => {
   try {
@@ -78,22 +19,18 @@ export const getUserLPTokens = () => async (dispatch, getState) => {
 
       const limit = 100;
       const totalPages = Math.ceil(lpTokensCount / limit);
-      // let lpTokensArr = [];
       for (let page = 1; page <= totalPages; page++) {
         let lpTokens = await UserService.getPairs({ page, limit });
 
         lpTokens = lpTokens.data;
-        // lpTokensArr = lpTokensArr.concat(lpTokens);
         for (let lp of lpTokens) {
           await dispatch(commonLpToken(lp));
         }
-
-        console.log("LPTOKENS:", lpTokens);
       }
     }
   } catch (error) {
-    console.log("Error: ", error);
-    return error;
+    // console.log("Error: ", error);
+    // return error;
   }
 };
 export const commonLpToken = (lp) => {
@@ -140,7 +77,6 @@ export const commonLpToken = (lp) => {
           ratio * (reserves["_reserve0"] / 10 ** token0Obj.decimals);
         token1Deposit =
           ratio * (reserves["_reserve1"] / 10 ** token1Obj.decimals);
-        console.log("jjjjjjjj", userLpTokensArr);
         const data = {
           ...lp,
           token0Obj,
@@ -232,8 +168,8 @@ export const addLpToken = (lp) => {
         }
       }
     } catch (error) {
-      console.log("Error: ", error);
-      return error;
+      // console.log("Error: ", error);
+      // return error;
     }
   };
 };

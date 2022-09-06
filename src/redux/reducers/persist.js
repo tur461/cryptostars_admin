@@ -1,9 +1,11 @@
 import { TOKEN_LIST } from "../../assets/tokens";
-import { empty, notEmpty, notEqual, rEqual } from "../../services/utils";
+import { empty, isAddr, notEmpty, notEqual, rEqual } from "../../services/utils";
 import { actionTypes } from "../actions/PersistActions";
 console.log("tokeeeeee", TOKEN_LIST);
 const initialState = {
   walletType: "Metamask",
+  priAccount: '',
+  isConnected: !1,
   isUserConnected: "",
   tokenList: [],
   tokenListTempo: [],
@@ -26,8 +28,11 @@ const persist = (state = initialState, action) => {
   let idx = -1;
   switch (action.type) {
     case actionTypes.USER_CONNECTED:
+      console.log('persisting:', action.payload);
       return {
         ...state,
+        priAccount: action.payload.account,
+        isConnected: isAddr(action.payload.account),
         isUserConnected: action.payload.account,
         walletType: action.payload.walletType,
       };

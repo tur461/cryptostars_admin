@@ -2,6 +2,7 @@ import Web3 from "web3";
 import TOKEN_ABI from "../assets/ABI/tokenContract.ABI.json";
 import { toast } from "../Components/Toast/Toast";
 import {
+  EVENTS,
   NETWORK_CHAIN_ID,
   NETWORK_CHAIN_NAME,
   NETWORK_LINK,
@@ -9,16 +10,24 @@ import {
   NETWORK_NATIVE_CURRENCY_NAME,
   NETWORK_NATIVE_CURRENCY_SYMBOL,
   NETWORK_RPC_URL,
+  STR_CONSTANT,
+  WALLET_METH,
+  WALLET_TYPE,
 } from "../constant";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { toHex } from "./utils";
+import { clearEnv, LocalStore, rEqual, toHex } from "./utils";
+import { notEqual } from "assert";
+import { LS_KEYS } from "./constants";
+import { WalletService } from "./WalletServices";
+import { MAIN_CONTRACT_LIST } from "../assets/tokens";
 
 let web3Object;
 let contractOjbect;
 let currentContractAddress;
 let tokenContractObject;
 let currentTokenAddress;
-let walletTypeObject = "Metamask";
+const wType = LocalStore.get(LS_KEYS.WALLET_TYPE);
+let walletTypeObject = wType || WALLET_TYPE.NONE;
 let walletConnectProvider;
 
 //only for lp tokens
@@ -28,20 +37,32 @@ const convertToDecimals = async (value) => {
 };
 
 const isMetamaskInstalled = async (type) => {
+  console.log('[isMetamaskInstalled] TYPE from ContractServices', type);
   //Have to check the ethereum binding on the window object to see if it's installed
   const { ethereum, web3 } = window;
-  const result = Boolean(ethereum && ethereum.isMetaMask);
-  walletTypeObject = "Metamask";
-  if (result) {
+  if (Boolean(ethereum && ethereum.isMetaMask)) {
+    
     //metamask
     try {
+      const chainId = ethereum.networkVersion;
+      if(!rEqual(toHex(chainId), toHex(NETWORK_CHAIN_ID))) {
+        // switch network request
+        try {
+          await WalletService.requestChainChange();
+        } catch(e) {
+          console.log('chain change request resulted into an error:', e);
+          toast.error(STR_CONSTANT.NETWORK_INVALID);
+          clearEnv();
+          return null;
+        }
+      }
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
       });
       return accounts[0];
     } catch (err) {
       toast.error(err.message);
-      return false;
+      return null;
     }
   } else if (ethereum) {
     //trust wallet
@@ -52,7 +73,7 @@ const isMetamaskInstalled = async (type) => {
       return accounts[0];
     } catch (err) {
       toast.error(err.message);
-      return false;
+      return null;
     }
   } else if (web3) {
     //trustwallet
@@ -62,98 +83,21 @@ const isMetamaskInstalled = async (type) => {
     if (type) {
       toast.error(`Install ${type} extension first!`);
     }
-    return false;
+    return null;
   }
 };
 
 //Network switch protection
-const walletWindowListener = async () => {
-  const { ethereum } = window;
-  console.log(
-    "ethereum.chainId ",
-    ethereum.chainId,
-    "NETWORK_CHAIN_ID",
-    toHex(NETWORK_CHAIN_ID)
-  );
-  if (walletTypeObject === "Metamask") {
-    const result = Boolean(ethereum && ethereum.isMetaMask);
-    if (result) {
-      if (ethereum.chainId !== toHex(NETWORK_CHAIN_ID)) {
-        try {
-          const chain = await ethereum.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: toHex(NETWORK_CHAIN_ID) }],
-          });
-        } catch (error) {
-          console.log("metamask error", error);
-          if (error?.code === 4902) {
-            try {
-              const addChain = await ethereum.request({
-                method: "wallet_addEthereumChain",
-                params: [
-                  {
-                    chainId: toHex(NETWORK_CHAIN_ID),
-                    chainName: NETWORK_CHAIN_NAME,
-                    nativeCurrency: {
-                      name: NETWORK_NATIVE_CURRENCY_NAME,
-                      symbol: NETWORK_NATIVE_CURRENCY_SYMBOL,
-                      decimals: Number(NETWORK_NATIVE_CURRENCY_DECIMALS),
-                    },
-                    rpcUrls: [NETWORK_RPC_URL],
-                    blockExplorerUrls: [NETWORK_LINK],
-                  },
-                ],
-              });
-              window.location.reload();
-            } catch (error) {}
-          }
-        }
-      }
 
-      ethereum.on("chainChanged", async (chainId) => {
-        if (chainId !== toHex(NETWORK_CHAIN_ID)) {
-          // toast.error('Select Binance Smart Chain Mainnet Network in wallet!')
-          try {
-            const chain = await ethereum.request({
-              method: "wallet_switchEthereumChain",
-              params: [{ chainId: toHex(NETWORK_CHAIN_ID) }],
-            });
-          } catch (error) {
-            console.log("metamask error", error);
-            if (error?.code === 4902) {
-              try {
-                const addChain = await ethereum.request({
-                  method: "wallet_addEthereumChain",
-                  params: [
-                    {
-                      chainId: await window.ethereum.chainId,
-                      chainName: NETWORK_CHAIN_NAME,
-                      nativeCurrency: {
-                        name: NETWORK_NATIVE_CURRENCY_NAME,
-                        symbol: NETWORK_NATIVE_CURRENCY_SYMBOL,
-                        decimals: Number(NETWORK_NATIVE_CURRENCY_DECIMALS),
-                      },
-                      rpcUrls: [NETWORK_RPC_URL],
-                      blockExplorerUrls: [NETWORK_LINK],
-                    },
-                  ],
-                });
-              } catch (error) {}
-            }
-          }
-        }
-      });
-    }
-  }
-  
-};
+
 
 const callWeb3 = async () => {
   if (web3Object) {
     return web3Object;
   }
   const { ethereum, web3 } = window;
-  if (walletTypeObject === "Metamask") {
+  console.log('callWeb3 wallet type:', walletTypeObject);
+  if (rEqual(walletTypeObject, WALLET_TYPE.METAMASK)) {
     if (ethereum && ethereum.isMetaMask) {
       web3Object = new Web3(ethereum);
       return web3Object;
@@ -175,7 +119,7 @@ const callContract = async (contractAddress, contractABI) => {
   if (
     contractOjbect &&
     currentContractAddress &&
-    currentContractAddress.toLowerCase() === contractAddress.toLowerCase()
+    rEqual(currentContractAddress, contractAddress)
   ) {
     return contractOjbect;
   }
@@ -322,7 +266,7 @@ const getBNBBalance = async (address) => {
   }
 };
 
-const setWalletType = async (walletType) => {
+const setWalletType = walletType => {
   walletTypeObject = walletType;
 };
 
@@ -394,9 +338,20 @@ const callWeb3ForWalletConnect = async (provider) => {
   // return instance;
 };
 
+const isAdminAccount = async account => {
+  const router = await callContract(
+    MAIN_CONTRACT_LIST.router.address,
+    MAIN_CONTRACT_LIST.router.abi
+    )
+  const admin = await router.methods.starOwner().call()
+  return rEqual(account, admin);
+}
+
 //exporting functions
 export const ContractServices = {
+  isAdminAccount,
   isMetamaskInstalled,
+  web3Object,
   callWeb3,
   callContract,
   calculateGasPrice,
@@ -414,7 +369,6 @@ export const ContractServices = {
   web3ErrorHandle,
   getDefaultAccount,
   callTokenContract,
-  walletWindowListener,
   walletTypeObject,
   getLiquidity100Value,
   callWeb3ForWalletConnect,

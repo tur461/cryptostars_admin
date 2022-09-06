@@ -42,16 +42,23 @@ export const ADDRESS = {
 }
 
 export const EVENTS = {
-  SWITCH_CHANGED: '',
+  CHAIN_CHANGED: 'chainChanged',
   ACC_CHANGED: 'accountsChanged',
 }
 
+export const WALLET_METH = {
+  ADD_CHAIN: 'wallet_addEthereumChain',
+  SWITCH_CHAIN: 'wallet_switchEthereumChain',
+}
+
 export const WALLET_TYPE = {
+  NONE: 'none',
   METAMASK: 'metamask',
   W_CONNECT: 'wallet-connect',
 }
 
 export const STR_CONSTANT = {
+  NETWORK_INVALID: 'pls select cronos network',
   WALLET_INVALID: 'invalid wallet',
   TOKEN_ALREADY: 'already selected',
   DEF_CURRENCY_SYM: 'Select a token',

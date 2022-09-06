@@ -5,7 +5,6 @@ import {AUTH_TOKEN_KEY} from  "../constant"
 export { _fetch as fetch };
 
 function handleError(error, reject) {
-  console.log("ERRRRR",error)
   if (!error) {
     toast.error("Something went wrong, Please try again");
   }

@@ -22,6 +22,7 @@ import {
   TWITTER_LINK,
   TELEGRAM_LINK,
   AUDIT_LINK,
+  STR_CONSTANT,
 } from "../../constant";
 import {
   ANTI_WHALE,
@@ -51,6 +52,7 @@ const Sidebar = (props) => {
   const location = useLocation();
   const { pathname } = location;
   const splitLocation = pathname.split("/");
+  
   const setSideBarOption = (option) => {
     if (selectedOption === option) {
       setSelectedOption("");
@@ -66,17 +68,14 @@ const Sidebar = (props) => {
       setSelectedOption(option);
     }
   };
-  useEffect(async () => {
-    if (props.showSocial) {
-      setSelectedOption("");
-    }
-    const res = await ContractServices.isMetamaskInstalled("");
-
-    if (isUserConnected && res) {
-      getAnchorDollarValue();
-    }
+  
+  useEffect(_ => {
+    if (props.showSocial) setSelectedOption('');
+    if (isUserConnected) getAnchorDollarValue();
   }, [props.showSocial]);
+  
   const AddModal = "/AddModal";
+  
   const getAnchorDollarValue = async () => {
     const reserves = await ExchangeService.getReserves(ANCHOR_BUSD_LP);
     let val = reserves[1] / reserves[0];
@@ -118,7 +117,7 @@ const Sidebar = (props) => {
           <MenuItem
             onClick={() => {
               if (!isUserConnected) {
-                return toast.error("Connect wallet first!");
+                return toast.error(STR_CONSTANT.CONNECT_WALLET);
               }
             }}
           >

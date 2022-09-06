@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { withRouter } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import "./Header.scss";
@@ -11,103 +11,46 @@ import ProfileModal from "../ProfileModal/ProfileModal";
 import Logo from "../../assets/images/logo_crypto.png";
 import { toast } from "../Toast/Toast";
 import WalletList from "./WalletList";
-import { HOME_ROUTE } from "../../constant";
+import { EVENTS, HOME_ROUTE, WALLET_TYPE } from "../../constant";
 import WalletConnectProvider from "@walletconnect/web3-provider";
+import { clearEnv, LocalStore, notEqual, rEqual } from "../../services/utils";
+import { LS_KEYS } from "../../services/constants";
+import { WalletService } from "../../services/WalletServices";
 
 const Header = (props) => {
   const dispatch = useDispatch();
-  const [isOpen, setModal] = useState(false);
-  const [walletShow, setWalletShow] = useState(false);
+  const [isOpen, setModal] = useState(!1);
+  const [walletShow, setWalletShow] = useState(!1);
 
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
-  const walletType = useSelector((state) => state.persist.walletType);
+
+  const lock = useRef(!0);
 
   useEffect(() => {
-    const init = async () => {
-      await dispatch(versionManager());
-      if (walletType) {
-        await ContractServices.setWalletType(walletType);
+    if(lock.current) {
+      dispatch(versionManager());
+      const wType = LocalStore.get(LS_KEYS.WALLET_TYPE);
+      if(wType && notEqual(wType, WALLET_TYPE.NONE)) {
+        LocalStore.add(LS_KEYS.WALLET_TYPE, wType);
+        WalletService.setupWalletEventListeners(wType);
+        dispatch(login({account: isUserConnected, walletType: wType}));
       } else {
-        dispatch(logout());
+        console.log('wType:', wType, notEqual(wType, WALLET_TYPE.NONE));
+        // dispatch(logout())
       }
-    };
-    init();
-    addListeners();
-    if (walletType === "Walletconnect") {
-      setProvider();
+      lock.current = !1;  
     }
   }, []);
   
-  useEffect(() => {
-    window.ethereum.on('accountsChanged', function (accounts) {
-      dispatch(logout());
-      // Time to reload your interface with accounts[0]!
-      localStorage.clear();
-    
-      window.location.reload()
-      
-    })
-  }, [isUserConnected])
-
-  const setProvider = async () => {
-    const provider = new WalletConnectProvider({
-      //infuraId: "8570afa4d18b4c5d9cb3a629b08de069",
-      rpc: {
-        97: "https://data-seed-prebsc-2-s3.binance.org:8545/",
-        56: "https://bsc-dataseed.binance.org/",
-      },
-      chainId: 56,
-      network: "binance",
-      qrcode: true,
-      qrcodeModalOptions: {
-        mobileLinks: [
-          "rainbow",
-          "metamask",
-          "argent",
-          "trust",
-          "imtoken",
-          "pillar",
-        ],
-        desktopLinks: ["encrypted ink"],
-      },
-    });
-    const results = await provider.enable();
-    await ContractServices.callWeb3ForWalletConnect(provider);
-  };
-
-  const addListeners = async () => {
-    let address;
-    if (walletType === "Metamask") {
-      address = await ContractServices.isMetamaskInstalled("");
-    }
-
-    ContractServices.walletWindowListener();
-    if (address) {
-      window.ethereum.on("accountsChanged", function (accounts) {
-        const account = accounts[0];
-        // dispatch(login({ account, walletType }));
-        window.location.reload();
-      });
-    }
-  };
-  const loginCall = async (walletType) => {
-    try {
-      const account = await ContractServices.isMetamaskInstalled("");
-      if (account) {
-        dispatch(login({ account, walletType }));
-        setWalletShow(false);
-      }
-    } catch (err) {
-      toast.error(err.message);
-    }
-  };
   const logoutCall = () => {
+    
     dispatch(logout());
-    setModal(false);
-    localStorage.clear();
+    setModal(!1);
+    clearEnv();
   };
+
   const connectCall = () => {
-    isUserConnected ? setModal(!isOpen) : setWalletShow(true);
+    isUserConnected ? setModal(!isOpen) : setWalletShow(!0);
   };
 
   return (

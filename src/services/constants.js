@@ -1,6 +1,7 @@
 export const PAGE_SIZE = 4;
 
 export const LS_KEYS = {
+    WALLET_TYPE: 'wallet_type',
     LAST_IDX: 'last_index',
     START_IDX: 'start_index',
     TOKEN_ADDR_LIST: 'token_address_list',

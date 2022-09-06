@@ -12,29 +12,38 @@ import { toast } from "../Toast/Toast"
 import WalletConnectProvider from '@walletconnect/web3-provider'
 import RouterABI from '../../assets/ABI/router.ABI.json'
 import { MAIN_CONTRACT_LIST } from '../../assets/tokens/index'
-import { rEqual } from "../../services/utils"
+import { clearEnv, LocalStore, rEqual } from "../../services/utils"
 import { EVENTS, NETWORK_CHAIN_ID, STR_CONSTANT, WALLET_TYPE } from "../../constant"
+import { WalletService } from "../../services/WalletServices"
+import { LS_KEYS } from "../../services/constants"
 
 
 const ConnectWalletModal = ({ setShowModal }) => {
-    console.log("clickhit");
     const dispatch = useDispatch();
     
-    const connect2wallet = async (walletType, type) => {
+    const connect2wallet = async (walletType) => {
         try {
             if (rEqual(walletType, WALLET_TYPE.METAMASK)) {
-                const account = await ContractServices.isMetamaskInstalled(type);
-                const router = await ContractServices.callContract(
-                    MAIN_CONTRACT_LIST.router.address,
-                    MAIN_CONTRACT_LIST.router.abi
-                )
-                const admin = await router.methods.starOwner().call();
-                if (rEqual(account, admin)) {
+                console.log('calling contract', walletType);
+                const account = await ContractServices.isMetamaskInstalled(walletType);
+                if(account === null) {
+                    return;
+                }
+                LocalStore.add(LS_KEYS.WALLET_TYPE, walletType);
+                ContractServices.setWalletType(walletType);
+                WalletService.setupWalletEventListeners(walletType);
+                
+                if (await ContractServices.isAdminAccount(account)) {
+                    console.log('is admin TRUE');
                     dispatch(login({ account, walletType }));
                     setShowModal(!1);
-                    // window.location.reload();
                 }
-                else toast.error(STR_CONSTANT.NOT_AN_ADMIN)
+                else {
+                    toast.error(STR_CONSTANT.NOT_AN_ADMIN);
+                    clearEnv();
+                }
+            } else if(rEqual(walletType, WALLET_TYPE.NONE)) {
+
             } else {
                 toast.error(STR_CONSTANT.WALLET_INVALID);
             }

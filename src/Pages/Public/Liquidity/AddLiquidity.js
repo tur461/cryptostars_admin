@@ -78,11 +78,6 @@ const AddLiquidity = (props) => {
     init();
   },[search, tokenList]);
 
-  useEffect(() => {
-    ContractServices.walletWindowListener();
-    console.log("hey");
-  }, []);
-
   const init = async () => {
     if (isUserConnected) {
       const oneBalance = await ContractServices.getBNBBalance(isUserConnected);
@@ -138,9 +133,6 @@ const AddLiquidity = (props) => {
     const { ethereum, web3 } = window;
     if (!isUserConnected) {
       return toast.error(STR_CONSTANT.CONNECT_WALLET);
-    }
-    if (notEqual(ethereum.chainId, toHex(NETWORK_CHAIN_ID))) {
-      return ContractServices.walletWindowListener();
     }
 
     setSelectedCurrency(

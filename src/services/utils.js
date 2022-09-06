@@ -1,4 +1,5 @@
-import { ADDRESS } from "../constant";
+import { ADDRESS, WALLET_TYPE } from "../constant";
+import { LS_KEYS } from "./constants";
 
 const toB64 = s => btoa(s);
 const eHandle = e => e.preventDefault() || !0;
@@ -71,12 +72,22 @@ const toHex = n => `${n}`.indexOf('0x') > -1 ? n : `0x${Number(n).toString(16)}`
 
 const truncAddr = addr => `${addr.slice(0, 5)}...${addr.slice(38, 42)}`;
 
+const clearEnv = _ => {
+    console.trace('clearing environment..');
+
+    setTimeout(_ => {
+        localStorage.clear()
+        LocalStore.add(LS_KEYS.WALLET_TYPE, WALLET_TYPE.NONE);
+        window.location.reload();
+    }, 1000)
+}
 
 export {
     empty,
     isAddr,
     rEqual,
     notEqual,
+    clearEnv,
     toB64,
     truncAddr,
     toHex,
