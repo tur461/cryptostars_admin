@@ -27,29 +27,32 @@ const LiquidityPoolList = () => {
       
     });
   };
-const pairCall =async () => {
-  let pairBalArr = [];
-  await Promise.all(poolList?.map(async(Ptoken) => {
-    console.log("Ptoken.token1,Ptoken.token2",Ptoken.token1Addr,Ptoken.token2Addr);
-    const pairList =await ExchangeService.getPair(Ptoken.token1Addr,Ptoken.token2Addr);
-    console.log("pairList",pairList);
-
-    /////////////contract call ////////////////
-    const contract = await ContractServices.callContract(
-      pairList,
-      MAIN_CONTRACT_LIST.pair.abi
-    );
-    const balaceOfPair= await contract.methods.balanceOf(isUserConnected).call();
-    const Dec_balaceOfPair =  balaceOfPair/ 10**18;
-    const fix_balaceOfPair = Dec_balaceOfPair.toFixed(2);
-      pairBalArr.push(fix_balaceOfPair);
-    console.log("balaceOfPair",balaceOfPair);
-    console.log("fix_balaceOfPair",fix_balaceOfPair);
-    
-  }));
-  pairBalArr.length &&
-  setPairBalance(pairBalArr);
-}
+  const pairCall =async () => {
+    let pairBalArr = [];
+    const getBal = i => {
+      if(i === poolList.length) {
+        console.log('pool list:', poolList);
+        console.log('bal list:', pairBalArr);
+        return setPairBalance([...pairBalArr]);
+      }
+      ExchangeService.getPair(poolList[i].token1Addr,poolList[i].token2Addr)
+      .then(pair => {
+        ContractServices.callContract(
+          pair,
+          MAIN_CONTRACT_LIST.pair.abi
+        )
+        .then(c => {
+          c.methods.balanceOf(isUserConnected).call()
+          .then(bal => {
+            pairBalArr.push((bal/ 10**18).toFixed(4));
+            getBal(i+1);
+          })
+        })
+      })
+    }
+    poolList.length &&
+    getBal(0);
+  }
 
   return (
    <>
