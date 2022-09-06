@@ -16,6 +16,7 @@ import checkicon from "../../assets/images/check_icon.svg";
 import { saveTokenIconToDB, saveTokenInfoToDB } from "../../services/api";
 import { useSelector } from "react-redux";
 import { toast } from "../Toast/Toast";
+import { notEmpty } from "../../services/utils";
 
 
 // import xtype from "xtypejs";
@@ -36,23 +37,28 @@ function PreviewAddTokenModal({
   const dispatch = useDispatch();
   const [result, setResult] = useState("");
   const [contractAddress, setContractAddress] = useState('');
-  const priAccount = useSelector(s => s.persist.isUserConnected);
+  const priAccount = useSelector(s => s.persist.priAccount);
 
   const letsCallTheContract = async () => {
     try {
+      console.log('funck up');
       if(!priAccount) return toast.error(STR_CONSTANT.CONNECT_WALLET);
       dispatch(startLoading())
-      let contract = await ContractServices.callContract(
+      console.log('funck up 2');
+      let tokenFactory = await ContractServices.callContract(
       MAIN_CONTRACT_LIST.tokenFactory.address,
       MAIN_CONTRACT_LIST.tokenFactory.abi
       );
 
-      let callCreate = await contract.methods
+      const w3 = ContractServices.callWeb3();
+      console.log('w3', w3);
+
+      let callCreate = await tokenFactory.methods
       .create(
       tokenName,
       tokenSymbol,
       mintAddress,
-      ContractServices.web3Object.utils.toWei(totalSupply, "ether"),
+      w3.utils.toWei(totalSupply, "ether"),
       ownerAddress
       )
       .send({ from: priAccount });
@@ -60,7 +66,7 @@ function PreviewAddTokenModal({
       setContractAddress(contract_address);
       let cc = callCreate?.transactionHash
       setFinalhash(cc)
-      if (cc !== "") {
+      if (notEmpty(cc)) {
         const iconName = `${tokenSymbol}_${Date.now()}.${tokenIcon.type.split('/')[1]}`;
         const token_obj = {
           icon: tokenIcon.name.split(' ').join('_'),
@@ -70,13 +76,9 @@ function PreviewAddTokenModal({
           dec: 18,
           supply: totalSupply,
         };
-        console.log("PPP", token_obj.icon);
-
-        const ress = saveTokenInfoToDB(token_obj, (d) => {
+        saveTokenInfoToDB(token_obj, (d) => {
           saveTokenIconToDB(tokenIcon, iconName, _ => console.log('All data saved'));
         });
-
-        console.log("ress", ress);
       }
       setResult(cc)
     } catch (error) {

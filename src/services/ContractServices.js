@@ -91,7 +91,7 @@ const isMetamaskInstalled = async (type) => {
 
 
 
-const callWeb3 = async () => {
+const callWeb3 =  _ => {
   if (web3Object) {
     return web3Object;
   }
