@@ -76,8 +76,27 @@ const AddLiquidity = (props) => {
       )
     );
     init();
-  },[search, tokenList]);
+    console.log('searching for: ' + search);
+  },[search,tokenList]);
 
+  // useEffect(_ => {
+  //   console.log("tokenlist2",tokenList)
+  //   setFilteredTokenList(tokenList);
+  //   console.log('tokenlist changed.', tokenList);
+  // }, [tokenList])
+
+  // const lock = useRef(!0);
+  // useEffect(_ => {
+  //   (
+  //     async _ => lock.current && await init() && (lock.current = !1)
+  //   )();
+  // }, []);
+// console.log("tokenOne",tokenOne);
+  useEffect(() => {
+    ContractServices.walletWindowListener();
+    console.log("hey");
+  }, []);
+  console.log("slippagePercentage", slippagePercentage);
   const init = async () => {
     if (isUserConnected) {
       const oneBalance = await ContractServices.getBNBBalance(isUserConnected);
@@ -593,6 +612,8 @@ const AddLiquidity = (props) => {
     const pool_Obj = {
       token1:tokenOne.symbol,
       token2:tokenTwo.symbol,
+      token1Addr: tokenOne.address,
+      token2Addr: tokenTwo.address,
     }
     const acc = await ContractServices.getDefaultAccount();
     if (acc && acc.toLowerCase() !== isUserConnected.toLowerCase()) {
