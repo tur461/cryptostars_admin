@@ -41,18 +41,13 @@ function PreviewAddTokenModal({
 
   const letsCallTheContract = async () => {
     try {
-      console.log('funck up');
       if (!priAccount) return toast.error(STR_CONSTANT.CONNECT_WALLET);
       dispatch(startLoading())
-      console.log('funck up 2');
       let tokenFactory = await ContractServices.callContract(
         MAIN_CONTRACT_LIST.tokenFactory.address,
         MAIN_CONTRACT_LIST.tokenFactory.abi
       );
-
       const w3 = ContractServices.callWeb3();
-      console.log('w3', w3);
-
       let callCreate = await tokenFactory.methods
         .create(
           tokenName,

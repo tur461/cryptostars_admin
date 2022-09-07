@@ -50,9 +50,7 @@ function AddTokenModal() {
 
         break;
       case "tokenSymbol":
-        console.log("mmmmmmmmmmmmmrrrrrrrrrr", e.target.value);
         const value1 = e.target.value;
-        console.log("Input value1111111111: ", value1);
         const re1 = /^[A-Za-z]+$/;
         if (value1 === "" || re1.test(value1)) {
           setTokenSymbol(value1);
@@ -63,12 +61,18 @@ function AddTokenModal() {
         setError(false);
         break;
       case "totalSupply":
-        e.target.value == ""
-          ? setSupplyError("Please Enter Token Supply")
-          : setSupplyError("");
-        setError(false);
+        const v = e.target.value;
+        v === '' ? 
+        setSupplyError("Please Enter Token Supply") :
+        v.indexOf('.') > -1 ?
+        setSupplyError("decimal not allowed") :
+        BigInt(v) <= BigInt(0) ? 
+        setSupplyError('must be non zero value') :
+        BigInt(v) >= BigInt(2**256) ?
+        setSupplyError("Number too big") :
+        setSupplyError('');
+        setError();
         setTotalSupply(e.target.value.toString());
-
         break;
       case "mintAddress":
         e.target.value == ""
@@ -84,12 +88,10 @@ function AddTokenModal() {
           }
         } catch (err) {
           setError(true);
-          console.error("invalid ethereum address", err.message);
           setMintAddress(e.target.value);
           setMintAddressError("Please  Enter correct Mint Address");
         }
         refrenceVariable = true;
-
         break;
       case "ownerAddress":
         e.target.value == ""
@@ -105,7 +107,6 @@ function AddTokenModal() {
           }
         } catch (err) {
           setError(true);
-          console.error("invalid ethereum address", err.message);
           setOwnerAddress(e.target.value);
           setOwnerAddressError("Please  Enter correct Mint Address");
         }
@@ -120,7 +121,6 @@ function AddTokenModal() {
   };
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  console.log("token ka naam", tokenName);
 
   const Preview = () => {
     if (tokenName == "") {
@@ -143,7 +143,6 @@ function AddTokenModal() {
       setOwnerAddressError("Please Enter Owner Address");
       setError(true);
     }
-    console.log("rrrrrrrrrrrrr", error);
     if (
       error == false &&
       (tokenName !== "") &
