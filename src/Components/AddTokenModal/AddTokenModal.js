@@ -70,14 +70,14 @@ function AddTokenModal() {
         setSupplyError("decimal not allowed") :
         BigNumber(v).lte(BigNumber(0)) ? 
         setSupplyError('must be non zero value') :
-        BigNumber(v).gt(BigNumber(VAL_CONSTANT.MAX_256_DEC)) ?
+        BigNumber(v).gt(BigNumber(VAL_CONSTANT.MAX_256_DEC_10_18)) ?
         setSupplyError("Number too big") :
         setSupplyError('');
         setError(
           v === '' || 
           v.indexOf('.') > -1 || 
           BigNumber(v).lte(BigNumber(0)) || 
-          BigNumber(v).gt(BigNumber(VAL_CONSTANT.MAX_256_DEC))
+          BigNumber(v).gt(BigNumber(VAL_CONSTANT.MAX_256_DEC_10_18))
         );
         setTotalSupply(e.target.value.toString());
         break;
