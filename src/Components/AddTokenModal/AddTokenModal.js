@@ -7,6 +7,7 @@ import back from "../../assets/images/back-arrow.svg";
 import { Modal, FormLabel, Button } from "react-bootstrap";
 import PreviewAddTokenModal from "./PreviewAddTokenModal";
 import Web3 from "web3";
+import BigNumber from "bignumber.js";
 
 function AddTokenModal() {
   let refrenceVariable = false;
@@ -66,9 +67,9 @@ function AddTokenModal() {
         setSupplyError("Please Enter Token Supply") :
         v.indexOf('.') > -1 ?
         setSupplyError("decimal not allowed") :
-        BigInt(v) <= BigInt(0) ? 
+        BigNumber.from(v).lte(BigNumber.from(0)) ? 
         setSupplyError('must be non zero value') :
-        BigInt(v) >= BigInt(2**256) ?
+        BigNumber.from(v).gte(BigNumber.from(2**256)) ?
         setSupplyError("Number too big") :
         setSupplyError('');
         setError();
