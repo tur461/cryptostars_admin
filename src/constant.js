@@ -35,6 +35,7 @@ export const AUDIT_LINK = 'https://docs.anchorswap.finance/audit/';
 
 export const VAL_CONSTANT = {
   MAX_256: '0x' + 'f'.repeat(64),
+  MAX_256_DEC: '115792089237316195423570985008687907853269984665640564039457584007913129639935',
 }
 
 export const ADDRESS = {

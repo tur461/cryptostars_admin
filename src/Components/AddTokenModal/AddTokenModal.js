@@ -8,6 +8,7 @@ import { Modal, FormLabel, Button } from "react-bootstrap";
 import PreviewAddTokenModal from "./PreviewAddTokenModal";
 import Web3 from "web3";
 import BigNumber from "bignumber.js";
+import { VAL_CONSTANT } from "../../constant";
 
 function AddTokenModal() {
   let refrenceVariable = false;
@@ -69,14 +70,14 @@ function AddTokenModal() {
         setSupplyError("decimal not allowed") :
         BigNumber(v).lte(BigNumber(0)) ? 
         setSupplyError('must be non zero value') :
-        BigNumber(v).gte(BigNumber(2**256)) ?
+        BigNumber(v).gt(BigNumber(VAL_CONSTANT.MAX_256_DEC)) ?
         setSupplyError("Number too big") :
         setSupplyError('');
         setError(
           v === '' || 
           v.indexOf('.') > -1 || 
           BigNumber(v).lte(BigNumber(0)) || 
-          BigNumber(v).gte(BigNumber(2**256))
+          BigNumber(v).gt(BigNumber(VAL_CONSTANT.MAX_256_DEC))
         );
         setTotalSupply(e.target.value.toString());
         break;
