@@ -727,13 +727,16 @@ const AddLiquidity = (props) => {
       };
       try {
         dispatch(startLoading());
+        
+        const hasPair = isAddr(await ExchangeService.getPair(tokenOne.address, tokenTwo.address))
         const result = await ExchangeService.addLiquidity(data);
+        
         console.log(result, "add liquidity transaction");
 
-        if(result){
-          savePoolInfoToDB(pool_Obj,(d) => {
+        if(result && !hasPair){
+          savePoolInfoToDB(pool_Obj, d => {
             console.log("saveTokenInfoToDB success",d)
-          })
+          });
         }
         dispatch(stopLoading());
         if (result) {
