@@ -67,9 +67,9 @@ function AddTokenModal() {
         setSupplyError("Please Enter Token Supply") :
         v.indexOf('.') > -1 ?
         setSupplyError("decimal not allowed") :
-        BigNumber.from(v).lte(BigNumber.from(0)) ? 
+        BigNumber(v).lte(BigNumber(0)) ? 
         setSupplyError('must be non zero value') :
-        BigNumber.from(v).gte(BigNumber.from(2**256)) ?
+        BigNumber(v).gte(BigNumber(2**256)) ?
         setSupplyError("Number too big") :
         setSupplyError('');
         setError(
