@@ -72,7 +72,12 @@ function AddTokenModal() {
         BigNumber.from(v).gte(BigNumber.from(2**256)) ?
         setSupplyError("Number too big") :
         setSupplyError('');
-        setError();
+        setError(
+          v === '' || 
+          v.indexOf('.') > -1 || 
+          BigNumber.from(v).lte(BigNumber.from(0)) || 
+          BigNumber.from(v).gte(BigNumber.from(2**256))
+        );
         setTotalSupply(e.target.value.toString());
         break;
       case "mintAddress":
