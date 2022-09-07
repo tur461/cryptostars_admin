@@ -75,8 +75,8 @@ function AddTokenModal() {
         setError(
           v === '' || 
           v.indexOf('.') > -1 || 
-          BigNumber.from(v).lte(BigNumber.from(0)) || 
-          BigNumber.from(v).gte(BigNumber.from(2**256))
+          BigNumber(v).lte(BigNumber(0)) || 
+          BigNumber(v).gte(BigNumber(2**256))
         );
         setTotalSupply(e.target.value.toString());
         break;
