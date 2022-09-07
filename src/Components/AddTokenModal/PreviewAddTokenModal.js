@@ -33,7 +33,7 @@ function PreviewAddTokenModal({
   ownerAddress,
 }) {
   const [data, setData] = useState();
-  const [finalhash,setFinalhash] = useState('')
+  const [finalhash, setFinalhash] = useState('')
   const dispatch = useDispatch();
   const [result, setResult] = useState("");
   const [contractAddress, setContractAddress] = useState('');
@@ -42,26 +42,26 @@ function PreviewAddTokenModal({
   const letsCallTheContract = async () => {
     try {
       console.log('funck up');
-      if(!priAccount) return toast.error(STR_CONSTANT.CONNECT_WALLET);
+      if (!priAccount) return toast.error(STR_CONSTANT.CONNECT_WALLET);
       dispatch(startLoading())
       console.log('funck up 2');
       let tokenFactory = await ContractServices.callContract(
-      MAIN_CONTRACT_LIST.tokenFactory.address,
-      MAIN_CONTRACT_LIST.tokenFactory.abi
+        MAIN_CONTRACT_LIST.tokenFactory.address,
+        MAIN_CONTRACT_LIST.tokenFactory.abi
       );
 
       const w3 = ContractServices.callWeb3();
       console.log('w3', w3);
 
       let callCreate = await tokenFactory.methods
-      .create(
-      tokenName,
-      tokenSymbol,
-      mintAddress,
-      w3.utils.toWei(totalSupply, "ether"),
-      ownerAddress
-      )
-      .send({ from: priAccount });
+        .create(
+          tokenName,
+          tokenSymbol,
+          mintAddress,
+          w3.utils.toWei(totalSupply, "ether"),
+          ownerAddress
+        )
+        .send({ from: priAccount });
       const contract_address = await callCreate.events[0].address
       setContractAddress(contract_address);
       let cc = callCreate?.transactionHash
@@ -105,15 +105,15 @@ function PreviewAddTokenModal({
         <Modal.Body className="preview_content text-white">
           <div className="token_info mb-3">
             <FormLabel className="text_head">Token Name:</FormLabel>
-            <p>{tokenName}</p>
+            <p>{tokenName.slice(0,20)+ "......"}</p>
           </div>
           <div className="token_info mb-3">
             <FormLabel className="text_head">Token Symbol:</FormLabel>
-            <p>{tokenSymbol}</p>
+            <p>{tokenSymbol.slice(0,20)+ "......"}</p>
           </div>
           <div className="token_info mb-3">
             <FormLabel className="text_head">Total Supply:</FormLabel>
-            <p>{totalSupply}</p>
+            <p>{totalSupply.slice(0,20)+ "......"}</p>
           </div>
           <div className="token_info mb-3">
             <FormLabel className="text_head">Mint Address:</FormLabel>
@@ -142,30 +142,30 @@ function PreviewAddTokenModal({
           </Button>
         </Modal.Footer>
         {result ? (
-        <div className="whole">
-          <Modal.Dialog className="confirmation_modal" centered>
-            {/* <Modal.Header closeButton></Modal.Header> */}
-            <Modal.Body>
-            
-            <img src={checkicon} alt="icon" />
-              <a
-                href={`${BSC_SCAN}tx/${finalhash}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <p>View on Cronos Scan</p>
-              </a>
-           
+          <div className="whole">
+            <Modal.Dialog className="confirmation_modal" centered>
+              {/* <Modal.Header closeButton></Modal.Header> */}
+              <Modal.Body>
 
-              <Link to={"/tokenList"}>View Token</Link>
-            </Modal.Body> 
-          </Modal.Dialog>
-        </div>
-      ) : (
-        ""
-      )}
+                <img src={checkicon} alt="icon" />
+                <a
+                  href={`${BSC_SCAN}tx/${finalhash}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <p>View on Cronos Scan</p>
+                </a>
+
+
+                <Link to={"/tokenList"}>View Token</Link>
+              </Modal.Body>
+            </Modal.Dialog>
+          </div>
+        ) : (
+          ""
+        )}
       </Modal>
-      
+
     </div>
   );
 }

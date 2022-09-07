@@ -46,11 +46,11 @@ export const TokenList = ({ data }) => {
             <div className="add_sec">
               <span>
                 <label htmlFor="html">Token Name:</label>
-                <li style={{ color: "white" }}>{token.name}</li>
+                <li style={{ color: "white" }}>{token.name.slice(0,10)}...</li>
               </span>
               <span>
                 <label htmlFor="html">Token Symbol:</label>
-                <li style={{ color: "white" }}>{token.sym}</li>
+                <li style={{ color: "white" }}>{token.sym.slice(0,10)}...</li>
               </span>
               <span>
                 <label htmlFor="html">Token Address:</label>
@@ -79,7 +79,7 @@ export const TokenList = ({ data }) => {
             <div className="supply_sec">
               <span>
                 <label htmlFor="html">Token Supply:</label>
-                <li style={{ color: "white" }}>{token.supply}</li>
+                <li style={{ color: "white" }}>{token.supply.slice(0,20)}</li>
               </span>
               <span>
                 <label htmlFor="html">Token Decimal:</label>

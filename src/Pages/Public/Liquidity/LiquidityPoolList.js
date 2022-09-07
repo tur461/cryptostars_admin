@@ -37,6 +37,7 @@ const LiquidityPoolList = () => {
       }
       ExchangeService.getPair(poolList[i].token1Addr,poolList[i].token2Addr)
       .then(pair => {
+        console.log('pair:', pair);
         ContractServices.callContract(
           pair,
           MAIN_CONTRACT_LIST.pair.abi
