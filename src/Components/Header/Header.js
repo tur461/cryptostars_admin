@@ -40,7 +40,7 @@ const Header = (props) => {
 
   useEffect(_ => {
     ensureProjectIsUptoDate();
-  }, [isUserConnected])
+  }, [])
 
   const lock = useRef(!0);
 
