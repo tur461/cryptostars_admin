@@ -1,11 +1,12 @@
 export const PAGE_SIZE = 4;
 
 export const LS_KEYS = {
-    WALLET_TYPE: 'wallet_type',
     LAST_IDX: 'last_index',
     START_IDX: 'start_index',
-    TOKEN_ADDR_LIST: 'token_address_list',
+    WALLET_TYPE: 'wallet_type',
     TOKEN_INFO_LIST: 'token_info_list',
+    PROJECT_VERSION: 'project_version',
+    TOKEN_ADDR_LIST: 'token_address_list',
 }
 
 export const API_PATH = {
