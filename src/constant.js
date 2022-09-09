@@ -34,8 +34,13 @@ export const TELEGRAM_LINK = 'https://t.me/joinchat/KP-_HKro73ViZTZk';
 export const AUDIT_LINK = 'https://docs.anchorswap.finance/audit/';
 
 export const VAL_CONSTANT = {
+  PROJECT_ID: 'admin_panel',
   MAX_256: '0x' + 'f'.repeat(64),
   MAX_256_DEC_10_18: '115792089237316195423570985008687907853269984665640564039457',
+}
+
+export const URL = {
+  CRONOS_EXPLORER: 'https://testnet.cronoscan.com',
 }
 
 export const ADDRESS = {

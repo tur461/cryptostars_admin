@@ -163,9 +163,7 @@ const getBurnedToken = async () => {
   }
 };
 
-const addLiquidity = async (data) => {
-  return new Promise(async (resolve, reject) => {
-    
+const addLiquidity = async (data, cbk) => {
     try {
       let {
         tokenA,
@@ -199,7 +197,7 @@ const addLiquidity = async (data) => {
         .estimateGas({ from: to });
       value = await web3.utils.toHex(value);
 
-      contract.methods
+      return contract.methods
         .addLiquidity(
           tokenA,
           tokenB,
@@ -211,19 +209,10 @@ const addLiquidity = async (data) => {
           deadline
         )
         .send({ from: to, gasPrice, gas, value })
-        .on("transactionHash", (hash) => {
-          resolve(hash);
-        })
-        .on("receipt", (receipt) => {
-          toast.success("Liquidity added successfully.");
-        })
-        .on("error", (error, receipt) => {
-          reject(error);
-        });
+        
     } catch (error) {
-      reject(error);
+      return new Promise((_,j) => j(error))
     }
-  });
 };
 const addLiquidityETH = async (data) => {
   return new Promise(async (resolve, reject) => {

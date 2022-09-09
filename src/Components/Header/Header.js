@@ -13,9 +13,10 @@ import { toast } from "../Toast/Toast";
 import WalletList from "./WalletList";
 import { EVENTS, HOME_ROUTE, WALLET_TYPE } from "../../constant";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { clearEnv, LocalStore, notEqual, rEqual } from "../../services/utils";
+import { clearEnv, doPageReload, isNull, LocalStore, notEqual, rEqual, toStr } from "../../services/utils";
 import { LS_KEYS } from "../../services/constants";
 import { WalletService } from "../../services/WalletServices";
+import { retrieveProjectVersion } from "../../services/api";
 
 const Header = (props) => {
   const dispatch = useDispatch();
@@ -23,6 +24,24 @@ const Header = (props) => {
   const [walletShow, setWalletShow] = useState(!1);
 
   const isUserConnected = useSelector((state) => state.persist.isUserConnected);
+
+  const ensureProjectIsUptoDate = _ => {
+		retrieveProjectVersion()
+		.then(version => {
+			const prevVer = LocalStore.get(LS_KEYS.PROJECT_VERSION);
+			if(isNull(prevVer) || notEqual(toStr(prevVer), toStr(version))) {
+			LocalStore.clear();
+			LocalStore.add(LS_KEYS.PROJECT_VERSION, version);
+			toast.w('page reloads in 2 sec to get updated..');
+			window.isPageForcedToReload = !0
+			doPageReload(2);
+			}
+		});
+	}
+
+  useEffect(_ => {
+    ensureProjectIsUptoDate();
+  }, [isUserConnected])
 
   const lock = useRef(!0);
 

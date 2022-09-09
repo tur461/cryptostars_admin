@@ -1,4 +1,6 @@
+import { VAL_CONSTANT } from "../constant";
 import { API_PATH, BACK_END_URL } from "./constants"
+import { jString } from "./utils";
 
 function saveTokenInfoToDB(tokenInfo, callback) {
     console.log(BACK_END_URL, API_PATH.SAVE_TOKEN_INFO);
@@ -93,10 +95,28 @@ function retreivePoolInfoList(callback) {
     })
 }
 
+function retrieveProjectVersion() {
+    return new Promise((r, j) => {
+        fetch(API_PATH.PROJECT_VERSION, {
+            method: 'POST',
+            body: jString({
+                projectId: VAL_CONSTANT.PROJECT_ID,
+            }),
+            headers: {
+                'content-type': 'application/json'
+            },
+        })
+        .then(res => res.json())
+        .then(res => r(res.data))
+        .catch(er => j(er));
+    });
+}
+
 export {
-    saveTokenInfoToDB,
-    retreiveTokenList,
-    saveTokenIconToDB,
     savePoolInfoToDB,
+    retreiveTokenList,
+    saveTokenInfoToDB,
+    saveTokenIconToDB,
     retreivePoolInfoList,
+    retrieveProjectVersion,
 }

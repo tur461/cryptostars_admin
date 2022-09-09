@@ -1,7 +1,7 @@
 import './InputSelectCurrency.scss'
 import ionicArrowDown from '../../assets/images/ionic-ios-arrow-down.svg'
 
-const InputSelectCurrency = ({ className, label, defaultValue, onChange, currencyType, onClick, currnecyName, balance, max, onMax }) => {
+const InputSelectCurrency = ({ className, label, defaultValue, onChange, currencyType, onClick, currnecyName, balance, max, onMax, type }) => {
     return (
         <div className={`col InputSelectCurrency_style ${className}`} >
             <label className="labelTextStyle">{label}</label>
@@ -19,7 +19,7 @@ const InputSelectCurrency = ({ className, label, defaultValue, onChange, currenc
                         minLength={1}
                         maxLength={79}
                         spellCheck="off"
-                        type="text"
+                        type={type}
                         value={defaultValue}
                         onChange={onChange} min={0}
                     />

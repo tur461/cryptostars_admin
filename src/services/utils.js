@@ -8,6 +8,10 @@ const isObj = o => typeof o === 'object';
 const isStr = s => typeof s === 'string';
 const isNum = s => typeof s === 'number';
 
+const jObject = s => JSON.parse(s);
+
+const jString = o => JSON.stringify(o);
+
 function rEqual(a, b) {
     return isStr(a) && isStr(b) ? a.toLowerCase() === b.toLowerCase() :
     isNum(a) && isNum(b) ? a === b :
@@ -82,8 +86,20 @@ const clearEnv = _ => {
     }, 1000)
 }
 
+const isNull = v => rEqual(`${v}`, 'null');
+
+const notNull = v => !isNull(v);
+
+const doPageReload = (delay=0) => delay ? setTimeout(_ => window.location.reload(), delay * 1000) : window.location.reload();
+
+const toStr = v => isStr(v) ? v : isObj(v) ? jString(v) : `${v}`;
+
 export {
+    toStr,
+    doPageReload,
     empty,
+    isNull,
+    notNull,
     isAddr,
     rEqual,
     notEqual,
@@ -93,6 +109,8 @@ export {
     toHex,
     contains,
     eHandle,
+    jObject,
+    jString,
     notEmpty,
     range,
     sortArr,

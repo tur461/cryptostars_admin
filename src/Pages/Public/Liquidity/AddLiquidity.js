@@ -80,6 +80,7 @@ const AddLiquidity = (props) => {
   },[search,tokenList]);
 
   const init = async () => {
+    
     if (isUserConnected) {
       const oneBalance = await ContractServices.getBNBBalance(isUserConnected);
       // setTokenOneBalance(oneBalance);
@@ -727,23 +728,25 @@ const AddLiquidity = (props) => {
       };
       try {
         dispatch(startLoading());
-        const result = await ExchangeService.addLiquidity(data);
-        console.log(result, "add liquidity transaction");
-
-        if(result){
+        const tx = await ExchangeService.addLiquidity(data);
+        console.log('add liquidity:', tx);
+        setShowSupplyModal(1);
+        const w3 = ContractServices.callWeb3();
+        await w3.eth.getTransactionReceipt(tx.transactionHash);
+        const txHash = tx.transactionHash;
+        console.log(txHash, "add liquidity transaction");
+        
+        dispatch(stopLoading());
+        if (txHash) {
           savePoolInfoToDB(pool_Obj,(d) => {
             console.log("saveTokenInfoToDB success",d)
           })
-        }
-        dispatch(stopLoading());
-        if (result) {
-          setTxHash(result);
+          setTxHash(txHash);
           setShowTransactionModal(!0);
           setShowSupplyModal(!1);
-
           const data = {
             message: `Add ${tokenOne.symbol} and ${tokenTwo.symbol}`,
-            tx: result,
+            tx: txHash,
           };
           dispatch(addTransaction(data));
           dispatch(checkUserLpTokens(!1));
@@ -797,6 +800,7 @@ const AddLiquidity = (props) => {
 
           <InputSelectCurrency
             label="From"
+            type="number"
             onClick={() => onHandleOpenModal(TOKEN.A)}
             currencyType={tokenOne?.icon ? tokenOne.icon : defaultImg}
             currnecyName={tokenOneCurrency}
@@ -813,6 +817,7 @@ const AddLiquidity = (props) => {
           {/* <label className="right">Balance: {tokenTwoBalance}</label> */}
           <InputSelectCurrency
             label="To"
+            type="number"
             onClick={() => onHandleOpenModal(TOKEN.B)}
             currencyType={tokenTwo.icon ? tokenTwo.icon : defaultImg}
             currnecyName={tokenTwoCurrency}

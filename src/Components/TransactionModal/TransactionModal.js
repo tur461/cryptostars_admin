@@ -4,7 +4,7 @@ import Card from "../Card/Card";
 import icon_information from "../../assets/images/icon_information.png";
 import closeBtn from "../../assets/images/ionic-md-close.svg";
 import checkicon from "../../assets/images/check_icon.svg";
-import { BSC_SCAN } from "../../constant";
+import { BSC_SCAN, URL } from "../../constant";
 import Button from "../Button/Button";
 
 const TransactionModal = ({ txHash, closeTransactionModal }) => {
@@ -28,7 +28,7 @@ const TransactionModal = ({ txHash, closeTransactionModal }) => {
           <div className="col viewbox">
             <img src={checkicon} alt="icon" width="85" />
             <a
-              href={`${BSC_SCAN}tx/${txHash}`}
+              href={`${URL.CRONOS_EXPLORER}/tx/${txHash}`}
               target="_blank"
               rel="noreferrer"
             >
