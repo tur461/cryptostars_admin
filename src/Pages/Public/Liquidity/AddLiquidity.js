@@ -728,19 +728,21 @@ const AddLiquidity = (props) => {
       };
       try {
         dispatch(startLoading());
+        const w3 = ContractServices.callWeb3();
+        const hasPair =  isAddr(await ExchangeService.getPair(data.tokenA, data.tokenB));
         const tx = await ExchangeService.addLiquidity(data);
         console.log('add liquidity:', tx);
         setShowSupplyModal(1);
-        const w3 = ContractServices.callWeb3();
         await w3.eth.getTransactionReceipt(tx.transactionHash);
         const txHash = tx.transactionHash;
         console.log(txHash, "add liquidity transaction");
         
         dispatch(stopLoading());
         if (txHash) {
+          !hasPair &&
           savePoolInfoToDB(pool_Obj,(d) => {
             console.log("saveTokenInfoToDB success",d)
-          })
+          });
           setTxHash(txHash);
           setShowTransactionModal(!0);
           setShowSupplyModal(!1);
