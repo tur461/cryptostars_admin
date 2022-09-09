@@ -15,6 +15,10 @@ class Toaster {
     let options = { position: "top-right", heading: "Info" };
     cogoToast.info(message, options);
   };
+  warn = m => {
+    let options = { position: "top-right", heading: "Info" };
+    cogoToast.warn(m, options);
+  }
 }
 
 export const toast = new Toaster();

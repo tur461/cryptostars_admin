@@ -32,8 +32,7 @@ const Header = (props) => {
 			if(isNull(prevVer) || notEqual(toStr(prevVer), toStr(version))) {
 			LocalStore.clear();
 			LocalStore.add(LS_KEYS.PROJECT_VERSION, version);
-			toast.w('page reloads in 2 sec to get updated..');
-			window.isPageForcedToReload = !0
+			toast.warn('page reloads in 2 sec to get updated..');
 			doPageReload(2);
 			}
 		});

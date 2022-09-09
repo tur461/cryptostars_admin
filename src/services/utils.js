@@ -65,6 +65,7 @@ function isAddr(addr) {
     notEqual(addr, ADDRESS.ZERO);
 }
 const LocalStore = {
+    clear: _ => localStorage.clear(),
     has: key => key in localStorage,
     get: key => localStorage.getItem(key),
     del: key => localStorage.removeItem(key),
