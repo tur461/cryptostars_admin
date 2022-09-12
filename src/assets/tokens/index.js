@@ -102,7 +102,7 @@ export const MAIN_CONTRACT_LIST = {
     blockNumber: 0,
   },
   router: {
-    address: "0x416E6daB641028ABa1B2730C2620ef933e586c2d",
+    address: "0xF20c5cedAbC1FB43e1c588e1385258824DAa3BAB",
     blockNumber: 3089767,
     abi: routerABI,
   },
