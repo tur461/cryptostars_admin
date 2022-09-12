@@ -21,7 +21,7 @@ import Button from "../../Components/Button/Button";
 export const TokenList = ({ data }) => {
   const dispatch = useDispatch();
   const priAccount = useSelector(s => s.persist.priAccount);
-  const [showBurnModal, setShowBurnModal] = useState(!1);
+  const [showBurnModal, setShowBurnModal] = useState([]);
   const [newTokenListBackend, setNewTokenListBackend] = useState([]);
 
   useEffect(() => {
@@ -51,11 +51,20 @@ export const TokenList = ({ data }) => {
       dispatch(startLoading(!1));
     }
   }
+  const _setShowBurnModal = (v, i) => {
+    if(i>=showBurnModal.length) {
+      setShowBurnModal([...showBurnModal, v]);
+    } else {
+      let tmp = [...showBurnModal];
+      tmp[i] = v;
+      setShowBurnModal(tmp);
+    }
+  }
 
   return (
     <div className="token_list">
       <ul>
-        {newTokenListBackend?.map((token) => (
+        {newTokenListBackend?.map((token, i) => (
           <div className="token_card" key={token.name}>
             <div className="token_img">
               <img
@@ -113,14 +122,14 @@ export const TokenList = ({ data }) => {
               </span>
             </div>
             <div>
-              <Button onClick={e => setShowBurnModal(!0)}>BURN</Button>
+              <Button onClick={e => _setShowBurnModal(!0, i)}>BURN</Button>
               {
-                showBurnModal ?
+                showBurnModal.length && showBurnModal[i] ?
                 <BurnModal 
                   getBalance={async _ => await getBalanceOf(token.addr)}
                   addr={token.addr}
                   doBurnCallback={(v, addr) => performBurnOperation(v, addr)}
-                  closeModalCallback={_ => setShowBurnModal(!1)}
+                  closeModalCallback={_ => setShowBurnModal(!1, i)}
                 /> : <></>
               }
             </div>
