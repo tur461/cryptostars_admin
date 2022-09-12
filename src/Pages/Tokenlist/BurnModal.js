@@ -4,6 +4,7 @@ import closeBtn from '../../assets/images/ionic-md-close.svg'
 import { eHandle } from '../../services/utils'
 import { useState } from 'react'
 import Card from "../../Components/Card/Card";
+import Button from '../../Components/Button/Button'
 
 const BurnModal = ({ closeModalCallback, doBurnCallback, getBalance, addr}) => {
     const [burnValue, setBurnValue] = useState('');
@@ -33,7 +34,7 @@ const BurnModal = ({ closeModalCallback, doBurnCallback, getBalance, addr}) => {
                         />
                     </div>
                     <div>
-                        <button onClick={e => eHandle(e) && doBurnCallback(burnValue, addr)}>DO BURN</button>
+                        <Button onClick={e => eHandle(e) && doBurnCallback(burnValue, addr)}>DO BURN</Button>
                     </div>
                 </div>
             </Card>

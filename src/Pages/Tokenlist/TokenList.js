@@ -16,6 +16,7 @@ import { getTokenBalance, startLoading } from "../../redux/actions";
 import { ContractServices } from "../../services/ContractServices";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
+import Button from "../../Components/Button/Button";
 
 export const TokenList = ({ data }) => {
   const dispatch = useDispatch();
@@ -112,7 +113,7 @@ export const TokenList = ({ data }) => {
               </span>
             </div>
             <div>
-              <button onClick={e => setShowBurnModal(!0)}>BURN</button>
+              <Button onClick={e => setShowBurnModal(!0)}>BURN</Button>
               {
                 showBurnModal ?
                 <BurnModal 
