@@ -11,8 +11,16 @@ import {
   truncAddr,
 } from "../../services/utils";
 import "./Tokenlist.scss";
+import BurnModal from "./BurnModal";
+import { getTokenBalance, startLoading } from "../../redux/actions";
+import { ContractServices } from "../../services/ContractServices";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 export const TokenList = ({ data }) => {
+  const dispatch = useDispatch();
+  const priAccount = useSelector(s => s.persist.priAccount);
+  const [showBurnModal, setShowBurnModal] = useState(!1);
   const [newTokenListBackend, setNewTokenListBackend] = useState([]);
 
   useEffect(() => {
@@ -27,7 +35,21 @@ export const TokenList = ({ data }) => {
     });
   };
 
-  console.log(newTokenListBackend, ">>>>>NEWTOKENLISTBACKEND");
+  const getBalanceOf = addr => {
+    return ContractServices.getTokenBalance(addr, priAccount);
+  }
+
+  const performBurnOperation = async (val, addr) => {
+    dispatch(startLoading(!0));
+    try{
+      await ContractServices.burnToken(val, addr, priAccount);
+      dispatch(startLoading(!1));
+      toast.error('burn successful');
+    } catch(e) {
+      toast.error('burn unsuccessful, pls try again!');
+      dispatch(startLoading(!1));
+    }
+  }
 
   return (
     <div className="token_list">
@@ -52,7 +74,7 @@ export const TokenList = ({ data }) => {
                 <label htmlFor="html">Token Symbol:</label>
                 <li style={{ color: "white" }}>{token.sym.slice(0,10)}...</li>
               </span>
-              <span>
+              <div>
                 <label htmlFor="html">Token Address:</label>
                 <div className="trunc_sec">
                   <li id={toB64(token.addr)} style={{ color: "white" }}>
@@ -73,9 +95,12 @@ export const TokenList = ({ data }) => {
                       alt="copy"
                     />
                   </CopyToClipboard>
+                  
                 </div>
-              </span>
+                
+              </div>
             </div>
+            
             <div className="supply_sec">
               <span>
                 <label htmlFor="html">Token Supply:</label>
@@ -85,6 +110,18 @@ export const TokenList = ({ data }) => {
                 <label htmlFor="html">Token Decimal:</label>
                 <li style={{ color: "white" }}>{token.dec}</li>
               </span>
+            </div>
+            <div>
+              <button onClick={e => setShowBurnModal(!0)}>BURN</button>
+              {
+                showBurnModal ?
+                <BurnModal 
+                  balance={async _ => await getBalanceOf(token.addr)}
+                  addr={token.addr}
+                  doBurnCallback={(v, addr) => performBurnOperation(v, addr)}
+                  closeModalCallback={_ => setShowBurnModal(!1)}
+                /> : <></>
+              }
             </div>
           </div>
         ))}

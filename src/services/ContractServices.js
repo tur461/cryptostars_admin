@@ -347,12 +347,31 @@ const isAdminAccount = async account => {
   return rEqual(account, admin);
 }
 
+const burnToken = async (amount, addr, from) => {
+  return new Promise((r, j) => {
+    callTokenContract(addr)
+      .then(async c => {
+        const dec = await getDecimals(addr);
+        amount = amount * 10**dec;
+        c.methods.burn(amount).estimateGas({from})
+        .then(gas => {
+          c.methods.burn(amount).send({from, gas})
+          .then(hash => r(hash))
+          .catch(e => j(e));
+        })
+        .catch(e => j(e));
+      })
+      .catch(e => j(e));
+  })
+}
+
 //exporting functions
 export const ContractServices = {
   isAdminAccount,
   isMetamaskInstalled,
   web3Object,
   callWeb3,
+  burnToken,
   callContract,
   calculateGasPrice,
   approveToken,
