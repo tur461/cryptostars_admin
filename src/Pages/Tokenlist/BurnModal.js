@@ -11,7 +11,7 @@ const BurnModal = ({ closeModalCallback, doBurnCallback, getBalance, addr}) => {
     return (
         <div className='burn-modal--container'>
             <div className="backdrop"></div>
-            <Card className="burn-token_modal">
+            <div className="burn-token_modal">
                 <div className=" modal_headerStyle__rowA_colRight">
                     <Link to="#" onClick={e => eHandle(e) && closeModalCallback()}>
                         <img src={closeBtn} alt="icon" />
@@ -37,7 +37,7 @@ const BurnModal = ({ closeModalCallback, doBurnCallback, getBalance, addr}) => {
                         <Button onClick={e => eHandle(e) && doBurnCallback(burnValue, addr)}>DO BURN</Button>
                     </div>
                 </div>
-            </Card>
+            </div>
         </div>
     )
 
