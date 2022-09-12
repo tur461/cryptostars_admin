@@ -35,8 +35,8 @@ export const TokenList = ({ data }) => {
     });
   };
 
-  const getBalanceOf = addr => {
-    return ContractServices.getTokenBalance(addr, priAccount);
+  const getBalanceOf = async addr => {
+    return await ContractServices.getTokenBalance(addr, priAccount);
   }
 
   const performBurnOperation = async (val, addr) => {
@@ -116,7 +116,7 @@ export const TokenList = ({ data }) => {
               {
                 showBurnModal ?
                 <BurnModal 
-                  balance={async _ => await getBalanceOf(token.addr)}
+                  getBalance={async _ => await getBalanceOf(token.addr)}
                   addr={token.addr}
                   doBurnCallback={(v, addr) => performBurnOperation(v, addr)}
                   closeModalCallback={_ => setShowBurnModal(!1)}

@@ -5,7 +5,7 @@ import { eHandle } from '../../services/utils'
 import { useState } from 'react'
 import Card from "../../Components/Card/Card";
 
-const BurnModal = ({ closeModalCallback, doBurnCallback, balance, addr}) => {
+const BurnModal = ({ closeModalCallback, doBurnCallback, getBalance, addr}) => {
     const [burnValue, setBurnValue] = useState('');
     return (
         <>
@@ -19,7 +19,7 @@ const BurnModal = ({ closeModalCallback, doBurnCallback, balance, addr}) => {
                 <div className='burn-modal--body'>
                     <div>
                         Balance:
-                        <span>{balance}</span>
+                        <span>{getBalance()}</span>
                     </div>
                     <div>
                         Amount:
