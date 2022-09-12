@@ -1,33 +1,37 @@
 @import "../../assets/theme/_var.scss";
-
-.burn-token_modal{
+.burn-modal--container{
+  position: relative;
+  .burn-token_modal{
   
-  position: absolute;
-  top:50%;
-  left:0;
-  right: 0;
-  margin:0 auto;
-  max-width: 410px;
-  transform: translateY(-50%);
-  .modal_headerStyle__rowA_colRight{
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-.burn-modal--body{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  &>div {
-    margin-top: .5rem;
+      position: absolute;
+      top:50%;
+      left:0;
+      right: 0;
+      margin:0 auto;
+      max-width: 410px;
+      z-index: 100;
+      transform: translateY(-50%);
+      .modal_headerStyle__rowA_colRight{
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+    .burn-modal--body{
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      &>div {
+        margin-top: .5rem;
+      }
+      // & * {
+      //   color: white !important;
+      // }
+    }
   }
-  & * {
-    color: white !important;
-  }
-  color: white !important;
 }
-}
+
+
 
 .table_responsive {
   @media (max-width: 991px) {

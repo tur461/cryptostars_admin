@@ -9,7 +9,7 @@ import Button from '../../Components/Button/Button'
 const BurnModal = ({ closeModalCallback, doBurnCallback, getBalance, addr}) => {
     const [burnValue, setBurnValue] = useState('');
     return (
-        <>
+        <div className='burn-modal--container'>
             <div className="backdrop"></div>
             <Card className="burn-token_modal">
                 <div className=" modal_headerStyle__rowA_colRight">
@@ -38,7 +38,7 @@ const BurnModal = ({ closeModalCallback, doBurnCallback, getBalance, addr}) => {
                     </div>
                 </div>
             </Card>
-        </>
+        </div>
     )
 
 }
