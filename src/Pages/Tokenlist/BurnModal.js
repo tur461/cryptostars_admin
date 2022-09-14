@@ -31,7 +31,7 @@ const BurnModal = ({ closeModalCallback, doBurnCallback, balance, addr}) => {
                             onChange={e => {
                                 eHandle(e);
                                 const val = e.target.value;
-                                if(Number(balance) > Number(val)) setValueErr('exceeds balance');
+                                if(Number(val) > Number(balance)) setValueErr('exceeds balance');
                                 else if(rEqual(parseFloat(val), 0)) setValueErr('cant be zero')
                                 else {
                                     setValueErr('');
