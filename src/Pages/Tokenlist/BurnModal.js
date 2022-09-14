@@ -1,12 +1,13 @@
 import './Tokenlist.scss'
 import { Link } from 'react-router-dom'
 import closeBtn from '../../assets/images/ionic-md-close.svg'
-import { eHandle } from '../../services/utils'
+import { eHandle, notEmpty, rEqual } from '../../services/utils'
 import { useState } from 'react'
 import Card from "../../Components/Card/Card";
 import Button from '../../Components/Button/Button'
 
 const BurnModal = ({ closeModalCallback, doBurnCallback, balance, addr}) => {
+    const [valueErr, setValueErr] = useState('');
     const [burnValue, setBurnValue] = useState('');
     return (
         <div className='burn-modal--container'>
@@ -30,13 +31,26 @@ const BurnModal = ({ closeModalCallback, doBurnCallback, balance, addr}) => {
                             onChange={e => {
                                 eHandle(e);
                                 const val = e.target.value;
-                                setBurnValue(val);
-                            }} 
+                                if(Number(balance) > Number(val)) setValueErr('exceeds balance');
+                                else if(rEqual(parseFloat(val), 0)) setValueErr('cant be zero')
+                                else {
+                                    setValueErr('');
+                                    setBurnValue(val);
+                                }
+                            }}
                             value={burnValue}
                         />
+                        { 
+                            notEmpty(valueErr) ? 
+                            <span 
+                                style={{'color': 'red', 'fontWeight': '700'}}
+                            >{valueErr}</span> : 
+                            <></>}
                     </div>
                     <div>
-                        <Button onClick={e => eHandle(e) && doBurnCallback(burnValue, addr)}>DO BURN</Button>
+                        <Button 
+                            onClick={e => eHandle(e) && !notEmpty(valueErr) && doBurnCallback(burnValue, addr)}
+                        >DO BURN</Button>
                     </div>
                 </div>
             </div>

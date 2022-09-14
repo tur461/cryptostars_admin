@@ -70,6 +70,7 @@ export const TokenList = ({ data }) => {
     try{
       await ContractServices.burnToken(val, addr, priAccount);
       dispatch(stopLoading());
+      setShowBurnModal(!1);
       toast.success('burn successful');
     } catch(e) {
       console.log('error', e);
