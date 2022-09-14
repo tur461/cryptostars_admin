@@ -43,7 +43,7 @@ const BurnModal = ({ closeModalCallback, doBurnCallback, balance, addr}) => {
                         { 
                             notEmpty(valueErr) ? 
                             <span 
-                                style={{'color': 'red !important', 'fontWeight': '700'}}
+                                className='burn-input-error'
                             >{valueErr}</span> : 
                             <></>}
                     </div>
