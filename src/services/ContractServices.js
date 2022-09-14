@@ -15,7 +15,7 @@ import {
   WALLET_TYPE,
 } from "../constant";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { clearEnv, isDefined, LocalStore, rEqual, toHex } from "./utils";
+import { clearEnv, isDefined, LocalStore, rEqual, toHex, toStd } from "./utils";
 import { notEqual } from "assert";
 import { LS_KEYS } from "./constants";
 import { WalletService } from "./WalletServices";
@@ -352,7 +352,7 @@ const burnToken = async (amount, addr, from) => {
     callTokenContract(addr)
       .then(async c => {
         const dec = await getDecimals(addr);
-        amount = `${amount * 10**dec}`;
+        amount = toStd(amount * 10**dec);
         c.methods.burn(amount).estimateGas({from})
         .then(gas => {
           c.methods.burn(amount).send({from, gas})

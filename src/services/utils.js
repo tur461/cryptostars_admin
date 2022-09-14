@@ -100,6 +100,8 @@ const isDefined = v => notEqual(v, 'null') && notEqual(v, null) && notEqual(v, '
 
 const notDefined = v => !isDefined(v);
 
+const toStd = v => Number(v).toLocaleString('fullwide', {useGrouping: !1});
+
 export {
     isDefined,
     notDefined,
@@ -107,6 +109,7 @@ export {
     doPageReload,
     empty,
     isNull,
+    toStd,
     notNull,
     isAddr,
     rEqual,
