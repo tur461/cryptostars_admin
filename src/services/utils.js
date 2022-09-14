@@ -95,7 +95,14 @@ const doPageReload = (delay=0) => delay ? setTimeout(_ => window.location.reload
 
 const toStr = v => isStr(v) ? v : isObj(v) ? jString(v) : `${v}`;
 
+
+const isDefined = v => notEqual(v, 'null') && notEqual(v, null) && notEqual(v, 'undefined') && notEqual(v, undefined);
+
+const notDefined = v => !isDefined(v);
+
 export {
+    isDefined,
+    notDefined,
     toStr,
     doPageReload,
     empty,

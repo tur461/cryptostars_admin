@@ -15,7 +15,7 @@ import {
   WALLET_TYPE,
 } from "../constant";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { clearEnv, LocalStore, rEqual, toHex } from "./utils";
+import { clearEnv, isDefined, LocalStore, rEqual, toHex } from "./utils";
 import { notEqual } from "assert";
 import { LS_KEYS } from "./constants";
 import { WalletService } from "./WalletServices";
@@ -117,24 +117,23 @@ const callWeb3 =  _ => {
 
 const callContract = async (contractAddress, contractABI) => {
   if (
-    contractOjbect &&
-    currentContractAddress &&
+    isDefined(contractOjbect) &&
+    isDefined(currentContractAddress) &&
     rEqual(currentContractAddress, contractAddress)
   ) {
     return contractOjbect;
   }
   const web3Object = await callWeb3();
   currentContractAddress = contractAddress;
-  // console.log(contractABI, contractAddress, "hjhjhjhj");
   contractOjbect = new web3Object.eth.Contract(contractABI, contractAddress);
   return contractOjbect;
 };
 
 const callTokenContract = async (tokenAddress) => {
   if (
-    tokenContractObject &&
-    currentContractAddress &&
-    currentTokenAddress.toLowerCase() === tokenAddress.toLowerCase()
+    isDefined(tokenContractObject) &&
+    isDefined(currentContractAddress) &&
+    rEqual(currentTokenAddress, tokenAddress)
   ) {
     return tokenContractObject;
   }
