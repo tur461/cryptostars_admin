@@ -347,7 +347,7 @@ const RemoveLiquidity = (props) => {
         data,
         currentPairAddress
       );
-      console.log("qqqqqqq", res);
+      console.log("qqqqqqq", res.message);
       if (res.message) {
         if (res.message.indexOf("eth_signTypedData_v4") > -1) {
           setCheckSignature(false);
@@ -501,7 +501,7 @@ const RemoveLiquidity = (props) => {
         s = signedData.s;
         v = signedData.v;
       }
-
+    
       const data = {
         token,
         liquidity,
@@ -514,7 +514,7 @@ const RemoveLiquidity = (props) => {
         r,
         s,
         v,
-        checkSignature,
+        checkSignature
       };
       console.log("hahahahahah", data);
       try {
@@ -594,7 +594,7 @@ const RemoveLiquidity = (props) => {
         v,
         r,
         s,
-        checkSignature,
+        checkSignature
       };
       console.log("---------------------------", data);
       console.log("signedData", signedData);

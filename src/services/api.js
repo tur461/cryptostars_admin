@@ -39,22 +39,32 @@ function saveTokenIconToDB(file, iconName, callback) {
     .catch(er => callback(er, null));
 }
 
-function retreiveTokenList(callback) {
-        fetch(BACK_END_URL + "/api/get/tokenInfoList", {
+async function retreiveTokenList(callback) {
+    try {
+        let getResult = await fetch(BACK_END_URL + "/api/get/tokenInfoList", {
             method: 'GET',
             headers: {
                 'content-type': 'application/json'
             },      
         })
-        .then(d => d.json())
-        .then(res => {
-            const infoList = JSON.parse(res.data);
-            console.log('vvvvvvvinfoList',infoList);
-            callback(infoList)
-        })
-        .catch(err => {
-            console.log('retreiveTokenList Error:', err);
-        })
+        getResult = await getResult.json();
+        const infoList = JSON.parse(getResult.data);
+        return infoList;
+    } catch (error) {
+        console.log('retreiveTokenList Error:', error);
+    }
+       
+        // .then(d => d.json())
+        // .then(res => {
+        //         const infoList = JSON.parse(res.data);
+        //         console.log('vvvvvvvinfoList',infoList);
+        //         return infoList;
+        //         // callback(infoList)
+        //     })
+            // .catch(err => {
+            //         console.log('retreiveTokenList Error:', err);
+            //     })
+                // console.log(infoList,"getResult0")
 }
 
 function savePoolInfoToDB(poolInfo, callback) {

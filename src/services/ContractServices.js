@@ -199,7 +199,8 @@ const getTokenBalance = async (tokenAddress, address) => {
         c.methods.decimals().call()
         .then(dec=> {
           c.methods.balanceOf(address).call()
-          .then(bal => r(Number((Number(bal) / 10 ** dec).toFixed(5))))
+          .then(bal =>   r(Number((Number(bal) / 10 ** dec).toFixed(5))))
+        
           .catch(e => j(e));
         })
         .catch(e => j(e));
@@ -352,7 +353,7 @@ const burnToken = async (amount, addr, from) => {
     callTokenContract(addr)
       .then(async c => {
         const dec = await getDecimals(addr);
-        amount = amount * 10**dec;
+        amount = `${amount * 10**dec}`;
         c.methods.burn(amount).estimateGas({from})
         .then(gas => {
           c.methods.burn(amount).send({from, gas})

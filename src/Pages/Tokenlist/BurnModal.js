@@ -6,7 +6,7 @@ import { useState } from 'react'
 import Card from "../../Components/Card/Card";
 import Button from '../../Components/Button/Button'
 
-const BurnModal = ({ closeModalCallback, doBurnCallback, getBalance, addr}) => {
+const BurnModal = ({ closeModalCallback, doBurnCallback, balance, addr}) => {
     const [burnValue, setBurnValue] = useState('');
     return (
         <div className='burn-modal--container'>
@@ -20,11 +20,13 @@ const BurnModal = ({ closeModalCallback, doBurnCallback, getBalance, addr}) => {
                 <div className='burn-modal--body'>
                     <div>
                         Balance:
-                        <span>{getBalance()}</span>
+                        <span>{balance}</span>
                     </div>
                     <div>
                         Amount:
                         <input 
+                        type='number'
+                            className="inputStyle"
                             onChange={e => {
                                 eHandle(e);
                                 const val = e.target.value;

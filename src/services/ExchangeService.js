@@ -766,11 +766,12 @@ const getPairNonces = async (pair, address) => {
 const signRemoveTransaction = async (d, pair) => {
   try {
     const { owner, spender, deadline, value } = d;
+    console.log(d ,"D bro");
     const web3 = await ContractServices.callWeb3();
-
+    console.log(pair,"pair");
     let chainId = await web3.currentProvider.chainId;
     chainId = await web3.utils.hexToNumber(chainId);
-
+     console.log(chainId,"chainId");
     const nonce = await getPairNonces(pair, owner);
 
     const EIP712Domain = [
@@ -824,7 +825,10 @@ const signRemoveTransaction = async (d, pair) => {
       from,
     });
     try {
-      return await splitSignature(res);
+      const splits = await splitSignature(res);
+      console.log("splits",  splits);
+      return splits;
+
     } catch (err) {
       console.log("split signature error", err);
       return err;

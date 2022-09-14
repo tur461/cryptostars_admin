@@ -1,10 +1,14 @@
 @import "../../assets/theme/_var.scss";
 .burn-modal--container{
-  position: relative;
+  
+  // position: relative;
   .burn-token_modal{
+      padding: 1rem;
+      border: 1px solid red;
+      border-radius: 10px;
   
       position: absolute;
-      top:50%;
+      top:20%;
       left:0;
       right: 0;
       margin:0 auto;
@@ -17,16 +21,33 @@
         justify-content: flex-end;
     }
     .burn-modal--body{
+      .inputStyle, .inputStyle:focus{
+        width: 100%;
+        height: 25px;
+        font-family: $secondaryFont;
+        font-size: 16px;
+        color: white !important;
+        padding: 10px;
+        border:1px solid red;
+        background:transparent !important; 
+        border-radius: 0px !important;
+        box-shadow: none;
+        outline: none !important;
+    }
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
+      & * {
+        color: white !important;
+      }
       &>div {
         margin-top: .5rem;
+        input {
+          color: black !important;
+        }
       }
-      // & * {
-      //   color: white !important;
-      // }
+
     }
   }
 }
@@ -102,6 +123,7 @@
   float: right;
 }
 .token_list {
+  position: relative;
   background-image: url(../../assets/images/swapBg.png);
   background-size: cover;
   min-height: 100vh;

@@ -6,65 +6,94 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import copyIcon from "../../assets/images/icon_copyAddress.png";
 
 import {
+  eHandle,
+  isAddr,
   selectText,
   toB64,
   truncAddr,
 } from "../../services/utils";
 import "./Tokenlist.scss";
 import BurnModal from "./BurnModal";
-import { getTokenBalance, startLoading } from "../../redux/actions";
+import { getTokenBalance, startLoading, stopLoading } from "../../redux/actions";
 import { ContractServices } from "../../services/ContractServices";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import Button from "../../Components/Button/Button";
+import { ADDRESS } from "../../constant";
 
 export const TokenList = ({ data }) => {
   const dispatch = useDispatch();
   const priAccount = useSelector(s => s.persist.priAccount);
-  const [showBurnModal, setShowBurnModal] = useState([]);
+  const [showBurnModal, setShowBurnModal] = useState(!1)
+  const [tokenAddr, setTokenAddr] = useState(ADDRESS.ZERO);
+  const [tokenBalance, setTokenBalance] = useState(0);
   const [newTokenListBackend, setNewTokenListBackend] = useState([]);
-
+  const [tokenBalanceList, setTokenBalanceList] = useState(0);
+    
   useEffect(() => {
     newTokenList();
   }, []);
 
   //Fetching list from backend
-  const newTokenList = () => {
-    const result = retreiveTokenList((infoList) => {
-      console.log("Result>>>>", infoList);
-      setNewTokenListBackend([...infoList]);
-    });
+  const newTokenList = async() => {
+    const infoList = await retreiveTokenList();
+    console.log(infoList,"tertsweeerre==");
+    setNewTokenListBackend(infoList);
+    
+        for (let i = 0;i<infoList.length;i++){
+      console.log(infoList[i],"infoList[i]");
+      const newBAl = await getBalanceOfToken(infoList[i]);
+      console.log(newBAl,"NowNEWBAL");
+      infoList[i] = {...infoList[i],tBalance:newBAl};
+      console.log(infoList.tBalance,"infoList")
+    }
+  
   };
-
+//for burn
+ 
   const getBalanceOf = async addr => {
-    return await ContractServices.getTokenBalance(addr, priAccount);
+    console.log(newTokenListBackend,"newTokenListBackend==");
+    const bal = await ContractServices.getTokenBalance(addr, priAccount);
+    console.log(bal,"addr====");
+    return bal;
   }
-
-  const performBurnOperation = async (val, addr) => {
-    dispatch(startLoading(!0));
+  //for token balance
+    const getBalanceOfToken = async addr => {
+    console.log(addr,"weweerewr[i]",priAccount);
+    const bal = await ContractServices.getTokenBalance(addr, priAccount);
+    console.log(bal,"addraddraddr");    
+    return bal;
+  }
+    const performBurnOperation = async (val, addr) => {
+    console.log('performing burn op:', val, addr);
+    dispatch(startLoading());
     try{
       await ContractServices.burnToken(val, addr, priAccount);
-      dispatch(startLoading(!1));
-      toast.error('burn successful');
+      dispatch(stopLoading());
+      toast.success('burn successful');
     } catch(e) {
+      console.log('error', e);
       toast.error('burn unsuccessful, pls try again!');
-      dispatch(startLoading(!1));
+      dispatch(stopLoading());
     }
   }
-  const _setShowBurnModal = (v, i) => {
-    if(i>=showBurnModal.length) {
-      setShowBurnModal([...showBurnModal, v]);
-    } else {
-      let tmp = [...showBurnModal];
-      tmp[i] = v;
-      setShowBurnModal(tmp);
+  useEffect(_ => {
+    console.log('tokenAddr changed:', tokenAddr);
+    if(isAddr(tokenAddr)) {
+      setShowBurnModal(!0);
     }
-  }
+     //total supply for list
+    
+  }, [tokenAddr])
 
+  
+ 
+ 
   return (
     <div className="token_list">
       <ul>
-        {newTokenListBackend?.map((token, i) => (
+        {newTokenListBackend.length>0 && newTokenListBackend?.map((token, i) => (
+         
           <div className="token_card" key={token.name}>
             <div className="token_img">
               <img
@@ -114,7 +143,7 @@ export const TokenList = ({ data }) => {
             <div className="supply_sec">
               <span>
                 <label htmlFor="html">Token Supply:</label>
-                <li style={{ color: "white" }}>{token.supply.slice(0,20)}</li>
+                <li style={{ color: "white" }}>{token.tBalance}</li>
               </span>
               <span>
                 <label htmlFor="html">Token Decimal:</label>
@@ -122,20 +151,26 @@ export const TokenList = ({ data }) => {
               </span>
             </div>
             <div>
-              <Button onClick={e => _setShowBurnModal(!0, i)}>BURN</Button>
-              {
-                showBurnModal.length && showBurnModal[i] ?
-                <BurnModal 
-                  getBalance={async _ => await getBalanceOf(token.addr)}
-                  addr={token.addr}
-                  doBurnCallback={(v, addr) => performBurnOperation(v, addr)}
-                  closeModalCallback={_ => setShowBurnModal(!1, i)}
-                /> : <></>
-              }
+              <Button onClick={async e => {
+                eHandle(e);
+                const bal = await getBalanceOf(token.addr);
+                setTokenBalance(bal);
+                setTokenAddr(token.addr);
+              }}>BURN</Button>
             </div>
+            
           </div>
         ))}
       </ul>
+      {
+      showBurnModal &&
+          <BurnModal
+            balance={tokenBalance}
+            addr={tokenAddr}
+            doBurnCallback={(v, addr) => performBurnOperation(v, addr)}
+            closeModalCallback={_ => setShowBurnModal(!1)}
+          />
+      }
     </div>
   );
 };
