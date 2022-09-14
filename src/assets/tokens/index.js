@@ -132,7 +132,7 @@ export const MAIN_CONTRACT_LIST = {
     abi: anchorABI,
   },
   tokenFactory: {
-    address: "0xFC4Bf4a12027FC05cF3C5eA5929087B70AA1ac92",
+    address: "0x25aDa3572390E2e76b177B4b0Ee562c688d313Cc",
     blockNumber: 68765876,
     abi: tokenFactoryABI,
   },
