@@ -1,6 +1,6 @@
 import { VAL_CONSTANT } from "../constant";
 import { API_PATH, BACK_END_URL } from "./constants"
-import { jString } from "./utils";
+import { jObject, jString } from "./utils";
 
 function saveTokenInfoToDB(tokenInfo, callback) {
     console.log(BACK_END_URL, API_PATH.SAVE_TOKEN_INFO);
@@ -48,23 +48,10 @@ async function retreiveTokenList(callback) {
             },      
         })
         getResult = await getResult.json();
-        const infoList = JSON.parse(getResult.data);
-        return infoList;
+        return jObject(getResult.data);
     } catch (error) {
-        console.log('retreiveTokenList Error:', error);
+        console.log('retrieveTokenList Error:', error);
     }
-       
-        // .then(d => d.json())
-        // .then(res => {
-        //         const infoList = JSON.parse(res.data);
-        //         console.log('vvvvvvvinfoList',infoList);
-        //         return infoList;
-        //         // callback(infoList)
-        //     })
-            // .catch(err => {
-            //         console.log('retreiveTokenList Error:', err);
-            //     })
-                // console.log(infoList,"getResult0")
 }
 
 function savePoolInfoToDB(poolInfo, callback) {

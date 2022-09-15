@@ -143,10 +143,6 @@ export const TokenList = ({ data }) => {
             
             <div className="supply_sec">
               <span>
-                <label htmlFor="html">Token Supply:</label>
-                <li style={{ color: "white" }}>{token.tBalance}</li>
-              </span>
-              <span>
                 <label htmlFor="html">Token Decimal:</label>
                 <li style={{ color: "white" }}>{token.dec}</li>
               </span>
