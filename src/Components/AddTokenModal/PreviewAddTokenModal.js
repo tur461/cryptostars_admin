@@ -11,7 +11,7 @@ import { MAIN_CONTRACT_LIST } from "../../assets/tokens/index";
 import { TokenList } from "../../Pages/Tokenlist/TokenList";
 import { Provider, useDispatch } from "react-redux";
 import { savetoken, startLoading, stopLoading } from "../../redux/actions";
-import { BSC_SCAN, STR_CONSTANT } from "../../constant";
+import { BSC_SCAN, STR_CONSTANT, URL } from "../../constant";
 import checkicon from "../../assets/images/check_icon.svg";
 import { saveTokenIconToDB, saveTokenInfoToDB } from "../../services/api";
 import { useSelector } from "react-redux";
@@ -144,7 +144,7 @@ function PreviewAddTokenModal({
 
                 <img src={checkicon} alt="icon" />
                 <a
-                  href={`${BSC_SCAN}tx/${finalhash}`}
+                  href={`${URL.CRONOS_EXPLORER}/tx/${finalhash}`}
                   target="_blank"
                   rel="noreferrer"
                 >
