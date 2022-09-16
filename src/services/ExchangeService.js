@@ -398,7 +398,7 @@ const removeLiquidityETHWithPermit = async (data) => {
         s,
         checkSignature,
       } = data;
-      value = "0";
+      // value = "0";
 
       const contract = await ContractServices.callContract(
         MAIN_CONTRACT_LIST.router.address,
@@ -416,7 +416,7 @@ const removeLiquidityETHWithPermit = async (data) => {
           const gas = await contract.methods
             .removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
               token,
-              liquidity,
+              value,
               amountTokenMin,
               amountETHMin,
               to,
@@ -431,7 +431,7 @@ const removeLiquidityETHWithPermit = async (data) => {
           contract.methods
             .removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
               token,
-              liquidity,
+              value,
               amountTokenMin,
               amountETHMin,
               to,
@@ -471,7 +471,7 @@ const removeLiquidityETHWithPermit = async (data) => {
           contract.methods
             .removeLiquidityETHWithPermit(
               token,
-              liquidity,
+              value,
               amountTokenMin,
               amountETHMin,
               to,
@@ -504,7 +504,7 @@ const removeLiquidityETHWithPermit = async (data) => {
           const gas = await contract.methods
             .removeLiquidityETHSupportingFeeOnTransferTokens(
               token,
-              liquidity,
+              value,
               amountTokenMin,
               amountETHMin,
               to,
@@ -515,7 +515,7 @@ const removeLiquidityETHWithPermit = async (data) => {
           contract.methods
             .removeLiquidityETHSupportingFeeOnTransferTokens(
               token,
-              liquidity,
+              value,
               amountTokenMin,
               amountETHMin,
               to,
@@ -536,7 +536,7 @@ const removeLiquidityETHWithPermit = async (data) => {
           const gas = await contract.methods
             .removeLiquidityETH(
               token,
-              liquidity,
+              value,
               amountTokenMin,
               amountETHMin,
               to,
@@ -547,7 +547,7 @@ const removeLiquidityETHWithPermit = async (data) => {
           contract.methods
             .removeLiquidityETH(
               token,
-              liquidity,
+              value,
               amountTokenMin,
               amountETHMin,
               to,

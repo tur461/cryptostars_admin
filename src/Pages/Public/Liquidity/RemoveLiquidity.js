@@ -516,7 +516,6 @@ const RemoveLiquidity = (props) => {
         v,
         checkSignature
       };
-      console.log("hahahahahah", data);
       try {
         const result = await ExchangeService.removeLiquidityETHWithPermit(data);
         console.log(result, "remove liquidity transaction");
